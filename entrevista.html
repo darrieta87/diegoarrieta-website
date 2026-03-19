@@ -1,102 +1,199 @@
 <!DOCTYPE html>
-  <html lang="es">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Entrevista AI - ozom.ai</title>
-      <script
-          id="retell-widget"
-          src="https://dashboard.retellai.com/retell-widget.js"
-          data-public-key="public_key_733663fa4c95af822bad5"
-          data-agent-id="agent_65aa52e5fd6cfe8c58bbc2e31d"
-          data-agent-version="0"
-          data-title="Entrevista ozom.ai"
-          data-color="#2563EB"
-          data-bot-name="Asistente ozom.ai"
-          data-popup-message="Hola! Estoy listo para platicar contigo sobre tu experiencia en el trabajo. Haz clic para empezar."
-          data-show-ai-popup="true"
-          data-show-ai-popup-time="2"
-          data-auto-open="true"
-      ></script>
-      <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrevista AI - ozom.ai</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <script
+        id="retell-widget"
+        src="https://dashboard.retellai.com/retell-widget.js"
+        data-public-key="public_key_733663fa4c95af822bad5"
+        data-agent-id="agent_537dd01789529e402073f397c5"
+        data-title="Chat con Diego Arrieta (bot)"
+        data-color="#B85C3A"
+        data-bot-name="Asistente ozom.ai"
+        data-popup-message="Hola! Estoy listo para platicar contigo sobre tu experiencia en el trabajo. Haz clic para empezar."
+        data-show-ai-popup="true"
+        data-show-ai-popup-time="2"
+        data-auto-open="true"
+    ></script>
+    <style>
+        :root {
+            --clay: #C4956A;
+            --clay-light: #D4AD8A;
+            --ink: #1A1714;
+            --paper: #F5F0E8;
+            --paper-dark: #EDE6D9;
+            --sand: #E8DFD0;
+            --rust: #B85C3A;
+            --ocean: #2D5F6E;
+            --sage: #7A8B6F;
+            --white: #FEFCF8;
+            --grey: #6B6560;
+            --grey-light: #9B9590;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { font-size: 16px; }
+
         body {
-                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+            font-family: 'Source Sans 3', Georgia, serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: white;
-}
-        .container {
-                      text-align: center;
-            max-width: 600px;
-            padding: 40px 20px;
-}
-        .logo {
-                      font-size: 14px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: 0.7;
-            margin-bottom: 20px;
-}
-        h1 {
-                      font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 16px;
-            line-height: 1.3;
-}
-        p {
-                      font-size: 16px;
-            opacity: 0.85;
-            line-height: 1.6;
-            margin-bottom: 30px;
-}
-        .instructions {
-                      background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 24px;
-            text-align: left;
         }
+
+        ::selection {
+            background: var(--clay);
+            color: var(--white);
+        }
+
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 3rem;
+            z-index: 100;
+            background: rgba(245, 240, 232, 0.92);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+        }
+
+        .nav-bar a {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--ink);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 620px;
+            padding: 6rem 2rem 3rem;
+            opacity: 0;
+            animation: fadeUp 0.8s ease 0.3s forwards;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--clay);
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.4rem);
+            font-weight: 900;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            margin-bottom: 1.2rem;
+        }
+
+        .intro {
+            font-size: 1.05rem;
+            color: var(--grey);
+            line-height: 1.8;
+            margin-bottom: 2.5rem;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .instructions {
+            background: var(--white);
+            border: 1px solid var(--sand);
+            padding: 2.5rem;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .instructions::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--rust);
+        }
+
         .instructions h2 {
-                      font-size: 16px;
-            margin-bottom: 12px;
-}
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 1.2rem;
+        }
+
         .instructions ol {
-                      padding-left: 20px;
-}
+            padding-left: 1.2rem;
+        }
+
         .instructions li {
-                      margin-bottom: 8px;
-            font-size: 14px;
-            opacity: 0.9;
-}
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            color: var(--grey);
+            line-height: 1.7;
+        }
+
         .arrow {
-                      font-size: 32px;
-            margin-top: 30px;
+            font-size: 2rem;
+            margin-top: 2rem;
+            color: var(--rust);
             animation: bounce 2s infinite;
-}
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @keyframes bounce {
-                      0%, 100% { transform: translateY(0); }
+            0%, 100% { transform: translateY(0); }
             50% { transform: translateY(10px); }
-}
+        }
+
+        @media (max-width: 640px) {
+            .nav-bar { padding: 1rem 1.5rem; }
+            .container { padding: 5rem 1.5rem 2rem; }
+            .instructions { padding: 1.8rem; }
+        }
     </style>
-      </head>
-      <body>
-          <div class="container">
-              <div class="logo">ozom.ai</div>
-              <h1>Entrevista de Frustraciones con Tecnologia</h1>
-        <p>Diego te invito a una entrevista rapida (5-10 min) con nuestro asistente de IA. Queremos entender que retos enfrentas en tu trabajo dia a dia.</p>
-              <div class="instructions">
-                  <h2>Como funciona:</h2>
-                  <ol>
-                      <li>Haz clic en el icono de chat (abajo a la derecha)</li>
+</head>
+<body>
+    <div class="nav-bar">
+        <a href="index.html">Diego Arrieta</a>
+    </div>
+    <div class="container">
+        <div class="logo">ozom.ai</div>
+        <h1>Entrevista de Frustraciones con Tecnologia</h1>
+        <p class="intro">Diego te invito a una entrevista rapida (5-10 min) con nuestro asistente de IA. Queremos entender que retos enfrentas en tu trabajo dia a dia.</p>
+        <div class="instructions">
+            <h2>Como funciona:</h2>
+            <ol>
+                <li>Haz clic en el icono de chat (abajo a la derecha)</li>
                 <li>El asistente te hara preguntas sobre tu trabajo</li>
-                <li>Responde con honestidad - no hay respuestas incorrectas</li>
-                      <li>Toma aproximadamente 5-10 minutos</li>
-                  </ol>
-              </div>
-              <div class="arrow">&#8595;</div>
-          </div>
-      </body>
-      </html>
+                <li>Responde con honestidad — no hay respuestas incorrectas</li>
+                <li>Toma aproximadamente 5-10 minutos</li>
+            </ol>
+        </div>
+        <div class="arrow">&#8595;</div>
+    </div>
+</body>
+</html>
