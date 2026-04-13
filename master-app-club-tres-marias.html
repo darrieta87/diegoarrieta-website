@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master App Club Tres Marías — Diego Arrieta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --clay: #C4956A;
+            --ink: #1A1714;
+            --paper: #F5F0E8;
+            --paper-dark: #EDE6D9;
+            --rust: #B85C3A;
+            --ocean: #2D5F6E;
+            --sage: #7A8B6F;
+            --white: #FEFCF8;
+            --grey: #6B6560;
+            --grey-light: #9B9590;
+            --club-green: #394F3D;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; }
+
+        body {
+            font-family: 'Source Sans 3', Georgia, serif;
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* — Header — */
+        .header {
+            text-align: center;
+            padding: 3rem 1.5rem 2rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .header .badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--club-green);
+            background: rgba(57, 79, 61, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+
+        .header .subtitle {
+            font-size: 1.05rem;
+            color: var(--grey);
+            max-width: 520px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .header .meta {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--grey-light);
+            letter-spacing: 0.5px;
+        }
+
+        .header .meta a {
+            color: var(--rust);
+            text-decoration: none;
+        }
+
+        /* — Brief section — */
+        .brief {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 1.5rem 2rem;
+        }
+
+        .brief h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 0.75rem;
+        }
+
+        .brief p {
+            color: var(--grey);
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .brief .highlight-box {
+            background: var(--white);
+            border-left: 3px solid var(--club-green);
+            padding: 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.25rem 0;
+        }
+
+        .brief .highlight-box p {
+            margin: 0;
+            font-style: italic;
+            color: var(--ink);
+            font-size: 0.95rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin: 1.25rem 0;
+        }
+
+        .feature-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+        }
+
+        .feature-card .emoji {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .feature-card .name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--ink);
+        }
+
+        .feature-card .desc {
+            font-size: 0.78rem;
+            color: var(--grey-light);
+            line-height: 1.4;
+        }
+
+        /* — Demo section — */
+        .demo-section {
+            padding: 2rem 1.5rem 3rem;
+            text-align: center;
+        }
+
+        .demo-section h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-section .demo-hint {
+            font-size: 0.85rem;
+            color: var(--grey-light);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Phone mockup — desktop */
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            margin: 0 auto;
+            border-radius: 40px;
+            border: 8px solid #1a1a1a;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 2px rgba(0,0,0,0.05);
+            position: relative;
+            background: #000;
+        }
+
+        .phone-frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 28px;
+            background: #1a1a1a;
+            border-radius: 0 0 16px 16px;
+            z-index: 10;
+        }
+
+        .phone-frame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* — Footer — */
+        .footer {
+            text-align: center;
+            padding: 2rem 1.5rem 3rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .footer a {
+            color: var(--rust);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .footer .credit {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--grey-light);
+            margin-top: 1rem;
+        }
+
+        /* — Mobile: full-width demo — */
+        @media (max-width: 768px) {
+            .header {
+                padding: 2rem 1.25rem 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.7rem;
+            }
+
+            .header .subtitle {
+                font-size: 0.95rem;
+            }
+
+            .brief {
+                padding: 0 1.25rem 1.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+
+            .demo-section {
+                padding: 1.5rem 0 0;
+            }
+
+            .phone-frame {
+                width: 100%;
+                height: 85vh;
+                border-radius: 0;
+                border: none;
+                box-shadow: none;
+            }
+
+            .phone-frame::before {
+                display: none;
+            }
+
+            .demo-section h2,
+            .demo-section .demo-hint {
+                padding: 0 1.25rem;
+            }
+
+            .footer {
+                padding: 1.5rem 1.25rem 2rem;
+            }
+        }
+
+        /* Fullscreen toggle */
+        .fullscreen-btn {
+            display: none;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--club-green);
+            background: rgba(57, 79, 61, 0.1);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .fullscreen-btn {
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <span class="badge">Proyecto ozom.ai</span>
+        <h1>Master App<br>Club Tres Marías</h1>
+        <p class="subtitle">La interfaz digital entre el socio y su club. Una app que transforma la experiencia de 553 familias y le da al club los datos que nunca ha tenido.</p>
+        <p class="meta">Diego Arrieta · <a href="https://ozom.ai">ozom.ai</a> · Abril 2026</p>
+    </div>
+
+    <div class="brief">
+        <div class="highlight-box">
+            <p>La app no es un proyecto de tecnología — es la interfaz que mata al ojímetro. Cada interacción genera datos que hoy no existen.</p>
+        </div>
+
+        <h2>El problema</h2>
+        <p>El socio no tiene un canal digital para interactuar con el club. Todo pasa por teléfono, WhatsApp personal de empleados, o presencia física. Esto genera favoritismo en reservaciones, cero datos de uso, opacidad financiera, comunicación rota y feedback inexistente.</p>
+
+        <h2 style="margin-top: 1.5rem;">Qué resuelve la app</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="emoji">📅</div>
+                <div class="name">Reservaciones</div>
+                <div class="desc">SPA, tenis, golf, spin. Sin favoritismo.</div>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">💳</div>
+                <div class="name">Estado de cuenta</div>
+                <div class="desc">Saldo, pagos, historial. Todo visible.</div>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">🍽️</div>
+                <div class="name">Pedidos A&B</div>
+                <div class="desc">Menú digital, pedidos en mesa y campo.</div>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">🛡️</div>
+                <div class="name">Accesos</div>
+                <div class="desc">Invitados, domésticos, proveedores.</div>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">💬</div>
+                <div class="name">Incidencias</div>
+                <div class="desc">Reportar con folio y tracking.</div>
+            </div>
+            <div class="feature-card">
+                <div class="emoji">🔍</div>
+                <div class="name">Directorio</div>
+                <div class="desc">Todos los servicios del club, visibles.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Demo interactiva</h2>
+        <p class="demo-hint">Navega la app como si fueras un socio. Todo es funcional.</p>
+        <button class="fullscreen-btn" onclick="openFullscreen()">Abrir en pantalla completa</button>
+        <div class="phone-frame" id="phoneFrame">
+            <iframe src="master-app/demo.html" title="Demo App Socios Tres Marías"></iframe>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="/">← diegoarrieta.com</a>
+        <p class="credit">Diseño de producto: Diego Arrieta · ozom.ai</p>
+    </div>
+
+    <script>
+        function openFullscreen() {
+            window.location.href = 'master-app/demo.html';
+        }
+    </script>
+</body>
+</html>

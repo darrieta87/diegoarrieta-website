@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#394F3D">
+<title>Tres Marías — App Socios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; }
+  html, body, #root { height: 100%; width: 100%; overflow: hidden; font-family: 'Poppins', sans-serif; }
+  ::-webkit-scrollbar { display: none; }
+  @keyframes fadeIn { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
+  @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  input { font-family: 'Poppins', sans-serif; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const C = {
+  primary: "#394F3D", accent: "#4FA352", bg: "#F9F9F6", white: "#FFFFFF",
+  text: "#212529", textLight: "#6c757d", textMuted: "#adb5bd", border: "#e9ecef",
+  danger: "#dc3545", gold: "#C5A55A",
+};
+
+const Logo = ({ size = 60, color = C.white }) => (
+  <svg width={size} height={size * 1.2} viewBox="0 0 60 72" fill="none">
+    <rect x="5" y="10" width="50" height="55" rx="4" fill={C.primary} opacity="0.9" />
+    <path d="M20 55 L20 30 Q20 22 25 18 L30 14 L35 18 Q40 22 40 30 L40 55" stroke={color} strokeWidth="1.8" fill="none" />
+    <path d="M26 55 L26 35 Q26 30 30 26 Q34 30 34 35 L34 55" stroke={color} strokeWidth="1.5" fill="none" />
+    <circle cx="30" cy="12" r="2.5" fill={color} /><circle cx="22" cy="20" r="1.8" fill={color} /><circle cx="38" cy="20" r="1.8" fill={color} />
+    <text x="30" y="64" textAnchor="middle" fill={C.gold} fontSize="5.5" fontFamily="Poppins" fontWeight="600" letterSpacing="1.5">TRES MARÍAS</text>
+  </svg>
+);
+
+const Icon = ({ d, size = 24, sw = 1.5 }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={sw} strokeLinecap="round"><path d={d} /></svg>;
+
+const icons = {
+  back: <Icon d="M15 18l-6-6 6-6" sw={2} />,
+  home: <Icon d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />,
+  cal: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
+  wallet: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><circle cx="17" cy="15" r="1.5" fill="currentColor"/></svg>,
+  user: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0112 0v1"/></svg>,
+  search: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>,
+  bell: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>,
+  check: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={C.accent} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg>,
+  chev: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.textMuted} strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>,
+};
+
+const StatusBar = () => <div style={{ height: "env(safe-area-inset-top, 44px)", background: "transparent", flexShrink: 0 }} />;
+
+const NavBar = ({ title, onBack, right }) => (
+  <div style={{ display: "flex", alignItems: "center", padding: "0 16px", height: 52, background: C.white, borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+    {onBack && <div onClick={onBack} style={{ cursor: "pointer", marginRight: 8, color: C.primary }}>{icons.back}</div>}
+    <span style={{ flex: 1, fontWeight: 600, fontSize: 17, color: C.primary, letterSpacing: 0.3 }}>{title}</span>
+    {right}
+  </div>
+);
+
+const Tab = ({ active, go }) => (
+  <div style={{ display: "flex", height: 64, paddingBottom: "env(safe-area-inset-bottom, 8px)", background: C.white, borderTop: `1px solid ${C.border}`, flexShrink: 0 }}>
+    {[["home", icons.home, "Inicio"], ["reservations", icons.cal, "Reservar"], ["account", icons.wallet, "Cuenta"], ["services", icons.search, "Servicios"], ["profile", icons.user, "Perfil"]].map(([id, ic, lb]) => (
+      <div key={id} onClick={() => go(id)} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", cursor: "pointer", color: active === id ? C.accent : C.textMuted, transition: "color 0.2s" }}>
+        {ic}<span style={{ fontSize: 10, marginTop: 2, fontWeight: active === id ? 600 : 400 }}>{lb}</span>
+      </div>
+    ))}
+  </div>
+);
+
+const Badge = ({ n }) => n > 0 ? <div style={{ position: "absolute", top: -4, right: -6, background: C.danger, color: C.white, fontSize: 9, fontWeight: 700, width: 16, height: 16, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>{n}</div> : null;
+
+const Btn = ({ children, onClick, outline, full, small, disabled }) => (
+  <div onClick={disabled ? undefined : onClick} style={{ border: outline ? `1.5px solid ${C.primary}` : "none", borderRadius: 12, background: outline ? "transparent" : C.accent, color: outline ? C.primary : C.white, padding: small ? "10px 20px" : "14px 24px", fontSize: small ? 13 : 15, fontWeight: 600, cursor: disabled ? "default" : "pointer", textAlign: "center", opacity: disabled ? 0.5 : 1, width: full ? "100%" : "auto", transition: "all 0.2s", letterSpacing: 0.5 }}>{children}</div>
+);
+
+// ═══ SPLASH ═══
+const Splash = ({ done }) => {
+  useEffect(() => { const t = setTimeout(done, 2000); return () => clearTimeout(t); }, []);
+  return (
+    <div style={{ flex: 1, background: `linear-gradient(160deg, ${C.primary}, #2a3b2e, #1d2b20)`, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ animation: "fadeIn 0.8s ease" }}><Logo size={80} /></div>
+      <p style={{ color: C.gold, fontSize: 11, letterSpacing: 4, marginTop: 24, textTransform: "uppercase", fontWeight: 300 }}>Club de Golf</p>
+      <div style={{ position: "absolute", bottom: 40, color: "rgba(255,255,255,0.25)", fontSize: 11 }}>App Socios — Demo Interactiva</div>
+    </div>
+  );
+};
+
+// ═══ LOGIN ═══
+const Login = ({ go }) => (
+  <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}>
+    <StatusBar />
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 32px", animation: "slideUp 0.5s ease" }}>
+      <Logo size={56} color={C.gold} />
+      <h2 style={{ color: C.primary, fontSize: 20, fontWeight: 600, marginTop: 24, marginBottom: 4, letterSpacing: 1 }}>Bienvenido</h2>
+      <p style={{ color: C.textLight, fontSize: 13, marginBottom: 32 }}>Ingresa con tu número de socio</p>
+      <div style={{ width: "100%", marginBottom: 16 }}>
+        <label style={{ fontSize: 12, color: C.textLight, fontWeight: 500, letterSpacing: 0.5 }}>NÚMERO DE SOCIO</label>
+        <div style={{ marginTop: 6, padding: "14px 16px", background: C.white, borderRadius: 12, border: `1.5px solid ${C.border}`, fontSize: 16, color: C.text, fontWeight: 500 }}>1247</div>
+      </div>
+      <div style={{ width: "100%", marginBottom: 32 }}>
+        <label style={{ fontSize: 12, color: C.textLight, fontWeight: 500, letterSpacing: 0.5 }}>PIN</label>
+        <div style={{ marginTop: 6, padding: "14px 16px", background: C.white, borderRadius: 12, border: `1.5px solid ${C.border}`, fontSize: 16, color: C.text, fontWeight: 500, letterSpacing: 8 }}>••••</div>
+      </div>
+      <Btn onClick={() => go("home")} full>Ingresar</Btn>
+      <p style={{ fontSize: 12, color: C.accent, marginTop: 16 }}>¿Olvidaste tu PIN?</p>
+    </div>
+  </div>
+);
+
+// ═══ HOME ═══
+const Home = ({ go }) => {
+  const qa = [
+    { id: "reservations", label: "Reservar", emoji: "📅", color: C.accent },
+    { id: "account", label: "Mi Cuenta", emoji: "💳", color: C.primary },
+    { id: "food", label: "Pedir", emoji: "🍽️", color: "#D4813B" },
+    { id: "access", label: "Accesos", emoji: "🛡️", color: "#5B7BB5" },
+    { id: "services", label: "Servicios", emoji: "🔍", color: C.gold },
+    { id: "incidents", label: "Reportar", emoji: "💬", color: "#C75B7A" },
+  ];
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}>
+      <StatusBar />
+      <div style={{ background: `linear-gradient(135deg, ${C.primary}, #2d4031)`, padding: "0 20px 20px", borderRadius: "0 0 24px 24px", flexShrink: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+          <div><p style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, margin: 0 }}>Buenos días</p><h2 style={{ color: C.white, fontSize: 22, fontWeight: 600, margin: "2px 0 0" }}>Diego</h2></div>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <div style={{ position: "relative", color: C.white }}>{icons.bell}<Badge n={3} /></div>
+            <div style={{ width: 38, height: 38, borderRadius: 19, background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center", color: C.white, fontSize: 14, fontWeight: 600 }}>DA</div>
+          </div>
+        </div>
+        <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 14, padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div><p style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, margin: 0, letterSpacing: 1, textTransform: "uppercase" }}>Socio #1247</p><p style={{ color: C.white, fontSize: 13, margin: "2px 0 0", fontWeight: 500 }}>Familia Arrieta Martínez</p></div>
+          <div style={{ textAlign: "right" }}><p style={{ color: "rgba(255,255,255,0.5)", fontSize: 10, margin: 0 }}>SALDO</p><p style={{ color: C.gold, fontSize: 16, margin: "2px 0 0", fontWeight: 600 }}>$4,280</p></div>
+        </div>
+      </div>
+      <div style={{ flex: 1, overflow: "auto", padding: "16px 16px 0" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
+          {qa.map(a => (
+            <div key={a.id} onClick={() => go(a.id)} style={{ background: C.white, borderRadius: 14, padding: "14px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+              <span style={{ fontSize: 24 }}>{a.emoji}</span>
+              <span style={{ fontSize: 11, fontWeight: 500, color: C.text }}>{a.label}</span>
+            </div>
+          ))}
+        </div>
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: C.primary, margin: "0 0 10px", letterSpacing: 0.5, textTransform: "uppercase" }}>Próximas reservaciones</h3>
+        {[{ area: "SPA", svc: "Masaje relajante · 60 min", dt: "Lun 14 abr · 11:00 AM", col: "#8B6DB0" }, { area: "Tenis", svc: "Cancha 3 · Dobles", dt: "Mar 15 abr · 7:00 AM", col: C.accent }].map((r, i) => (
+          <div key={i} style={{ background: C.white, borderRadius: 14, padding: "12px 14px", marginBottom: 8, display: "flex", alignItems: "center", gap: 12, boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ width: 42, height: 42, borderRadius: 12, background: `${r.col}18`, display: "flex", alignItems: "center", justifyContent: "center", color: r.col, fontWeight: 700, fontSize: 11 }}>{r.area}</div>
+            <div><p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: C.text }}>{r.svc}</p><p style={{ margin: "2px 0 0", fontSize: 11, color: C.textLight }}>{r.dt}</p></div>
+          </div>
+        ))}
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: C.primary, margin: "16px 0 10px", letterSpacing: 0.5, textTransform: "uppercase" }}>Avisos</h3>
+        {[{ t: "Torneo Primavera — 19 abril. Inscripciones abiertas", h: "2h", c: C.accent }, { t: "Tu estado de cuenta de abril está disponible", h: "1d", c: C.gold }, { t: "Mantenimiento alberca: cerrada lun 14 abr", h: "2d", c: C.textMuted }].map((n, i) => (
+          <div key={i} style={{ background: C.white, borderRadius: 12, padding: "10px 14px", marginBottom: 6, display: "flex", alignItems: "flex-start", gap: 10, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+            <div style={{ width: 6, height: 6, borderRadius: 3, background: n.c, marginTop: 6, flexShrink: 0 }} />
+            <p style={{ flex: 1, margin: 0, fontSize: 12, color: C.text, lineHeight: 1.4 }}>{n.t}</p>
+            <span style={{ fontSize: 10, color: C.textMuted }}>{n.h}</span>
+          </div>
+        ))}
+        <div style={{ height: 16 }} />
+      </div>
+      <Tab active="home" go={go} />
+    </div>
+  );
+};
+
+// ═══ RESERVATIONS ═══
+const Reservations = ({ go }) => {
+  const [step, setStep] = useState("area");
+  const [area, setArea] = useState(null);
+  const [date, setDate] = useState(null);
+  const [time, setTime] = useState(null);
+  const areas = [
+    { id: "spa", label: "SPA", emoji: "🧖", color: "#8B6DB0", slots: 12 },
+    { id: "tenis", label: "Tenis", emoji: "🎾", color: C.accent, slots: 8 },
+    { id: "golf", label: "Golf", emoji: "⛳", color: C.primary, slots: 24 },
+    { id: "spin", label: "Spin / Pilates", emoji: "🚴", color: "#D4813B", slots: 6 },
+  ];
+  const dates = [{ id: "hoy", l: "Hoy", s: "12 abr" }, { id: "man", l: "Mañana", s: "13 abr" }, { id: "lun", l: "Lunes", s: "14 abr" }, { id: "mar", l: "Martes", s: "15 abr" }, { id: "mie", l: "Miérc.", s: "16 abr" }];
+  const svcs = { spa: [{ n: "Masaje relajante", d: "60 min", p: "$1,200" }, { n: "Masaje deportivo", d: "60 min", p: "$1,400" }, { n: "Facial hidratante", d: "45 min", p: "$900" }, { n: "Mani + Pedi", d: "90 min", p: "$800" }], tenis: [{ n: "Cancha 1 · Singles", d: "1 hr" }, { n: "Cancha 2 · Singles", d: "1 hr" }, { n: "Cancha 3 · Dobles", d: "2 hrs" }, { n: "Cancha 4 · Dobles", d: "2 hrs" }], golf: [{ n: "El Reto · 18 hoyos", d: "~4.5 hrs" }, { n: "El Desafío · 9 hoyos", d: "~2.5 hrs" }, { n: "Driving Range", d: "Sin límite" }], spin: [{ n: "Spin · 6:30 AM", d: "45 min", sp: "3 lugares" }, { n: "Spin · 7:30 AM", d: "45 min", sp: "1 lugar" }, { n: "Pilates · 8:00 AM", d: "55 min", sp: "5 lugares" }, { n: "Pilates · 9:00 AM", d: "55 min", sp: "Lleno", full: true }] };
+  const times = ["7:00", "7:30", "8:00", "8:30", "9:00", "9:30", "10:00", "10:30", "11:00", "11:30", "12:00"];
+  const taken = ["8:00", "9:30", "10:00"];
+
+  if (step === "done") return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}>
+      <StatusBar />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 32px", textAlign: "center", animation: "slideUp 0.4s ease" }}>
+        {icons.check}
+        <h2 style={{ color: C.primary, fontSize: 22, fontWeight: 600, margin: "16px 0 8px" }}>Reservación confirmada</h2>
+        <p style={{ color: C.textLight, fontSize: 13 }}>{areas.find(a => a.id === area)?.label} · {dates.find(d => d.id === date)?.s} · {time}</p>
+        <p style={{ color: C.textMuted, fontSize: 12, marginBottom: 32 }}>Recibirás un recordatorio 1 hora antes</p>
+        <div style={{ display: "flex", gap: 12, width: "100%" }}>
+          <div style={{ flex: 1 }}><Btn outline full small onClick={() => { setStep("area"); setArea(null); setDate(null); setTime(null); }}>Nueva</Btn></div>
+          <div style={{ flex: 1 }}><Btn full small onClick={() => go("home")}>Inicio</Btn></div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const goBack = () => step === "area" ? go("home") : setStep(step === "time" ? "service" : step === "service" ? "date" : "area");
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}>
+      <StatusBar /><NavBar title="Reservar" onBack={goBack} />
+      <div style={{ display: "flex", padding: "12px 20px", gap: 6 }}>
+        {["area", "date", "service", "time"].map((s, i) => <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: ["area", "date", "service", "time"].indexOf(step) >= i ? C.accent : C.border }} />)}
+      </div>
+      <div style={{ flex: 1, overflow: "auto", padding: "8px 16px" }}>
+        {step === "area" && areas.map(a => (
+          <div key={a.id} onClick={() => { setArea(a.id); setStep("date"); }} style={{ background: C.white, borderRadius: 16, padding: "16px", marginBottom: 10, display: "flex", alignItems: "center", gap: 14, cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+            <div style={{ width: 48, height: 48, borderRadius: 14, background: `${a.color}12`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>{a.emoji}</div>
+            <div style={{ flex: 1 }}><p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: C.text }}>{a.label}</p><p style={{ margin: "2px 0 0", fontSize: 11, color: C.textLight }}>{a.slots} horarios disponibles hoy</p></div>
+            {icons.chev}
+          </div>
+        ))}
+        {step === "date" && <>
+          <p style={{ fontSize: 13, color: C.textLight, margin: "0 0 12px" }}>{areas.find(a => a.id === area)?.label} — Selecciona fecha</p>
+          <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 8 }}>
+            {dates.map(d => (
+              <div key={d.id} onClick={() => { setDate(d.id); setStep("service"); }} style={{ minWidth: 72, padding: "14px 12px", borderRadius: 14, background: C.white, color: C.text, textAlign: "center", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.04)" }}>
+                <p style={{ margin: 0, fontSize: 13, fontWeight: 600 }}>{d.l}</p><p style={{ margin: "4px 0 0", fontSize: 11, opacity: 0.7 }}>{d.s}</p>
+              </div>
+            ))}
+          </div>
+        </>}
+        {step === "service" && (svcs[area] || []).map((s, i) => (
+          <div key={i} onClick={s.full ? undefined : () => setStep("time")} style={{ background: C.white, borderRadius: 14, padding: "14px 16px", marginBottom: 8, cursor: s.full ? "default" : "pointer", opacity: s.full ? 0.5 : 1, boxShadow: "0 1px 4px rgba(0,0,0,0.04)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div><p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: C.text }}>{s.n}</p><p style={{ margin: "2px 0 0", fontSize: 11, color: C.textLight }}>{s.d}{s.sp ? ` · ${s.sp}` : ""}</p></div>
+            {s.p && <span style={{ fontSize: 14, fontWeight: 600, color: C.primary }}>{s.p}</span>}
+            {s.full && <span style={{ fontSize: 11, fontWeight: 600, color: C.danger }}>Lleno</span>}
+          </div>
+        ))}
+        {step === "time" && <>
+          <p style={{ fontSize: 13, color: C.textLight, margin: "0 0 12px" }}>Selecciona horario</p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+            {times.map(t => { const tk = taken.includes(t); return (
+              <div key={t} onClick={tk ? undefined : () => { setTime(t); setStep("done"); }} style={{ padding: "14px 8px", borderRadius: 12, background: tk ? "#f8d7da" : C.white, color: tk ? C.danger : C.text, textAlign: "center", cursor: tk ? "default" : "pointer", fontWeight: 500, fontSize: 14, opacity: tk ? 0.5 : 1, boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+                {t}{tk && <p style={{ margin: "2px 0 0", fontSize: 9 }}>Ocupado</p>}
+              </div>
+            ); })}
+          </div>
+        </>}
+      </div>
+      <Tab active="reservations" go={go} />
+    </div>
+  );
+};
+
+// ═══ ACCOUNT ═══
+const Account = ({ go }) => {
+  const mvs = [
+    { d: "Restaurante 3M", dt: "11 abr", a: "-$680", tp: "c" },
+    { d: "Pago mensual abril", dt: "5 abr", a: "-$8,500", tp: "c" },
+    { d: "Abono tarjeta ****6411", dt: "3 abr", a: "+$10,000", tp: "p" },
+    { d: "Hoyo 28 — Bar", dt: "30 mar", a: "-$1,240", tp: "c" },
+    { d: "SPA — Masaje deportivo", dt: "28 mar", a: "-$1,400", tp: "c" },
+  ];
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}>
+      <StatusBar /><NavBar title="Mi Cuenta" onBack={() => go("home")} />
+      <div style={{ flex: 1, overflow: "auto" }}>
+        <div style={{ margin: "16px 16px 0", background: `linear-gradient(135deg, ${C.primary}, #2a3b2e)`, borderRadius: 20, padding: "24px 20px" }}>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, margin: 0, letterSpacing: 1.5, textTransform: "uppercase" }}>Saldo por pagar</p>
+          <h2 style={{ color: C.white, fontSize: 32, fontWeight: 700, margin: "4px 0 16px" }}>$4,280<span style={{ fontSize: 14, fontWeight: 400 }}> MXN</span></h2>
+          <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ flex: 1, background: "rgba(255,255,255,0.12)", borderRadius: 10, padding: "10px", textAlign: "center" }}>
+              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 9, margin: 0 }}>CUOTA MENSUAL</p><p style={{ color: C.white, fontSize: 14, fontWeight: 600, margin: "2px 0 0" }}>$8,500</p>
+            </div>
+            <div style={{ flex: 1, background: "rgba(255,255,255,0.12)", borderRadius: 10, padding: "10px", textAlign: "center" }}>
+              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 9, margin: 0 }}>VENCE</p><p style={{ color: C.gold, fontSize: 14, fontWeight: 600, margin: "2px 0 0" }}>20 abr</p>
+            </div>
+          </div>
+          <div style={{ marginTop: 16 }}><Btn full small>Pagar ahora</Btn></div>
+        </div>
+        <div style={{ padding: "20px 16px" }}>
+          <h3 style={{ fontSize: 13, fontWeight: 600, color: C.primary, margin: "0 0 12px", letterSpacing: 0.5, textTransform: "uppercase" }}>Movimientos recientes</h3>
+          {mvs.map((m, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", padding: "12px 0", borderBottom: i < mvs.length - 1 ? `1px solid ${C.border}` : "none" }}>
+              <div style={{ width: 34, height: 34, borderRadius: 10, background: m.tp === "p" ? `${C.accent}15` : `${C.primary}10`, display: "flex", alignItems: "center", justifyContent: "center", marginRight: 12, fontSize: 14 }}>{m.tp === "p" ? "💳" : "🧾"}</div>
+              <div style={{ flex: 1 }}><p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: C.text }}>{m.d}</p><p style={{ margin: "2px 0 0", fontSize: 11, color: C.textLight }}>{m.dt}</p></div>
+              <span style={{ fontSize: 14, fontWeight: 600, color: m.tp === "p" ? C.accent : C.text }}>{m.a}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <Tab active="account" go={go} />
+    </div>
+  );
+};
+
+// ═══ SERVICES ═══
+const Services = ({ go }) => {
+  const cats = [
+    { n: "Golf", items: ["Campo El Reto (18)", "Campo El Desafío (9)", "Driving Range", "Pro Shop", "Clínicas"], e: "⛳" },
+    { n: "Deportes", items: ["Tenis (5 canchas)", "Pádel (2 canchas)", "Gimnasio", "Alberca", "Spin & Pilates"], e: "🎾" },
+    { n: "SPA & Bienestar", items: ["Masajes", "Faciales", "Barbería", "Estética", "Lockers"], e: "🧖" },
+    { n: "Restaurantes", items: ["Restaurante 3M", "Hoyo 28 Bar", "Hoyo 6", "Snack", "NAMA (próx.)", "Domicilios"], e: "🍽️" },
+    { n: "Hípico", items: ["Equitación", "Clases", "Eventos ecuestres"], e: "🐴" },
+    { n: "Eventos", items: ["Salón principal", "Jardín", "Torneos"], e: "🎉" },
+  ];
+  const [open, setOpen] = useState(null);
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}>
+      <StatusBar /><NavBar title="Servicios" onBack={() => go("home")} />
+      <div style={{ flex: 1, overflow: "auto", padding: "16px" }}>
+        {cats.map((c, i) => (
+          <div key={i} style={{ background: C.white, borderRadius: 14, marginBottom: 8, overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div onClick={() => setOpen(open === i ? null : i)} style={{ padding: "14px 16px", display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }}>
+              <span style={{ fontSize: 22 }}>{c.e}</span><span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: C.text }}>{c.n}</span>
+              <span style={{ fontSize: 12, color: C.textMuted, transform: open === i ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>▶</span>
+            </div>
+            {open === i && <div style={{ padding: "0 16px 14px 52px" }}>{c.items.map((it, j) => <p key={j} style={{ margin: 0, padding: "6px 0", fontSize: 13, color: C.textLight, borderTop: j > 0 ? `1px solid ${C.border}` : "none" }}>{it}</p>)}</div>}
+          </div>
+        ))}
+      </div>
+      <Tab active="services" go={go} />
+    </div>
+  );
+};
+
+// ═══ PROFILE ═══
+const Profile = ({ go }) => (
+  <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}>
+    <StatusBar /><NavBar title="Mi Perfil" onBack={() => go("home")} />
+    <div style={{ flex: 1, overflow: "auto" }}>
+      <div style={{ padding: "20px 16px", textAlign: "center" }}>
+        <div style={{ width: 72, height: 72, borderRadius: 36, background: `${C.primary}15`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px", color: C.primary, fontSize: 26, fontWeight: 700 }}>DA</div>
+        <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: C.text }}>Diego Arrieta</h3>
+        <p style={{ margin: "4px 0 0", fontSize: 12, color: C.textLight }}>Socio #1247 · Acción Propietario · Desde 2019</p>
+      </div>
+      <div style={{ padding: "0 16px 16px" }}>
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: C.primary, margin: "0 0 10px", letterSpacing: 0.5, textTransform: "uppercase" }}>Grupo familiar</h3>
+        {[["Diego Arrieta", "Titular"], ["Joyce Martínez", "Cónyuge"], ["Mateo Arrieta", "Hijo"], ["Tiago Arrieta", "Hijo"]].map(([n, r], i) => (
+          <div key={i} style={{ background: C.white, borderRadius: 12, padding: "12px 14px", marginBottom: 6, display: "flex", alignItems: "center", gap: 12, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+            <div style={{ width: 34, height: 34, borderRadius: 17, background: `${C.accent}15`, display: "flex", alignItems: "center", justifyContent: "center", color: C.accent, fontSize: 13, fontWeight: 600 }}>{n[0]}</div>
+            <div><p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: C.text }}>{n}</p><p style={{ margin: "1px 0 0", fontSize: 11, color: C.textLight }}>{r}</p></div>
+          </div>
+        ))}
+      </div>
+      <div style={{ padding: "0 16px 16px" }}>
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: C.primary, margin: "0 0 10px", letterSpacing: 0.5, textTransform: "uppercase" }}>Vehículos</h3>
+        {[["MHN-123-A", "Toyota RAV4 2023 · Blanco"], ["MHN-456-B", "Mazda 3 2021 · Gris"]].map(([p, m], i) => (
+          <div key={i} style={{ background: C.white, borderRadius: 12, padding: "12px 14px", marginBottom: 6, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+            <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: C.text }}>{p}</p><p style={{ margin: "2px 0 0", fontSize: 11, color: C.textLight }}>{m}</p>
+          </div>
+        ))}
+      </div>
+      <div style={{ padding: "0 16px 20px" }}>
+        {["Gestionar accesos", "Historial de visitas", "Configuración", "Cerrar sesión"].map((it, i) => (
+          <div key={i} onClick={it === "Cerrar sesión" ? () => go("login") : undefined} style={{ padding: "14px 0", borderBottom: `1px solid ${C.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" }}>
+            <span style={{ fontSize: 14, color: it === "Cerrar sesión" ? C.danger : C.text }}>{it}</span>{icons.chev}
+          </div>
+        ))}
+      </div>
+    </div>
+    <Tab active="profile" go={go} />
+  </div>
+);
+
+// ═══ INCIDENTS ═══
+const Incidents = ({ go }) => {
+  const [submitted, setSubmitted] = useState(false);
+  const [selType, setSelType] = useState(null);
+  if (submitted) return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}><StatusBar />
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 32px", textAlign: "center", animation: "slideUp 0.4s ease" }}>
+        {icons.check}<h2 style={{ color: C.primary, fontSize: 20, fontWeight: 600, margin: "16px 0 8px" }}>Reporte enviado</h2>
+        <p style={{ color: C.textLight, fontSize: 13, marginBottom: 8 }}>Folio: INC-042</p>
+        <p style={{ color: C.textMuted, fontSize: 12, marginBottom: 32 }}>Recibirás actualizaciones de status</p>
+        <Btn onClick={() => go("home")}>Volver al inicio</Btn>
+      </div>
+    </div>
+  );
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}>
+      <StatusBar /><NavBar title="Reportar" onBack={() => go("home")} />
+      <div style={{ flex: 1, overflow: "auto", padding: "16px" }}>
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: C.primary, margin: "0 0 10px", letterSpacing: 0.5, textTransform: "uppercase" }}>Mis reportes</h3>
+        {[{ id: "INC-041", tp: "Mantenimiento", d: "Regadera vestidor sin agua caliente", st: "En proceso", dt: "10 abr" }, { id: "INC-038", tp: "Instalaciones", d: "Luz fundida estacionamiento zona B", st: "Resuelto", dt: "5 abr" }].map((r, i) => (
+          <div key={i} style={{ background: C.white, borderRadius: 14, padding: "14px 16px", marginBottom: 8, boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+              <span style={{ fontSize: 11, color: C.textMuted }}>{r.id} · {r.tp}</span>
+              <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 8, fontWeight: 500, background: r.st === "Resuelto" ? `${C.accent}15` : "#ffc10720", color: r.st === "Resuelto" ? C.accent : "#b8860b" }}>{r.st}</span>
+            </div>
+            <p style={{ margin: 0, fontSize: 13, fontWeight: 500, color: C.text }}>{r.d}</p><p style={{ margin: "4px 0 0", fontSize: 11, color: C.textLight }}>{r.dt}</p>
+          </div>
+        ))}
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: C.primary, margin: "20px 0 10px", letterSpacing: 0.5, textTransform: "uppercase" }}>Nuevo reporte</h3>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 20 }}>
+          {["Mantenimiento", "Seguridad", "Servicio", "Instalaciones", "Otro"].map(t => (
+            <div key={t} onClick={() => setSelType(t)} style={{ padding: "8px 16px", borderRadius: 20, background: selType === t ? C.accent : C.white, color: selType === t ? C.white : C.text, fontSize: 13, fontWeight: 500, cursor: "pointer", border: `1px solid ${selType === t ? C.accent : C.border}` }}>{t}</div>
+          ))}
+        </div>
+        {selType && <>
+          <div style={{ background: C.white, borderRadius: 14, padding: "14px 16px", marginBottom: 12, minHeight: 80, border: `1.5px solid ${C.border}` }}>
+            <p style={{ margin: 0, fontSize: 13, color: C.textMuted }}>Describe el problema...</p>
+          </div>
+          <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+            <div style={{ padding: "6px 12px", borderRadius: 16, background: `${C.accent}12`, color: C.accent, fontSize: 11 }}>📸 Foto</div>
+            <div style={{ padding: "6px 12px", borderRadius: 16, background: `${C.primary}10`, color: C.primary, fontSize: 11 }}>📍 Ubicación</div>
+          </div>
+          <Btn onClick={() => setSubmitted(true)} full>Enviar reporte</Btn>
+        </>}
+      </div>
+    </div>
+  );
+};
+
+// ═══ ACCESS ═══
+const Access = ({ go }) => {
+  const [tab, setTab] = useState("invitados");
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}>
+      <StatusBar /><NavBar title="Gestión de Accesos" onBack={() => go("home")} />
+      <div style={{ display: "flex", background: C.white, borderBottom: `1px solid ${C.border}` }}>
+        {["invitados", "domésticos", "proveedores"].map(t => (
+          <div key={t} onClick={() => setTab(t)} style={{ flex: 1, padding: "12px 0", textAlign: "center", fontSize: 12, fontWeight: tab === t ? 600 : 400, color: tab === t ? C.accent : C.textLight, borderBottom: tab === t ? `2px solid ${C.accent}` : "2px solid transparent", cursor: "pointer", textTransform: "capitalize" }}>{t}</div>
+        ))}
+      </div>
+      <div style={{ flex: 1, overflow: "auto", padding: "16px" }}>
+        {tab === "invitados" && <>
+          <div style={{ background: C.white, borderRadius: 14, padding: "16px", marginBottom: 12, boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}><span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>Carlos Méndez</span><span style={{ fontSize: 11, background: `${C.accent}15`, color: C.accent, padding: "2px 8px", borderRadius: 8, fontWeight: 500 }}>Activo</span></div>
+            <p style={{ margin: 0, fontSize: 12, color: C.textLight }}>Válido hoy 12 abr · Placas: ABC-123</p>
+          </div>
+          <div style={{ marginTop: 16 }}><Btn full outline>+ Registrar invitado</Btn></div>
+        </>}
+        {tab === "domésticos" && <>
+          <div style={{ background: C.white, borderRadius: 14, padding: "16px", marginBottom: 12, boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}><span style={{ fontSize: 14, fontWeight: 600, color: C.text }}>María García</span><span style={{ fontSize: 11, background: `${C.accent}15`, color: C.accent, padding: "2px 8px", borderRadius: 8, fontWeight: 500 }}>Vigente</span></div>
+            <p style={{ margin: 0, fontSize: 12, color: C.textLight }}>Empleada doméstica · Vence: 30 jun 2026</p>
+          </div>
+          <div style={{ marginTop: 16 }}><Btn full outline>+ Registrar empleado</Btn></div>
+        </>}
+        {tab === "proveedores" && <div style={{ textAlign: "center", padding: "40px 20px" }}>
+          <p style={{ fontSize: 32, marginBottom: 8 }}>🔧</p><p style={{ fontSize: 13, color: C.textLight }}>Pre-registra proveedores para agilizar su entrada</p>
+          <div style={{ marginTop: 16 }}><Btn outline>+ Registrar proveedor</Btn></div>
+        </div>}
+      </div>
+    </div>
+  );
+};
+
+// ═══ FOOD ═══
+const Food = ({ go }) => {
+  const [cart, setCart] = useState(0);
+  const menu = [
+    { cat: "Entradas", items: [{ n: "Guacamole con totopos", p: "$180" }, { n: "Ensalada César", p: "$165" }] },
+    { cat: "Platos fuertes", items: [{ n: "Arrachera 300g", p: "$380" }, { n: "Salmón a la plancha", p: "$350" }, { n: "Hamburguesa Tres Marías", p: "$245" }] },
+    { cat: "Bebidas", items: [{ n: "Agua mineral", p: "$45" }, { n: "Limonada natural", p: "$65" }, { n: "Cerveza artesanal", p: "$95" }] },
+  ];
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", background: C.bg }}>
+      <StatusBar /><NavBar title="Pedir" onBack={() => go("home")} right={<div style={{ position: "relative" }}><span style={{ fontSize: 20 }}>🛒</span>{cart > 0 && <Badge n={cart} />}</div>} />
+      <div style={{ display: "flex", background: C.white, padding: "8px 16px", gap: 8, borderBottom: `1px solid ${C.border}` }}>
+        {["Restaurante 3M", "Hoyo 28", "Domicilio"].map((t, i) => <div key={t} style={{ padding: "6px 12px", borderRadius: 16, background: i === 0 ? C.primary : "transparent", color: i === 0 ? C.white : C.textLight, fontSize: 12, fontWeight: 500, cursor: "pointer" }}>{t}</div>)}
+      </div>
+      <div style={{ flex: 1, overflow: "auto", padding: "16px" }}>
+        {menu.map((s, si) => (
+          <div key={si} style={{ marginBottom: 20 }}>
+            <h3 style={{ fontSize: 13, fontWeight: 600, color: C.primary, margin: "0 0 10px", letterSpacing: 0.5, textTransform: "uppercase" }}>{s.cat}</h3>
+            {s.items.map((it, ii) => (
+              <div key={ii} style={{ background: C.white, borderRadius: 12, padding: "12px 14px", marginBottom: 6, display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                <div><p style={{ margin: 0, fontSize: 14, fontWeight: 500, color: C.text }}>{it.n}</p><p style={{ margin: "2px 0 0", fontSize: 13, fontWeight: 600, color: C.primary }}>{it.p}</p></div>
+                <div onClick={() => setCart(cart + 1)} style={{ width: 32, height: 32, borderRadius: 16, background: `${C.accent}15`, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: C.accent, fontSize: 18, fontWeight: 600 }}>+</div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      {cart > 0 && <div style={{ padding: "12px 16px 20px", background: C.white, borderTop: `1px solid ${C.border}` }}><Btn full>Ver pedido ({cart} items)</Btn></div>}
+    </div>
+  );
+};
+
+// ═══ APP ═══
+function App() {
+  const [s, setS] = useState("splash");
+  const go = (x) => setS(x);
+  return (
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      {s === "splash" && <Splash done={() => go("login")} />}
+      {s === "login" && <Login go={go} />}
+      {s === "home" && <Home go={go} />}
+      {s === "reservations" && <Reservations go={go} />}
+      {s === "account" && <Account go={go} />}
+      {s === "services" && <Services go={go} />}
+      {s === "profile" && <Profile go={go} />}
+      {s === "incidents" && <Incidents go={go} />}
+      {s === "access" && <Access go={go} />}
+      {s === "food" && <Food go={go} />}
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
