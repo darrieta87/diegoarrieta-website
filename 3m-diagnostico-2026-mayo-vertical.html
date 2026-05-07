@@ -299,8 +299,10 @@
   }
   .mode-toggle button.active .mins { opacity: 0.7; }
 
-  /* In express mode, hide elements marked as expr-hide */
-  body.mode-express .expr-hide { display: none !important; }
+  /* Reading mode: each idea has two parallel versions.
+     .only-full shows in full mode, .only-express shows in express mode. */
+  body.mode-full .only-express { display: none !important; }
+  body.mode-express .only-full { display: none !important; }
 
   /* ===== FLOATING BACK-TO-TOP (FAB) ===== */
   .fab-back {
@@ -904,7 +906,8 @@
         <div class="eyebrow"><span class="num">01</span><span class="lbl">Resumen ejecutivo</span></div>
         <h2 class="t">Lo esencial, en una <em>página.</em></h2>
         <p class="lede">En 8 semanas recorrí todas las áreas del club en <strong>+75 sesiones presenciales</strong>. Documenté <strong>89 oportunidades concretas</strong> que se explican por tres temas de fondo: la operación es ineficiente por costumbre, la tecnología se gestiona sin estrategia, y se dirige sin datos.</p>
-        <p class="body expr-hide">El club tiene con qué resolverlo: <strong>equipo estable</strong>, <strong>tecnología disponible</strong> (pagada y sin usar), y un <strong>nuevo DG con energía</strong> para modernizar. Ya hay avances en los tres frentes — digitalización, experiencia del socio, y transición de Dirección General.</p>
+        <p class="body only-full">El club tiene con qué resolverlo: <strong>equipo estable</strong>, <strong>tecnología disponible</strong> (pagada y sin usar), y un <strong>nuevo DG con energía</strong> para modernizar. Ya hay avances en los tres frentes — digitalización, experiencia del socio, y transición de Dirección General.</p>
+        <p class="body only-express">Hay con qué resolverlo: <strong>equipo estable</strong>, <strong>tecnología pagada sin usar</strong>, <strong>nuevo DG con energía</strong>. Ya hay avances en los tres frentes.</p>
         <div class="callout">
           <div class="cl-label">Para marzo 2027</div>
           <p>El socio interactúa con el club desde su teléfono, Daniel dirige con información, la tecnología pagada genera valor, y Presidencia tiene visibilidad sin tener que preguntar.</p>
@@ -919,10 +922,13 @@
         <h2 class="t">Ocho semanas, todas las áreas, <em>nada al azar.</em></h2>
         <ul class="dash">
           <li><strong>+75 sesiones presenciales</strong> con todas las áreas — cada una grabada y procesada con inteligencia artificial.</li>
-          <li class="expr-hide"><strong>Conversaciones</strong> con Dirección General, Administración, A&amp;B, Sistemas, Seguridad, Deportes (Golf, Tenis, Pádel, SPA, Pilates), Atención a Socios, RH y Campo.</li>
-          <li class="expr-hide"><strong>Revisión de sistemas</strong>: Clubes, MySCIE, POS, agenda SPA, Google Workspace.</li>
-          <li class="expr-hide"><strong>Reuniones con proveedores</strong> tecnológicos: Kiritek y Cibermundo.</li>
-          <li class="expr-hide"><strong>Observación directa</strong> en operación.</li>
+          <li class="only-full"><strong>Conversaciones</strong> con Dirección General, Administración, A&amp;B, Sistemas, Seguridad, Deportes (Golf, Tenis, Pádel, SPA, Pilates), Atención a Socios, RH y Campo.</li>
+          <li class="only-express"><strong>Conversaciones</strong> con todas las áreas: DG, Admin, A&amp;B, Sistemas, Deportes, RH y Campo.</li>
+          <li class="only-full"><strong>Revisión de sistemas</strong>: Clubes, MySCIE, POS, agenda SPA, Google Workspace.</li>
+          <li class="only-express"><strong>Revisión de sistemas</strong> actuales.</li>
+          <li class="only-full"><strong>Reuniones con proveedores</strong> tecnológicos: Kiritek y Cibermundo.</li>
+          <li class="only-express"><strong>Reuniones</strong> con Kiritek y Cibermundo.</li>
+          <li><strong>Observación directa</strong> en operación.</li>
         </ul>
         <div class="callout accent">
           <div class="cl-label">El objetivo</div>
@@ -940,8 +946,10 @@
         <h3 class="st">El club tiene una base sólida</h3>
         <ul class="dash">
           <li><strong>Equipo consolidado</strong> — la mayoría con +10 años de servicio.</li>
-          <li class="expr-hide"><strong>Infraestructura tecnológica estable</strong> y disponible (ecosistema Cibermundo + amplia capacidad Kiritek).</li>
-          <li class="expr-hide"><strong>Un nuevo Director General</strong> con energía para modernizar operación y mejorar experiencia de socios.</li>
+          <li class="only-full"><strong>Infraestructura tecnológica estable</strong> y disponible (ecosistema Cibermundo + amplia capacidad Kiritek).</li>
+          <li class="only-express"><strong>Infraestructura tecnológica estable</strong> y disponible.</li>
+          <li class="only-full"><strong>Un nuevo Director General</strong> con energía para modernizar operación y mejorar experiencia de socios.</li>
+          <li class="only-express"><strong>Un nuevo Director General</strong> con energía para modernizar.</li>
         </ul>
 
         <h3 class="st">La oportunidad principal</h3>
@@ -954,7 +962,8 @@
       <div class="container">
         <div class="eyebrow"><span class="num">04</span><span class="lbl">Diagnóstico</span></div>
         <h2 class="t">89 oportunidades, <em>tres temas de fondo.</em></h2>
-        <p class="body expr-hide">Del diagnóstico salieron <strong>89 oportunidades documentadas</strong> en todas las áreas del club. Casi todos comparten las mismas tres causas:</p>
+        <p class="body only-full">Del diagnóstico salieron <strong>89 oportunidades documentadas</strong> en todas las áreas del club. Casi todos comparten las mismas tres causas:</p>
+        <p class="body only-express">Las <strong>89 oportunidades</strong> comparten las mismas tres causas:</p>
 
         <div class="theme">
           <div class="tnum">01</div>
@@ -1026,10 +1035,15 @@
           <div class="obj-num">Objetivo 01</div>
           <h3>Digitalizar la operación</h3>
           <p class="obj-lede">Menos papel, menos captura doble, más visibilidad para quienes dirigen.</p>
-          <ul class="bul expr-hide">
+          <ul class="bul only-full">
             <li>Reducir las ~350 mil impresiones anuales (proyecto paperless).</li>
             <li>Conectar sistemas para eliminar doble captura (Clubes → MySCIE → accesos).</li>
             <li>Métricas claras: gastos, ingresos, uso de instalaciones, estatus de proyectos.</li>
+          </ul>
+          <ul class="bul only-express">
+            <li>Reducir ~350 mil impresiones anuales.</li>
+            <li>Eliminar doble captura entre sistemas.</li>
+            <li>Métricas: gastos, ingresos, uso, proyectos.</li>
           </ul>
         </div>
 
@@ -1037,9 +1051,13 @@
           <div class="obj-num">Objetivo 02</div>
           <h3>Experiencia del socio</h3>
           <p class="obj-lede">Que el socio tenga información a la mano y pueda hacer cosas desde su celular.</p>
-          <ul class="bul expr-hide">
+          <ul class="bul only-full">
             <li><strong>Consultar:</strong> horarios deportes, servicios SPA, saldos, torneos, disponibilidad.</li>
             <li><strong>Actuar:</strong> reservar canchas, agendar SPA, pagar, dar acceso a invitados con QR.</li>
+          </ul>
+          <ul class="bul only-express">
+            <li><strong>Consultar:</strong> horarios, saldos, torneos, disponibilidad.</li>
+            <li><strong>Actuar:</strong> agendar, pagar, accesos con QR.</li>
           </ul>
         </div>
 
@@ -1047,10 +1065,15 @@
           <div class="obj-num">Objetivo 03</div>
           <h3>Transición de Dirección General</h3>
           <p class="obj-lede">Que Daniel arranque como DG con estructura, información y respaldo.</p>
-          <ul class="bul expr-hide">
+          <ul class="bul only-full">
             <li>Organigrama con roles claros (DG, gerencias, deportes) — validación pendiente.</li>
             <li>Herramientas para dirigir con datos, no con intuición.</li>
             <li>Acompañamiento a gerencias durante el cambio.</li>
+          </ul>
+          <ul class="bul only-express">
+            <li>Organigrama con roles claros — validación pendiente.</li>
+            <li>Dirigir con datos, no con intuición.</li>
+            <li>Acompañamiento a gerencias.</li>
           </ul>
         </div>
       </div>
@@ -1067,8 +1090,10 @@
           <div class="col-head">Hacia digitalización · Obj. 1</div>
           <ul class="bul">
             <li>+75 sesiones diagnósticas con todas las áreas.</li>
-            <li class="expr-hide">Lista priorizada de necesidades tech enviada a Kiritek para planeación.</li>
-            <li class="expr-hide">Nuevo formato seguimiento proyectos definido con Daniel (piloto mayo).</li>
+            <li class="only-full">Lista priorizada de necesidades tech enviada a Kiritek para planeación.</li>
+            <li class="only-express">Lista priorizada enviada a Kiritek.</li>
+            <li class="only-full">Nuevo formato seguimiento proyectos definido con Daniel (piloto mayo).</li>
+            <li class="only-express">Nuevo formato de seguimiento (piloto mayo).</li>
           </ul>
         </div>
 
@@ -1076,8 +1101,10 @@
           <div class="col-head">Hacia experiencia socio · Obj. 2</div>
           <ul class="bul">
             <li><strong>Reservas Tenis:</strong> necesidad documentada y en desarrollo con Cibermundo.</li>
-            <li class="expr-hide"><strong>Reservas Pilates:</strong> necesidad definida y compartida con Cibermundo.</li>
-            <li class="expr-hide">Canal directo establecido con ambos proveedores.</li>
+            <li class="only-full"><strong>Reservas Pilates:</strong> necesidad definida y compartida con Cibermundo.</li>
+            <li class="only-express"><strong>Reservas Pilates:</strong> definida con Cibermundo.</li>
+            <li class="only-full">Canal directo establecido con ambos proveedores.</li>
+            <li class="only-express">Canal directo con proveedores.</li>
           </ul>
         </div>
 
@@ -1085,7 +1112,8 @@
           <div class="col-head">Hacia transición DG · Obj. 3</div>
           <ul class="bul">
             <li>Propuesta de organigrama trabajada con Daniel, Nacho y Lulú.</li>
-            <li class="expr-hide">Presentación formal de Daniel como nuevo DG en todas las áreas (5 mayo).</li>
+            <li class="only-full">Presentación formal de Daniel como nuevo DG en todas las áreas (5 mayo).</li>
+            <li class="only-express">Presentación formal de Daniel como DG (5 mayo).</li>
           </ul>
         </div>
       </div>
@@ -1101,8 +1129,10 @@
           <div class="col-head">Digitalizar operación · Obj. 1</div>
           <ul class="bul">
             <li><span class="when">Mayo — junio</span>Eliminar captura manual ingresos en MySCIE.</li>
-            <li class="expr-hide"><span class="when">Junio</span>Carritos bar con comandas electrónicas.</li>
-            <li class="expr-hide"><span class="when">Julio</span>Primeras reducciones paperless.</li>
+            <li class="only-full"><span class="when">Junio</span>Carritos bar con comandas electrónicas.</li>
+            <li class="only-express"><span class="when">Jun</span>Comandas electrónicas en carritos bar.</li>
+            <li class="only-full"><span class="when">Julio</span>Primeras reducciones paperless.</li>
+            <li class="only-express"><span class="when">Jul</span>Primeras reducciones paperless.</li>
           </ul>
         </div>
 
@@ -1110,8 +1140,10 @@
           <div class="col-head">Experiencia socio · Obj. 2</div>
           <ul class="bul">
             <li><span class="when">Mayo — junio</span>Registro interno golf (métricas de uso).</li>
-            <li class="expr-hide"><span class="when">Mayo — julio</span>Registro + reservas tenis y SPA.</li>
-            <li class="expr-hide"><span class="when">Julio — agosto</span>Registro + reservas pilates.</li>
+            <li class="only-full"><span class="when">Mayo — julio</span>Registro + reservas tenis y SPA.</li>
+            <li class="only-express"><span class="when">May–jul</span>Reservas tenis y SPA.</li>
+            <li class="only-full"><span class="when">Julio — agosto</span>Registro + reservas pilates.</li>
+            <li class="only-express"><span class="when">Jul–ago</span>Reservas pilates.</li>
           </ul>
         </div>
 
@@ -1119,8 +1151,10 @@
           <div class="col-head">Transición DG · Obj. 3</div>
           <ul class="bul">
             <li><span class="when">Mayo</span>Seguimiento estructurado de proyectos dirección/gerencias.</li>
-            <li class="expr-hide"><span class="when">Junio</span>Integración Ana Laura y Betty al proceso de compras.</li>
-            <li class="expr-hide"><span class="when">Junio</span>Reportes para Presidencia y DG.</li>
+            <li class="only-full"><span class="when">Junio</span>Integración Ana Laura y Betty al proceso de compras.</li>
+            <li class="only-express"><span class="when">Jun</span>Ana Laura y Betty integradas a compras.</li>
+            <li class="only-full"><span class="when">Junio</span>Reportes para Presidencia y DG.</li>
+            <li class="only-express"><span class="when">Jun</span>Reportes para Presidencia y DG.</li>
           </ul>
         </div>
       </div>
@@ -1134,12 +1168,14 @@
 
         <div class="vendor">
           <h3>Cibermundo<em>Adaptar lo ya construido</em></h3>
-          <p class="expr-hide">Adaptar herramientas que ya tienen construidas — reservas, app socios, POS, agenda SPA. Para corto y mediano plazo, funciona bien.</p>
+          <p class="only-full">Adaptar herramientas que ya tienen construidas — reservas, app socios, POS, agenda SPA. Para corto y mediano plazo, funciona bien.</p>
+          <p class="only-express">Adaptar lo que ya tienen — reservas, app, POS. Funciona para corto y mediano plazo.</p>
         </div>
 
         <div class="vendor">
           <h3>Kiritek<em>Construir a la medida</em></h3>
-          <p class="expr-hide">Gran capacidad técnica para desarrollos a la medida y proyectos de cero — integraciones, automatizaciones, reportes. Excelente recurso para cuando necesitamos construir algo nuevo.</p>
+          <p class="only-full">Gran capacidad técnica para desarrollos a la medida y proyectos de cero — integraciones, automatizaciones, reportes. Excelente recurso para cuando necesitamos construir algo nuevo.</p>
+          <p class="only-express">Capacidad técnica para construir a la medida — integraciones, automatizaciones, reportes.</p>
         </div>
 
         <div class="callout">
@@ -1162,13 +1198,13 @@
             <div class="rn">1</div>
             <div class="rb"><strong>Que la tecnología se implemente y no se use (otra vez).</strong><p>El patrón ya existe. Si se repite, se pierde credibilidad.</p></div>
           </div>
-          <div class="risk expr-hide">
+          <div class="risk">
             <div class="rn">2</div>
-            <div class="rb"><strong>Que el conocimiento se vaya con el consultor.</strong><p>La capacidad interna debe quedar instalada antes de marzo 2027.</p></div>
+            <div class="rb"><strong>Que el conocimiento se vaya con el consultor.</strong><p class="only-full">La capacidad interna debe quedar instalada antes de marzo 2027.</p><p class="only-express">Capacidad interna instalada antes de marzo 2027.</p></div>
           </div>
-          <div class="risk expr-hide">
+          <div class="risk">
             <div class="rn">3</div>
-            <div class="rb"><strong>Resistencia del equipo.</strong><p>22 años de costumbre. El cambio tiene que sentirse como ayuda, no como imposición.</p></div>
+            <div class="rb"><strong>Resistencia del equipo.</strong><p class="only-full">22 años de costumbre. El cambio tiene que sentirse como ayuda, no como imposición.</p><p class="only-express">22 años de costumbre. El cambio debe sentirse como ayuda, no como imposición.</p></div>
           </div>
         </div>
 
@@ -1179,13 +1215,13 @@
             <div class="rn">1</div>
             <div class="rb"><strong>Primera impresión digital negativa.</strong><p>Si falla, los socios rechazan lo digital y se cierra la puerta.</p></div>
           </div>
-          <div class="risk expr-hide">
+          <div class="risk">
             <div class="rn">2</div>
-            <div class="rb"><strong>Seguridad y privacidad.</strong><p>Socios de alto perfil. Cualquier falla en datos daña la confianza de forma desproporcionada.</p></div>
+            <div class="rb"><strong>Seguridad y privacidad.</strong><p class="only-full">Socios de alto perfil. Cualquier falla en datos daña la confianza de forma desproporcionada.</p><p class="only-express">Socios de alto perfil; falla en datos daña la confianza.</p></div>
           </div>
-          <div class="risk expr-hide">
+          <div class="risk">
             <div class="rn">3</div>
-            <div class="rb"><strong>Hábitos arraigados.</strong><p>El socio resuelve por teléfono o en persona. Lo digital tiene que ser notablemente mejor.</p></div>
+            <div class="rb"><strong>Hábitos arraigados.</strong><p class="only-full">El socio resuelve por teléfono o en persona. Lo digital tiene que ser notablemente mejor.</p><p class="only-express">Lo digital tiene que ser notablemente mejor que el teléfono.</p></div>
           </div>
         </div>
 
@@ -1196,13 +1232,13 @@
             <div class="rn">1</div>
             <div class="rb"><strong>Daniel DG de nombre, no de hecho.</strong><p>Para que Daniel ejerza autoridad real, Nacho debe soltar las decisiones operativas y la oficina de DG.</p></div>
           </div>
-          <div class="risk expr-hide">
+          <div class="risk">
             <div class="rn">2</div>
-            <div class="rb"><strong>Daniel absorbido por talacha.</strong><p>Que no termine firmando papeles en vez de caminar pasillos.</p></div>
+            <div class="rb"><strong>Daniel absorbido por talacha.</strong><p class="only-full">Que no termine firmando papeles en vez de caminar pasillos.</p><p class="only-express">Que camine pasillos, no firme papeles.</p></div>
           </div>
-          <div class="risk expr-hide">
+          <div class="risk">
             <div class="rn">3</div>
-            <div class="rb"><strong>Evitar decisiones difíciles.</strong><p>Si evita fricción por querer agradar, pierde la ventana de credibilidad.</p></div>
+            <div class="rb"><strong>Evitar decisiones difíciles.</strong><p class="only-full">Si evita fricción por querer agradar, pierde la ventana de credibilidad.</p><p class="only-express">Evitar fricción por agradar = perder credibilidad.</p></div>
           </div>
         </div>
       </div>
