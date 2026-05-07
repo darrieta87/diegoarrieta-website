@@ -176,17 +176,6 @@
     padding: 0 22px;
   }
 
-  /* Reading progress bar */
-  .progress {
-    position: fixed;
-    top: 0; left: 0;
-    height: 2px;
-    width: 0%;
-    background: linear-gradient(90deg, var(--accent) 0%, var(--gold-soft) 100%);
-    z-index: 100;
-    transition: width 0.1s linear;
-  }
-
   /* ===== HERO ===== */
   .hero {
     background: linear-gradient(180deg, #1a3528 0%, #1f3d2e 70%, #284a39 100%);
@@ -268,26 +257,33 @@
   }
   section.s + section.s { padding-top: 8px; }
 
-  /* Section eyebrow */
+  /* Section eyebrow — chapter opener weight */
   .eyebrow {
-    font-family: var(--sans);
-    font-size: 11px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--accent);
-    font-weight: 700;
-    margin-bottom: 14px;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--accent);
   }
   .eyebrow .num {
     font-family: var(--serif);
     font-style: italic;
-    font-weight: 500;
-    font-size: 14px;
+    font-weight: 400;
+    font-size: clamp(44px, 12vw, 60px);
+    line-height: 0.85;
     color: var(--gold);
-    letter-spacing: 0;
+    letter-spacing: -0.01em;
+    flex-shrink: 0;
+  }
+  .eyebrow .lbl {
+    font-family: var(--sans);
+    font-size: clamp(14px, 3.6vw, 17px);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    line-height: 1.1;
   }
 
   /* Section titles */
@@ -644,6 +640,76 @@
     margin: 0;
   }
 
+  /* ===== GREEN BREAK SECTION (slide 06) ===== */
+  section.s.green {
+    background: linear-gradient(180deg, #1a3528 0%, #1f3d2e 60%, #284a39 100%);
+    color: var(--paper);
+    padding: 56px 0 56px;
+    margin: 24px 0 32px;
+  }
+  section.s.green .eyebrow {
+    border-bottom-color: rgba(244,241,234,0.25);
+  }
+  section.s.green .eyebrow .num { color: var(--gold-soft); }
+  section.s.green .eyebrow .lbl { color: rgba(244,241,234,0.85); }
+  section.s.green h2.t { color: var(--paper); }
+  section.s.green h2.t em { color: var(--gold-soft); }
+  section.s.green p.body { color: rgba(244,241,234,0.85); }
+  section.s.green .stat-row {
+    border-color: rgba(244,241,234,0.2);
+  }
+  section.s.green .stat-row .stat .num { color: var(--gold-soft); }
+  section.s.green .stat-row .stat .lbl { color: rgba(244,241,234,0.6); }
+  section.s.green .status {
+    background: rgba(244,241,234,0.06);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  section.s.green .status .body .h { color: var(--paper); }
+  section.s.green .status .body .m { color: rgba(244,241,234,0.75); }
+  section.s.green .kicker-italic {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--gold-soft);
+    font-size: 21px;
+    margin-top: 28px;
+    line-height: 1.35;
+  }
+
+  /* ===== BACK TO TOP BUTTON ===== */
+  .back-top-wrap {
+    background: var(--paper);
+    padding: 40px 0 32px;
+    text-align: center;
+  }
+  .back-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    background: var(--accent);
+    color: var(--paper);
+    text-decoration: none;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .back-top:active { transform: scale(0.97); }
+  .back-top:hover { background: var(--accent-soft); }
+  .back-top .arrow {
+    display: inline-block;
+    transform: rotate(-90deg);
+    font-size: 16px;
+    line-height: 1;
+  }
+
   /* ===== VISION (closing) ===== */
   .vision {
     background: linear-gradient(180deg, #1a3528 0%, #1f3d2e 100%);
@@ -749,7 +815,6 @@
 
 <!-- ============ ARTICLE ============ -->
 <div class="article" id="article">
-  <div class="progress" id="progress"></div>
 
   <!-- HERO -->
   <header class="hero">
@@ -771,7 +836,7 @@
     <!-- 02 RESUMEN -->
     <section class="s">
       <div class="container">
-        <div class="eyebrow"><span class="num">01</span> Resumen ejecutivo</div>
+        <div class="eyebrow"><span class="num">01</span><span class="lbl">Resumen ejecutivo</span></div>
         <h2 class="t">Lo esencial, en una <em>página.</em></h2>
         <p class="lede">En 8 semanas recorrí todas las áreas del club en <strong>+75 sesiones presenciales</strong>. Documenté <strong>89 problemas concretos</strong> que se explican por tres temas de fondo: la operación es ineficiente por costumbre, la tecnología se gestiona sin estrategia, y se dirige sin datos.</p>
         <p class="body">El club tiene con qué resolverlo: <strong>equipo estable</strong>, <strong>tecnología disponible</strong> (pagada y sin usar), y un <strong>nuevo DG con energía</strong> para modernizar. Ya hay avances en los tres frentes — digitalización, experiencia del socio, y transición de Dirección General.</p>
@@ -785,7 +850,7 @@
     <!-- 03 MÉTODO -->
     <section class="s">
       <div class="container">
-        <div class="eyebrow"><span class="num">02</span> Método</div>
+        <div class="eyebrow"><span class="num">02</span><span class="lbl">Método</span></div>
         <h2 class="t">Ocho semanas, todas las áreas, <em>nada al azar.</em></h2>
         <ul class="dash">
           <li><strong>+75 sesiones presenciales</strong> con todas las áreas — cada una grabada y procesada con inteligencia artificial.</li>
@@ -804,7 +869,7 @@
     <!-- 04 HALLAZGOS -->
     <section class="s">
       <div class="container">
-        <div class="eyebrow"><span class="num">03</span> Hallazgos</div>
+        <div class="eyebrow"><span class="num">03</span><span class="lbl">Hallazgos</span></div>
         <h2 class="t">Base sólida, momento <em>ideal</em> para evolucionar.</h2>
 
         <h3 class="st">El club tiene una base sólida</h3>
@@ -822,7 +887,7 @@
     <!-- 05 TRES TEMAS -->
     <section class="s">
       <div class="container">
-        <div class="eyebrow"><span class="num">04</span> Diagnóstico</div>
+        <div class="eyebrow"><span class="num">04</span><span class="lbl">Diagnóstico</span></div>
         <h2 class="t">89 problemas, <em>tres causas raíz.</em></h2>
         <p class="body">Del diagnóstico salieron <strong>89 problemas documentados</strong> en todas las áreas del club. Casi todos son síntomas de tres temas de fondo:</p>
 
@@ -845,9 +910,9 @@
     </section>
 
     <!-- 06 CIBERMUNDO -->
-    <section class="s">
+    <section class="s green">
       <div class="container">
-        <div class="eyebrow"><span class="num">05</span> Tecnología</div>
+        <div class="eyebrow"><span class="num">05</span><span class="lbl">Tecnología</span></div>
         <h2 class="t">Hay herramienta pagada <em>que no se usa.</em></h2>
         <div class="stat-row">
           <div class="stat">
@@ -882,14 +947,14 @@
           </div>
         </div>
 
-        <p class="body" style="margin-top:24px; font-family: var(--serif); font-style: italic; color: var(--accent); font-size: 19px;">La prioridad es activarla.</p>
+        <p class="kicker-italic">La prioridad es activarla.</p>
       </div>
     </section>
 
     <!-- 07 OBJETIVOS -->
     <section class="s">
       <div class="container">
-        <div class="eyebrow"><span class="num">06</span> Plan</div>
+        <div class="eyebrow"><span class="num">06</span><span class="lbl">Plan</span></div>
         <h2 class="t">Tres grandes objetivos. Hacia dónde dirigir <em>los esfuerzos.</em></h2>
 
         <div class="obj">
@@ -929,7 +994,7 @@
     <!-- 08 AVANCES -->
     <section class="s">
       <div class="container">
-        <div class="eyebrow"><span class="num">07</span> Avances</div>
+        <div class="eyebrow"><span class="num">07</span><span class="lbl">Avances</span></div>
         <h2 class="t">Lo que <em>ya se movió.</em></h2>
         <p class="body" style="margin-bottom:20px; color: var(--muted); font-size: 14.5px; letter-spacing: 0.04em;">16 marzo — 7 mayo</p>
 
@@ -964,7 +1029,7 @@
     <!-- 09 SIGUIENTES -->
     <section class="s">
       <div class="container">
-        <div class="eyebrow"><span class="num">08</span> Roadmap</div>
+        <div class="eyebrow"><span class="num">08</span><span class="lbl">Roadmap</span></div>
         <h2 class="t">Qué viene en los <em>próximos meses.</em></h2>
 
         <div class="col">
@@ -999,7 +1064,7 @@
     <!-- 10 PROVEEDORES -->
     <section class="s">
       <div class="container">
-        <div class="eyebrow"><span class="num">09</span> Proveedores</div>
+        <div class="eyebrow"><span class="num">09</span><span class="lbl">Proveedores</span></div>
         <h2 class="t">Dos proveedores, <em>dos roles.</em></h2>
 
         <div class="vendor">
@@ -1022,7 +1087,7 @@
     <!-- 11 RIESGOS -->
     <section class="s">
       <div class="container">
-        <div class="eyebrow"><span class="num">10</span> Riesgos</div>
+        <div class="eyebrow"><span class="num">10</span><span class="lbl">Riesgos</span></div>
         <h2 class="t">Lo que puede <em>descarrilar</em> esto.</h2>
 
         <div class="risk-group">
@@ -1083,7 +1148,7 @@
   <!-- 12 VISIÓN -->
   <section class="vision">
     <div class="container">
-      <div class="eyebrow"><span class="num">11</span> Visión · Marzo 2027</div>
+      <div class="eyebrow"><span class="num">11</span><span class="lbl">Visión · Marzo 2027</span></div>
       <h2 class="t">Cómo se ve el club <em>en diez meses.</em></h2>
       <ol class="vlist">
         <li>El socio reserva, consulta y paga desde su teléfono.</li>
@@ -1095,6 +1160,13 @@
       </ol>
     </div>
   </section>
+
+  <div class="back-top-wrap">
+    <button type="button" class="back-top" id="backTop" aria-label="Regresar al inicio">
+      <span class="arrow">‹</span>
+      <span>Regresar al inicio</span>
+    </button>
+  </div>
 
   <footer class="article-foot">
     <div class="container">
@@ -1119,7 +1191,6 @@
     gate.classList.add('hidden');
     article.classList.add('show');
     window.scrollTo(0, 0);
-    setupProgress();
   }
 
   function checkPin() {
@@ -1177,19 +1248,13 @@
     if (sessionStorage.getItem(STORAGE_KEY) === '1') unlock();
   } catch(_){}
 
-  // ============ READING PROGRESS ============
-  function setupProgress() {
-    var bar = document.getElementById('progress');
-    function update() {
-      var h = document.documentElement;
-      var b = document.body;
-      var st = h.scrollTop || b.scrollTop;
-      var sh = (h.scrollHeight || b.scrollHeight) - h.clientHeight;
-      var pct = sh > 0 ? Math.min(100, (st / sh) * 100) : 0;
-      bar.style.width = pct + '%';
-    }
-    window.addEventListener('scroll', update, { passive: true });
-    update();
+  // ============ BACK TO TOP ============
+  var backBtn = document.getElementById('backTop');
+  if (backBtn) {
+    backBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 })();
 </script>
