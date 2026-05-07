@@ -251,6 +251,98 @@
     font-weight: 600;
   }
 
+  /* ===== MODE TOGGLE (Completa / Express) ===== */
+  .mode-block {
+    margin-top: 32px;
+    padding-top: 26px;
+    border-top: 1px solid rgba(244,241,234,0.2);
+  }
+  .mode-block .mode-label {
+    font-size: 10px;
+    color: rgba(244,241,234,0.5);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .mode-toggle {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    background: rgba(244,241,234,0.06);
+    border: 1px solid rgba(244,241,234,0.2);
+    border-radius: 999px;
+  }
+  .mode-toggle button {
+    background: transparent;
+    border: none;
+    color: rgba(244,241,234,0.7);
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 11px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mode-toggle button .mins {
+    opacity: 0.6;
+    font-weight: 500;
+    margin-left: 6px;
+  }
+  .mode-toggle button.active {
+    background: var(--gold-soft);
+    color: var(--accent);
+  }
+  .mode-toggle button.active .mins { opacity: 0.7; }
+
+  /* In express mode, hide elements marked as expr-hide */
+  body.mode-express .expr-hide { display: none !important; }
+
+  /* ===== FLOATING BACK-TO-TOP (FAB) ===== */
+  .fab-back {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    width: 46px;
+    height: 46px;
+    background: var(--accent);
+    color: var(--paper);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 0.25s, transform 0.25s, background 0.2s;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fab-back:active { transform: scale(0.95); }
+  .fab-back.show {
+    opacity: 0.92;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .fab-back .arrow {
+    transform: rotate(-90deg);
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 600;
+  }
+  @supports (padding: max(0px)) {
+    .fab-back {
+      bottom: max(18px, calc(14px + env(safe-area-inset-bottom)));
+    }
+  }
+
   /* ===== SECTIONS ===== */
   section.s {
     padding: 0 0 56px;
@@ -676,40 +768,6 @@
     line-height: 1.35;
   }
 
-  /* ===== BACK TO TOP BUTTON ===== */
-  .back-top-wrap {
-    background: var(--paper);
-    padding: 40px 0 32px;
-    text-align: center;
-  }
-  .back-top {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 22px;
-    background: var(--accent);
-    color: var(--paper);
-    text-decoration: none;
-    font-family: var(--sans);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    border-radius: 999px;
-    border: none;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .back-top:active { transform: scale(0.97); }
-  .back-top:hover { background: var(--accent-soft); }
-  .back-top .arrow {
-    display: inline-block;
-    transform: rotate(-90deg);
-    font-size: 16px;
-    line-height: 1;
-  }
-
   /* ===== VISION (closing) ===== */
   .vision {
     background: linear-gradient(180deg, #1a3528 0%, #1f3d2e 100%);
@@ -828,6 +886,13 @@
         <div><span class="label">Periodo</span>15 mar — 8 may 2026</div>
         <div><span class="label">Fecha</span>8 · mayo · 2026</div>
       </div>
+      <div class="mode-block">
+        <div class="mode-label">Modo de lectura</div>
+        <div class="mode-toggle" role="tablist" aria-label="Selecciona modo de lectura">
+          <button type="button" data-mode="full" class="active" role="tab" aria-selected="true">Completa<span class="mins">10 min</span></button>
+          <button type="button" data-mode="express" role="tab" aria-selected="false">Express<span class="mins">5 min</span></button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -838,8 +903,8 @@
       <div class="container">
         <div class="eyebrow"><span class="num">01</span><span class="lbl">Resumen ejecutivo</span></div>
         <h2 class="t">Lo esencial, en una <em>página.</em></h2>
-        <p class="lede">En 8 semanas recorrí todas las áreas del club en <strong>+75 sesiones presenciales</strong>. Documenté <strong>89 problemas concretos</strong> que se explican por tres temas de fondo: la operación es ineficiente por costumbre, la tecnología se gestiona sin estrategia, y se dirige sin datos.</p>
-        <p class="body">El club tiene con qué resolverlo: <strong>equipo estable</strong>, <strong>tecnología disponible</strong> (pagada y sin usar), y un <strong>nuevo DG con energía</strong> para modernizar. Ya hay avances en los tres frentes — digitalización, experiencia del socio, y transición de Dirección General.</p>
+        <p class="lede">En 8 semanas recorrí todas las áreas del club en <strong>+75 sesiones presenciales</strong>. Documenté <strong>89 oportunidades concretas</strong> que se explican por tres temas de fondo: la operación es ineficiente por costumbre, la tecnología se gestiona sin estrategia, y se dirige sin datos.</p>
+        <p class="body expr-hide">El club tiene con qué resolverlo: <strong>equipo estable</strong>, <strong>tecnología disponible</strong> (pagada y sin usar), y un <strong>nuevo DG con energía</strong> para modernizar. Ya hay avances en los tres frentes — digitalización, experiencia del socio, y transición de Dirección General.</p>
         <div class="callout">
           <div class="cl-label">Para marzo 2027</div>
           <p>El socio interactúa con el club desde su teléfono, Daniel dirige con información, la tecnología pagada genera valor, y Presidencia tiene visibilidad sin tener que preguntar.</p>
@@ -854,10 +919,10 @@
         <h2 class="t">Ocho semanas, todas las áreas, <em>nada al azar.</em></h2>
         <ul class="dash">
           <li><strong>+75 sesiones presenciales</strong> con todas las áreas — cada una grabada y procesada con inteligencia artificial.</li>
-          <li><strong>Conversaciones</strong> con Dirección General, Administración, A&amp;B, Sistemas, Seguridad, Deportes (Golf, Tenis, Pádel, SPA, Pilates), Atención a Socios, RH y Campo.</li>
-          <li><strong>Revisión de sistemas</strong>: Clubes, MySCIE, POS, agenda SPA, Google Workspace.</li>
-          <li><strong>Reuniones con proveedores</strong> tecnológicos: Kiritek y Cibermundo.</li>
-          <li><strong>Observación directa</strong> en operación.</li>
+          <li class="expr-hide"><strong>Conversaciones</strong> con Dirección General, Administración, A&amp;B, Sistemas, Seguridad, Deportes (Golf, Tenis, Pádel, SPA, Pilates), Atención a Socios, RH y Campo.</li>
+          <li class="expr-hide"><strong>Revisión de sistemas</strong>: Clubes, MySCIE, POS, agenda SPA, Google Workspace.</li>
+          <li class="expr-hide"><strong>Reuniones con proveedores</strong> tecnológicos: Kiritek y Cibermundo.</li>
+          <li class="expr-hide"><strong>Observación directa</strong> en operación.</li>
         </ul>
         <div class="callout accent">
           <div class="cl-label">El objetivo</div>
@@ -875,8 +940,8 @@
         <h3 class="st">El club tiene una base sólida</h3>
         <ul class="dash">
           <li><strong>Equipo consolidado</strong> — la mayoría con +10 años de servicio.</li>
-          <li><strong>Infraestructura tecnológica estable</strong> y disponible (ecosistema Cibermundo + amplia capacidad Kiritek).</li>
-          <li><strong>Un nuevo Director General</strong> con energía para modernizar operación y mejorar experiencia de socios.</li>
+          <li class="expr-hide"><strong>Infraestructura tecnológica estable</strong> y disponible (ecosistema Cibermundo + amplia capacidad Kiritek).</li>
+          <li class="expr-hide"><strong>Un nuevo Director General</strong> con energía para modernizar operación y mejorar experiencia de socios.</li>
         </ul>
 
         <h3 class="st">La oportunidad principal</h3>
@@ -888,8 +953,8 @@
     <section class="s">
       <div class="container">
         <div class="eyebrow"><span class="num">04</span><span class="lbl">Diagnóstico</span></div>
-        <h2 class="t">89 problemas, <em>tres causas raíz.</em></h2>
-        <p class="body">Del diagnóstico salieron <strong>89 problemas documentados</strong> en todas las áreas del club. Casi todos son síntomas de tres temas de fondo:</p>
+        <h2 class="t">89 oportunidades, <em>tres temas de fondo.</em></h2>
+        <p class="body expr-hide">Del diagnóstico salieron <strong>89 oportunidades documentadas</strong> en todas las áreas del club. Casi todos comparten las mismas tres causas:</p>
 
         <div class="theme">
           <div class="tnum">01</div>
@@ -961,7 +1026,7 @@
           <div class="obj-num">Objetivo 01</div>
           <h3>Digitalizar la operación</h3>
           <p class="obj-lede">Menos papel, menos captura doble, más visibilidad para quienes dirigen.</p>
-          <ul class="bul">
+          <ul class="bul expr-hide">
             <li>Reducir las ~350 mil impresiones anuales (proyecto paperless).</li>
             <li>Conectar sistemas para eliminar doble captura (Clubes → MySCIE → accesos).</li>
             <li>Métricas claras: gastos, ingresos, uso de instalaciones, estatus de proyectos.</li>
@@ -972,7 +1037,7 @@
           <div class="obj-num">Objetivo 02</div>
           <h3>Experiencia del socio</h3>
           <p class="obj-lede">Que el socio tenga información a la mano y pueda hacer cosas desde su celular.</p>
-          <ul class="bul">
+          <ul class="bul expr-hide">
             <li><strong>Consultar:</strong> horarios deportes, servicios SPA, saldos, torneos, disponibilidad.</li>
             <li><strong>Actuar:</strong> reservar canchas, agendar SPA, pagar, dar acceso a invitados con QR.</li>
           </ul>
@@ -982,7 +1047,7 @@
           <div class="obj-num">Objetivo 03</div>
           <h3>Transición de Dirección General</h3>
           <p class="obj-lede">Que Daniel arranque como DG con estructura, información y respaldo.</p>
-          <ul class="bul">
+          <ul class="bul expr-hide">
             <li>Organigrama con roles claros (DG, gerencias, deportes) — validación pendiente.</li>
             <li>Herramientas para dirigir con datos, no con intuición.</li>
             <li>Acompañamiento a gerencias durante el cambio.</li>
@@ -1002,8 +1067,8 @@
           <div class="col-head">Hacia digitalización · Obj. 1</div>
           <ul class="bul">
             <li>+75 sesiones diagnósticas con todas las áreas.</li>
-            <li>Lista priorizada de necesidades tech enviada a Kiritek para planeación.</li>
-            <li>Nuevo formato seguimiento proyectos definido con Daniel (piloto mayo).</li>
+            <li class="expr-hide">Lista priorizada de necesidades tech enviada a Kiritek para planeación.</li>
+            <li class="expr-hide">Nuevo formato seguimiento proyectos definido con Daniel (piloto mayo).</li>
           </ul>
         </div>
 
@@ -1011,8 +1076,8 @@
           <div class="col-head">Hacia experiencia socio · Obj. 2</div>
           <ul class="bul">
             <li><strong>Reservas Tenis:</strong> necesidad documentada y en desarrollo con Cibermundo.</li>
-            <li><strong>Reservas Pilates:</strong> necesidad definida y compartida con Cibermundo.</li>
-            <li>Canal directo establecido con ambos proveedores.</li>
+            <li class="expr-hide"><strong>Reservas Pilates:</strong> necesidad definida y compartida con Cibermundo.</li>
+            <li class="expr-hide">Canal directo establecido con ambos proveedores.</li>
           </ul>
         </div>
 
@@ -1020,7 +1085,7 @@
           <div class="col-head">Hacia transición DG · Obj. 3</div>
           <ul class="bul">
             <li>Propuesta de organigrama trabajada con Daniel, Nacho y Lulú.</li>
-            <li>Presentación formal de Daniel como nuevo DG en todas las áreas (5 mayo).</li>
+            <li class="expr-hide">Presentación formal de Daniel como nuevo DG en todas las áreas (5 mayo).</li>
           </ul>
         </div>
       </div>
@@ -1036,8 +1101,8 @@
           <div class="col-head">Digitalizar operación · Obj. 1</div>
           <ul class="bul">
             <li><span class="when">Mayo — junio</span>Eliminar captura manual ingresos en MySCIE.</li>
-            <li><span class="when">Junio</span>Carritos bar con comandas electrónicas.</li>
-            <li><span class="when">Julio</span>Primeras reducciones paperless.</li>
+            <li class="expr-hide"><span class="when">Junio</span>Carritos bar con comandas electrónicas.</li>
+            <li class="expr-hide"><span class="when">Julio</span>Primeras reducciones paperless.</li>
           </ul>
         </div>
 
@@ -1045,8 +1110,8 @@
           <div class="col-head">Experiencia socio · Obj. 2</div>
           <ul class="bul">
             <li><span class="when">Mayo — junio</span>Registro interno golf (métricas de uso).</li>
-            <li><span class="when">Mayo — julio</span>Registro + reservas tenis y SPA.</li>
-            <li><span class="when">Julio — agosto</span>Registro + reservas pilates.</li>
+            <li class="expr-hide"><span class="when">Mayo — julio</span>Registro + reservas tenis y SPA.</li>
+            <li class="expr-hide"><span class="when">Julio — agosto</span>Registro + reservas pilates.</li>
           </ul>
         </div>
 
@@ -1054,8 +1119,8 @@
           <div class="col-head">Transición DG · Obj. 3</div>
           <ul class="bul">
             <li><span class="when">Mayo</span>Seguimiento estructurado de proyectos dirección/gerencias.</li>
-            <li><span class="when">Junio</span>Integración Ana Laura y Betty al proceso de compras.</li>
-            <li><span class="when">Junio</span>Reportes para Presidencia y DG.</li>
+            <li class="expr-hide"><span class="when">Junio</span>Integración Ana Laura y Betty al proceso de compras.</li>
+            <li class="expr-hide"><span class="when">Junio</span>Reportes para Presidencia y DG.</li>
           </ul>
         </div>
       </div>
@@ -1069,12 +1134,12 @@
 
         <div class="vendor">
           <h3>Cibermundo<em>Adaptar lo ya construido</em></h3>
-          <p>Adaptar herramientas que ya tienen construidas — reservas, app socios, POS, agenda SPA. Para corto y mediano plazo, funciona bien.</p>
+          <p class="expr-hide">Adaptar herramientas que ya tienen construidas — reservas, app socios, POS, agenda SPA. Para corto y mediano plazo, funciona bien.</p>
         </div>
 
         <div class="vendor">
           <h3>Kiritek<em>Construir a la medida</em></h3>
-          <p>Gran capacidad técnica para desarrollos a la medida y proyectos de cero — integraciones, automatizaciones, reportes. Excelente recurso para cuando necesitamos construir algo nuevo.</p>
+          <p class="expr-hide">Gran capacidad técnica para desarrollos a la medida y proyectos de cero — integraciones, automatizaciones, reportes. Excelente recurso para cuando necesitamos construir algo nuevo.</p>
         </div>
 
         <div class="callout">
@@ -1097,11 +1162,11 @@
             <div class="rn">1</div>
             <div class="rb"><strong>Que la tecnología se implemente y no se use (otra vez).</strong><p>El patrón ya existe. Si se repite, se pierde credibilidad.</p></div>
           </div>
-          <div class="risk">
+          <div class="risk expr-hide">
             <div class="rn">2</div>
             <div class="rb"><strong>Que el conocimiento se vaya con el consultor.</strong><p>La capacidad interna debe quedar instalada antes de marzo 2027.</p></div>
           </div>
-          <div class="risk">
+          <div class="risk expr-hide">
             <div class="rn">3</div>
             <div class="rb"><strong>Resistencia del equipo.</strong><p>22 años de costumbre. El cambio tiene que sentirse como ayuda, no como imposición.</p></div>
           </div>
@@ -1114,11 +1179,11 @@
             <div class="rn">1</div>
             <div class="rb"><strong>Primera impresión digital negativa.</strong><p>Si falla, los socios rechazan lo digital y se cierra la puerta.</p></div>
           </div>
-          <div class="risk">
+          <div class="risk expr-hide">
             <div class="rn">2</div>
             <div class="rb"><strong>Seguridad y privacidad.</strong><p>Socios de alto perfil. Cualquier falla en datos daña la confianza de forma desproporcionada.</p></div>
           </div>
-          <div class="risk">
+          <div class="risk expr-hide">
             <div class="rn">3</div>
             <div class="rb"><strong>Hábitos arraigados.</strong><p>El socio resuelve por teléfono o en persona. Lo digital tiene que ser notablemente mejor.</p></div>
           </div>
@@ -1129,13 +1194,13 @@
           <div class="rg-sub">Transición DG</div>
           <div class="risk">
             <div class="rn">1</div>
-            <div class="rb"><strong>Daniel DG de nombre, no de hecho.</strong><p>Si la organización sigue acudiendo a Nacho, Daniel no ejerce autoridad real. Nacho no debería seguir tomando decisiones operativas ni mantenerse en la oficina de DG mucho tiempo más.</p></div>
+            <div class="rb"><strong>Daniel DG de nombre, no de hecho.</strong><p>Para que Daniel ejerza autoridad real, Nacho debe soltar las decisiones operativas y la oficina de DG.</p></div>
           </div>
-          <div class="risk">
+          <div class="risk expr-hide">
             <div class="rn">2</div>
             <div class="rb"><strong>Daniel absorbido por talacha.</strong><p>Que no termine firmando papeles en vez de caminar pasillos.</p></div>
           </div>
-          <div class="risk">
+          <div class="risk expr-hide">
             <div class="rn">3</div>
             <div class="rb"><strong>Evitar decisiones difíciles.</strong><p>Si evita fricción por querer agradar, pierde la ventana de credibilidad.</p></div>
           </div>
@@ -1161,13 +1226,6 @@
     </div>
   </section>
 
-  <div class="back-top-wrap">
-    <button type="button" class="back-top" id="backTop" aria-label="Regresar al inicio">
-      <span class="arrow">‹</span>
-      <span>Regresar al inicio</span>
-    </button>
-  </div>
-
   <footer class="article-foot">
     <div class="container">
       <div class="signature">Diego Arrieta</div>
@@ -1175,6 +1233,10 @@
     </div>
   </footer>
 </div>
+
+<button type="button" class="fab-back" id="fabBack" aria-label="Regresar al inicio" title="Regresar al inicio">
+  <span class="arrow">‹</span>
+</button>
 
 <script>
 (function(){
@@ -1248,14 +1310,53 @@
     if (sessionStorage.getItem(STORAGE_KEY) === '1') unlock();
   } catch(_){}
 
-  // ============ BACK TO TOP ============
-  var backBtn = document.getElementById('backTop');
-  if (backBtn) {
-    backBtn.addEventListener('click', function(e){
-      e.preventDefault();
+  // ============ FLOATING BACK-TO-TOP ============
+  var fab = document.getElementById('fabBack');
+  if (fab) {
+    fab.addEventListener('click', function(){
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+    var SHOW_AFTER = 600;
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function(){
+        var y = window.scrollY || window.pageYOffset || 0;
+        if (y > SHOW_AFTER) fab.classList.add('show');
+        else fab.classList.remove('show');
+        ticking = false;
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
   }
+
+  // ============ MODE TOGGLE (Completa / Express) ============
+  var MODE_KEY = '3m-diag-mode';
+  var modeBtns = document.querySelectorAll('.mode-toggle button');
+  function setMode(mode, scrollTop) {
+    if (mode !== 'express') mode = 'full';
+    document.body.classList.toggle('mode-express', mode === 'express');
+    document.body.classList.toggle('mode-full', mode !== 'express');
+    modeBtns.forEach(function(b){
+      var active = b.getAttribute('data-mode') === mode;
+      b.classList.toggle('active', active);
+      b.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    try { sessionStorage.setItem(MODE_KEY, mode); } catch(_){}
+    if (scrollTop) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  modeBtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      setMode(b.getAttribute('data-mode'), false);
+    });
+  });
+  // Restore previous choice (if any) — default is full
+  try {
+    var saved = sessionStorage.getItem(MODE_KEY);
+    if (saved === 'express') setMode('express', false);
+    else setMode('full', false);
+  } catch(_) { setMode('full', false); }
 })();
 </script>
 </body>
