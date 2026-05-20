@@ -62,6 +62,20 @@
   }
   .btn-sm:hover { background: #f5f5f5; }
 
+  /* Prominent quick-select (Todos / Ninguno) */
+  .quick-toggle { display: inline-flex; gap: 6px; margin: 0 10px 0 0; }
+  .anim-controls .quick-toggle { margin: 2px 0 8px; }
+  .btn-quick {
+    font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px;
+    cursor: pointer; border: 1.5px solid var(--primary); line-height: 1;
+    display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-quick.all { background: var(--primary); color: #fff; }
+  .btn-quick.all:hover { background: var(--primary-light); border-color: var(--primary-light); }
+  .btn-quick.none { background: #fff; color: var(--primary); }
+  .btn-quick.none:hover { background: #e8f5e9; }
+
   .heatmap-wrap { overflow-x: auto; }
   table.heatmap { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 13px; }
   table.heatmap th { padding: 8px 6px; font-weight: 600; text-align: center; background: #f8f8f8; border: 1px solid var(--border); }
@@ -121,6 +135,7 @@
     .filter-bar { gap: 4px; }
     .filter-bar label { font-size: 11px; padding: 3px 7px; }
     .btn-sm { font-size: 11px; padding: 3px 8px; }
+    .btn-quick { font-size: 11px; padding: 5px 11px; }
     table.heatmap { font-size: 11px; min-width: 520px; }
     table.heatmap th { padding: 5px 3px; font-size: 11px; }
     table.heatmap td { padding: 4px 2px; min-width: 42px; font-size: 11px; }
@@ -145,6 +160,7 @@
     .section-header h2 { font-size: 15px; }
     .section-body { padding: 10px 8px 12px; }
     .filter-bar label { font-size: 10px; padding: 2px 5px; }
+    .btn-quick { font-size: 10px; padding: 4px 9px; }
     table.heatmap { font-size: 10px; min-width: 460px; }
     table.heatmap th { padding: 4px 2px; }
     table.heatmap td { padding: 3px 1px; min-width: 36px; }
@@ -207,6 +223,7 @@
   </div>
   <div class="section-body">
     <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Estimación de personas simultáneamente dentro del club (entradas acumuladas menos salidas por torniquetes peatonales de Casa Club). Se excluye lunes por torniquetes apagados.</p>
+    <div class="filter-bar" id="insideDayFilters"></div>
     <div class="chart-container">
       <canvas id="insideChart"></canvas>
     </div>
@@ -275,20 +292,34 @@ for(let h=5;h<=23;h++) HOURS_DISPLAY.push(h);
 // ==================== SECTION 1: HEATMAP ====================
 const torniqueteGroups = ['Torniquete Casa Club','Torniquete PB Casa Club','Torniquetes Panoli/Sur','Motor Lobby'];
 
+// Reusable prominent "Todos / Ninguno" quick-select. Sets every checkbox under
+// `selector`, syncs the .checked label style, then runs `afterChange`.
+function makeQuickToggle(selector, afterChange){
+  const wrap = document.createElement('span');
+  wrap.className = 'quick-toggle';
+  const make = (cls, label, val) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn-quick ' + cls;
+    b.innerHTML = label;
+    b.onclick = () => {
+      document.querySelectorAll(selector + ' input[type=checkbox]').forEach(c => {
+        c.checked = val;
+        const lab = c.closest('label');
+        if(lab) lab.classList.toggle('checked', val);
+      });
+      afterChange();
+    };
+    return b;
+  };
+  wrap.appendChild(make('all', '&#10003; Todos', true));
+  wrap.appendChild(make('none', '&#10007; Ninguno', false));
+  return wrap;
+}
+
 function initGroupFilters(){
   const bar = document.getElementById('groupFilters');
-  // Select all / none buttons
-  let btnAll = document.createElement('button');
-  btnAll.className='btn-sm'; btnAll.textContent='Todos'; btnAll.onclick=()=>{
-    document.querySelectorAll('#groupFilters input').forEach(c=>{c.checked=true; c.parentElement.classList.add('checked');});
-    renderHeatmap();
-  };
-  let btnNone = document.createElement('button');
-  btnNone.className='btn-sm'; btnNone.textContent='Ninguno'; btnNone.onclick=()=>{
-    document.querySelectorAll('#groupFilters input').forEach(c=>{c.checked=false; c.parentElement.classList.remove('checked');});
-    renderHeatmap();
-  };
-  bar.appendChild(btnAll); bar.appendChild(btnNone);
+  bar.appendChild(makeQuickToggle('#groupFilters', renderHeatmap));
 
   D.groups.forEach(g=>{
     const lbl = document.createElement('label');
@@ -421,6 +452,32 @@ function initInsideChart(){
   });
 }
 
+// Day selector for the line chart (datasets are pushed in dow order 1..6,
+// so dataset index i corresponds to dow = i+1).
+function initInsideDayFilters(){
+  const bar = document.getElementById('insideDayFilters');
+  bar.appendChild(makeQuickToggle('#insideDayFilters', updateInsideChart));
+  for(let dow=1; dow<=6; dow++){
+    const lbl = document.createElement('label');
+    lbl.className = 'checked';
+    const cb = document.createElement('input');
+    cb.type='checkbox'; cb.checked=true; cb.value=dow;
+    cb.onchange = ()=>{ lbl.classList.toggle('checked', cb.checked); updateInsideChart(); };
+    lbl.appendChild(cb);
+    lbl.appendChild(document.createTextNode(' '+DOW_NAMES[dow]));
+    bar.appendChild(lbl);
+  }
+}
+
+function updateInsideChart(){
+  if(!insideChart) return;
+  const sel = new Set(Array.from(document.querySelectorAll('#insideDayFilters input:checked')).map(c=>+c.value));
+  insideChart.data.datasets.forEach((ds,i)=>{
+    insideChart.setDatasetVisibility(i, sel.has(i+1));
+  });
+  insideChart.update();
+}
+
 // ==================== SECTION 3: VEHICLE ANIMATION (continuous flow, 3+3 lanes) ====================
 const VEH_COLORS = {
   'Acceso Principal':'#1565c0','Pluma Sur':'#6a1b9a','Pluma Norte':'#2e7d32',
@@ -452,6 +509,9 @@ function getCanvasH(vehs){ return Math.max(200, vehs.length * (getBlockH()+GAP_B
 
 function initVehFilters(){
   const div = document.getElementById('vehFilters');
+  div.parentElement.insertBefore(
+    makeQuickToggle('#vehFilters', ()=>{ resizeCanvas(); if(!animPlaying) drawLanes(); }),
+    div);
   D.vehicularGroups.forEach(g=>{
     const lbl = document.createElement('label');
     const cb = document.createElement('input');
@@ -468,6 +528,9 @@ function initVehFilters(){
 
 function initDayFilters(){
   const div = document.getElementById('dayFilters');
+  div.parentElement.insertBefore(
+    makeQuickToggle('#dayFilters', ()=>{ if(animPlaying) rebuildSchedule(); }),
+    div);
   DOW_NAMES.forEach((d,i)=>{
     const lbl = document.createElement('label');
     const cb = document.createElement('input');
@@ -761,6 +824,7 @@ try { initInsideChart(); } catch(e) {
   document.getElementById('insideChart').parentElement.innerHTML =
     '<p style="color:#e65100;padding:20px;">Error al cargar la gráfica. Verifica conexión a internet (Chart.js se carga desde CDN).</p>';
 }
+initInsideDayFilters();
 initVehFilters();
 initDayFilters();
 resizeCanvas();
