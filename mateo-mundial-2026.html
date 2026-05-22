@@ -120,6 +120,10 @@
   .cell.have{background:#eafaf0;color:var(--fifa-green);border-color:#cdeede;}
   .cell.have .num{color:#0e8a44;}
   .cell.have .check{font-size:13px;margin-top:2px;}
+  /* duplicate = warm */
+  .cell.have.dupe{background:#fff4e2;border-color:#ffd9a8;color:#b46500;}
+  .cell.have.dupe .num{color:#b46500;}
+  .cell.have.dupe .check{color:#b46500;}
   /* dupe badge */
   .badge{position:absolute;top:-7px;right:-7px;min-width:24px;height:24px;padding:0 5px;border-radius:99px;background:linear-gradient(135deg,var(--gold),var(--fifa-orange));color:#fff;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(255,122,0,.5);border:2px solid #fff;}
   .empty-note{font-size:13px;color:var(--grey);text-align:center;padding:18px 10px;font-weight:600;}
@@ -220,8 +224,8 @@
     <button class="clr" id="clrBtn" aria-label="Limpiar">✕</button>
   </div>
   <div class="chips" id="chips">
-    <button class="chip faltan active" data-mode="faltan">🔴 Faltantes <span class="n" id="cnFaltan">0</span></button>
-    <button class="chip" data-mode="todas">📋 Todas <span class="n" id="cnTodas">0</span></button>
+    <button class="chip faltan" data-mode="faltan">🔴 Faltantes <span class="n" id="cnFaltan">0</span></button>
+    <button class="chip active" data-mode="todas">📋 Todas <span class="n" id="cnTodas">0</span></button>
     <button class="chip repe" data-mode="repe">🔁 Repetidas <span class="n" id="cnRepe">0</span></button>
   </div>
   <div class="toolrow">
@@ -238,7 +242,7 @@
     <button class="fbtn" id="shareRepe">🔁 Compartir repetidas</button>
     <button class="fbtn" id="resetBtn">↺ Reiniciar</button>
   </div>
-  <p class="foot-note" id="footNote">Toca una estampa <b>azul</b> para marcar “¡La tengo!”. Toca una <b>verde</b> para agregar repetidas o quitarla.</p>
+  <p class="foot-note" id="footNote"><b>Azul</b> = me falta · <b>verde</b> = la tengo · <b>naranja</b> = repetida. Toca una azul para marcar “¡La tengo!”; toca una verde o naranja para agregar repetidas o quitarla.</p>
 </footer>
 
 <!-- action sheet -->
@@ -354,7 +358,7 @@ const byCode = {}; TEAMS.forEach(t=>byCode[t.c]=t);
         extras = repetidas adicionales (total = 1 + extras). ---- */
 const LS_KEY = "mateo_album_2026_v1";
 let state = {};
-let mode = "faltan";            // faltan | todas | repe
+let mode = "todas";             // faltan | todas | repe
 let query = "";
 const openSet = new Set();      // países expandidos manualmente
 let CLOUD = false, sb = null;
@@ -526,8 +530,9 @@ function render(){
       cells.forEach(n=>{
         if(owned(t.c,n)){
           const tot=total(t.c,n);
-          const badge = tot>=2 ? '<span class="badge">'+tot+'</span>' : '';
-          cellsHtml+='<div class="cell have" data-c="'+t.c+'" data-n="'+n+'">'+badge+'<span class="num">'+n+'</span><span class="check">✓</span></div>';
+          const dupe = tot>=2;
+          const badge = dupe ? '<span class="badge">'+tot+'</span>' : '';
+          cellsHtml+='<div class="cell have'+(dupe?' dupe':'')+'" data-c="'+t.c+'" data-n="'+n+'">'+badge+'<span class="num">'+n+'</span><span class="check">'+(dupe?'🔁':'✓')+'</span></div>';
         }else{
           cellsHtml+='<div class="cell miss" data-c="'+t.c+'" data-n="'+n+'"><span class="num">'+n+'</span><span class="lbl">Falta</span></div>';
         }
