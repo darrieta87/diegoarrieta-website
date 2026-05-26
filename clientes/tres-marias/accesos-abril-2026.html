@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis de Accesos Abril 2026 &mdash; Club de Golf Tres Marías</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --primary: #1a5c2e;
+    --primary-light: #2d8a4e;
+    --bg: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #666;
+    --border: #e0e0e0;
+    --section-bg: #fafafa;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f0f2f5; color: var(--text); line-height: 1.5; }
+
+  .header {
+    background: linear-gradient(135deg, #1a5c2e 0%, #0d3d1c 100%);
+    color: white; padding: 32px 24px; text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .header p { font-size: 15px; opacity: 0.85; margin-top: 6px; }
+
+  .container { max-width: 1300px; margin: 0 auto; padding: 24px 16px; }
+
+  .section {
+    background: var(--bg); border-radius: 12px; box-shadow: var(--shadow);
+    margin-bottom: 28px; overflow: hidden;
+  }
+  .section-header {
+    padding: 20px 24px 16px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .section-header h2 { font-size: 20px; color: var(--primary); font-weight: 700; }
+  .section-body { padding: 20px 24px 24px; }
+  .section-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 50%; background: var(--primary);
+    color: white; font-weight: 700; font-size: 15px; flex-shrink: 0;
+  }
+
+  /* Heatmap */
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; align-items: center; }
+  .filter-bar label {
+    font-size: 13px; background: #f5f5f5; padding: 4px 10px; border-radius: 6px;
+    cursor: pointer; user-select: none; display: flex; align-items: center; gap: 4px;
+    border: 1px solid var(--border); transition: all 0.15s;
+  }
+  .filter-bar label:hover { background: #e8f5e9; }
+  .filter-bar label.checked { background: #e8f5e9; border-color: var(--primary-light); }
+  .filter-bar input[type=checkbox] { accent-color: var(--primary); }
+  .btn-sm {
+    font-size: 12px; padding: 4px 10px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border); background: #fff; color: var(--text-muted);
+    transition: all 0.15s;
+  }
+  .btn-sm:hover { background: #f5f5f5; }
+
+  .heatmap-wrap { overflow-x: auto; }
+  table.heatmap { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 13px; }
+  table.heatmap th { padding: 8px 6px; font-weight: 600; text-align: center; background: #f8f8f8; border: 1px solid var(--border); }
+  table.heatmap td { padding: 6px 4px; text-align: center; border: 1px solid var(--border); font-variant-numeric: tabular-nums; min-width: 60px; position: relative; }
+  table.heatmap td.hour-label { font-weight: 600; background: #f8f8f8; min-width: 50px; }
+  .heatmap-legend { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 12px; color: var(--text-muted); }
+  .legend-bar { width: 200px; height: 14px; border-radius: 3px; border: 1px solid var(--border); }
+  .warning-badge { font-size: 10px; color: #e65100; position: absolute; top: 1px; right: 2px; }
+  .monday-warning { background: #fff3e0; padding: 8px 12px; border-radius: 6px; font-size: 12px; color: #e65100; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+
+  /* Chart */
+  .chart-container { position: relative; width: 100%; height: 420px; }
+
+  /* Animation section */
+  .anim-controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; align-items: flex-start; }
+  .anim-controls fieldset { border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-size: 13px; }
+  .anim-controls legend { font-weight: 600; font-size: 12px; color: var(--text-muted); padding: 0 4px; }
+  .anim-controls label { display: flex; align-items: center; gap: 4px; cursor: pointer; margin-bottom: 2px; font-size: 13px; }
+  .anim-controls input[type=checkbox] { accent-color: var(--primary); }
+
+  .anim-btns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.15s;
+  }
+  .btn-play { background: var(--primary); color: white; }
+  .btn-play:hover { background: var(--primary-light); }
+  .btn-play:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-speed { background: #f5f5f5; color: var(--text); border: 1px solid var(--border); padding: 6px 12px; font-size: 13px; }
+  .btn-speed.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+  .anim-hour { font-size: 64px; font-weight: 800; color: var(--primary); text-align: center; font-variant-numeric: tabular-nums; margin: 8px 0; }
+  .anim-counters { display: flex; gap: 24px; justify-content: center; margin: 12px 0 20px; flex-wrap: wrap; }
+  .counter-box { text-align: center; min-width: 100px; }
+  .counter-box .val { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .counter-box .lbl { font-size: 12px; color: var(--text-muted); }
+  .counter-box.entries .val { color: #2e7d32; }
+  .counter-box.exits .val { color: #e65100; }
+  .counter-box.net .val { color: #1565c0; }
+
+  .anim-canvas-wrap { position: relative; width: 100%; overflow: hidden; background: #f9faf9; border-radius: 8px; border: 1px solid var(--border); }
+  canvas#animCanvas { width: 100%; display: block; min-height: 300px; }
+
+  .note-box { background: #fff8e1; border-left: 4px solid #f9a825; padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 13px; color: #5d4037; margin-top: 16px; }
+
+
+
+  /* Action type filter */
+  .action-type-btn {
+    font-size: 13px; padding: 6px 14px; border-radius: 8px; cursor: pointer;
+    font-weight: 600; border: 2px solid transparent; transition: all 0.2s;
+    user-select: none; display: inline-flex; align-items: center; gap: 4px;
+  }
+  .action-type-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .action-type-btn.active { box-shadow: 0 2px 8px rgba(0,0,0,0.15); transform: translateY(-1px); }
+  .action-type-btn[data-type="Todos"] { background: #f5f5f5; color: #555; border-color: #ccc; }
+  .action-type-btn[data-type="Todos"].active { background: #616161; color: #fff; border-color: #424242; }
+  .action-type-btn[data-type="Propietarios"] { background: #e3f2fd; color: #1565c0; border-color: #bbdefb; }
+  .action-type-btn[data-type="Propietarios"].active { background: #1565c0; color: #fff; border-color: #0d47a1; }
+  .action-type-btn[data-type="Usufructuarios"] { background: #e8f5e9; color: #2e7d32; border-color: #c8e6c9; }
+  .action-type-btn[data-type="Usufructuarios"].active { background: #2e7d32; color: #fff; border-color: #1b5e20; }
+  .action-type-btn[data-type="Honorarias/Especiales"] { background: #f3e5f5; color: #6a1b9a; border-color: #e1bee7; }
+  .action-type-btn[data-type="Honorarias/Especiales"].active { background: #6a1b9a; color: #fff; border-color: #4a148c; }
+  .action-type-btn[data-type="Cinépolis"] { background: #fff3e0; color: #e65100; border-color: #ffe0b2; }
+  .action-type-btn[data-type="Cinépolis"].active { background: #e65100; color: #fff; border-color: #bf360c; }
+  .action-type-btn[data-type="Empresas/Gerentes"] { background: #e0f2f1; color: #00695c; border-color: #b2dfdb; }
+  .action-type-btn[data-type="Empresas/Gerentes"].active { background: #00695c; color: #fff; border-color: #004d40; }
+  .action-type-btn[data-type="Otros"] { background: #eceff1; color: #546e7a; border-color: #cfd8dc; }
+  .action-type-btn[data-type="Otros"].active { background: #546e7a; color: #fff; border-color: #37474f; }
+
+  /* Heatmap scroll hint */
+  .heatmap-wrap {
+    position: relative;
+  }
+  .heatmap-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; width: 0;
+    background: linear-gradient(to left, rgba(255,255,255,0.95), transparent);
+    pointer-events: none;
+    transition: width 0.2s;
+  }
+  .heatmap-wrap.show-fade::after {
+    width: 32px;
+  }
+
+  /* ===== MOBILE RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .header { padding: 20px 14px; }
+    .header h1 { font-size: 20px; }
+    .header p { font-size: 13px; }
+    .container { padding: 12px 8px; }
+    .section-header { padding: 14px 16px 12px; }
+    .section-header h2 { font-size: 17px; }
+    .section-body { padding: 14px 12px 16px; }
+    .section-number { width: 26px; height: 26px; font-size: 13px; }
+    .filter-bar { gap: 4px; }
+    .filter-bar label { font-size: 11px; padding: 3px 7px; }
+    .btn-sm { font-size: 11px; padding: 3px 8px; }
+    table.heatmap { font-size: 11px; min-width: 520px; }
+    table.heatmap th { padding: 5px 3px; font-size: 11px; }
+    table.heatmap td { padding: 4px 2px; min-width: 42px; font-size: 11px; }
+    .chart-container { height: 300px; }
+    .anim-hour { font-size: 44px; }
+    .counter-box .val { font-size: 22px; }
+    .anim-controls { flex-direction: column; }
+    .anim-controls fieldset { width: 100%; }
+    .anim-btns { justify-content: center; }
+    .monday-warning { font-size: 11px; padding: 6px 10px; }
+    .action-type-btn { font-size: 11px; padding: 4px 10px; }
+    #globalActionFilter { padding: 10px 12px; margin-bottom: 12px; }
+
+    .heatmap-legend { font-size: 11px; flex-wrap: wrap; }
+    .note-box { font-size: 12px; padding: 8px 10px; }
+    canvas#animCanvas { min-height: 220px; }
+
+    /* Fix 1: Golf grids stack vertically */
+    .golf-grid { grid-template-columns: 1fr !important; }
+
+    /* Fix 3: Sticky filter backdrop */
+    #globalActionFilter {
+      background: rgba(255,255,255,0.85) !important;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Fix 4: Heatmap scroll hint text */
+    .heatmap-scroll-hint { display: flex !important; }
+  }
+
+  @media (max-width: 480px) {
+    .header h1 { font-size: 17px; }
+    .header p { font-size: 12px; }
+    .container { padding: 8px 4px; }
+    .section { border-radius: 8px; margin-bottom: 16px; }
+    .section-header { padding: 10px 12px 8px; gap: 8px; }
+    .section-header h2 { font-size: 15px; }
+    .section-body { padding: 10px 8px 12px; }
+    .filter-bar label { font-size: 10px; padding: 2px 5px; }
+    table.heatmap { font-size: 10px; min-width: 460px; }
+    table.heatmap th { padding: 4px 2px; }
+    table.heatmap td { padding: 3px 1px; min-width: 36px; }
+    .chart-container { height: 250px; }
+    .anim-hour { font-size: 36px; }
+    .counter-box .val { font-size: 18px; }
+    .counter-box { min-width: 70px; }
+    .anim-counters { gap: 12px; }
+    canvas#animCanvas { min-height: 180px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== PIN GATE (protección ligera, lado cliente) ===== -->
+<style>
+  #pinGate{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#1a5c2e 0%,#0d3d1c 100%);display:flex;align-items:center;justify-content:center;padding:20px;}
+  #pinGate .pin-box{background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.3);padding:32px 28px;max-width:340px;width:100%;text-align:center;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;}
+  #pinGate h2{font-size:19px;color:#1a5c2e;margin-bottom:6px;font-weight:700;}
+  #pinGate p.sub{font-size:13px;color:#666;margin-bottom:18px;}
+  #pinGate input{width:100%;font-size:26px;letter-spacing:10px;text-align:center;padding:12px;border:2px solid #e0e0e0;border-radius:10px;outline:none;font-variant-numeric:tabular-nums;}
+  #pinGate input:focus{border-color:#2d8a4e;}
+  #pinGate button{margin-top:14px;width:100%;background:#1a5c2e;color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s;}
+  #pinGate button:hover{background:#2d8a4e;}
+  #pinGate .err{color:#c62828;font-size:13px;height:18px;margin-top:10px;}
+  body.locked{overflow:hidden;}
+</style>
+<div id="pinGate">
+  <div class="pin-box">
+    <h2>Club de Golf Tres Marías</h2>
+    <p class="sub">Ingresa el PIN para ver el dashboard</p>
+    <input id="pinInput" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
+    <div class="err" id="pinErr"></div>
+    <button type="button" id="pinBtn">Entrar</button>
+  </div>
+</div>
+<script>
+(function(){
+  var PIN="0717", KEY="3m_pin_ok";
+  function unlock(){
+    var g=document.getElementById('pinGate');
+    if(g) g.style.display='none';
+    document.body.classList.remove('locked');
+    window.dispatchEvent(new Event('resize'));
+  }
+  if(sessionStorage.getItem(KEY)==="1"){ unlock(); return; }
+  document.body.classList.add('locked');
+  function tryPin(){
+    var inp=document.getElementById('pinInput');
+    if(inp.value.trim()===PIN){ sessionStorage.setItem(KEY,"1"); unlock(); }
+    else { document.getElementById('pinErr').textContent='PIN incorrecto'; inp.value=''; inp.focus(); }
+  }
+  document.getElementById('pinBtn').addEventListener('click',tryPin);
+  document.getElementById('pinInput').addEventListener('keydown',function(e){ if(e.key==='Enter') tryPin(); });
+  window.addEventListener('load',function(){ var i=document.getElementById('pinInput'); if(i) i.focus(); });
+})();
+</script>
+<!-- ===== /PIN GATE ===== -->
+
+<div class="header">
+  <h1>Club de Golf Tres Marías &mdash; Análisis de accesos</h1>
+  <p>Abril 2026 &bull; Promedios por día de la semana y hora</p>
+</div>
+
+<div class="container">
+
+<!-- ========== SUMMARY SECTION (STATIC) ========== -->
+<div id="summarySection" style="background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.08);padding:24px;margin-bottom:20px;">
+  <h2 style="font-size:20px;color:#1a5c2e;font-weight:700;margin-bottom:16px;">Resumen General &mdash; Abril 2026</h2>
+  <div id="summaryCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;"></div>
+  <p style="font-size:12px;color:#999;margin-top:16px;line-height:1.5;">Solo personas con registro de entrada y salida en el mismo día. Datos de torniquetes, abril 1&ndash;25, 2026.</p>
+</div>
+
+<!-- GLOBAL ACTION TYPE FILTER -->
+<div id="globalActionFilter" style="background:#fff;border-radius:12px;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:16px 20px;margin-bottom:20px;position:sticky;top:0;z-index:100;">
+  <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;">
+    <span style="font-weight:700;font-size:14px;color:#333;">Tipo de Acción:</span>
+    <div id="actionTypeButtons" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+  </div>
+</div>
+
+<!-- ========== SECTION 1 ========== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">1</span>
+    <h2>Ingresos por acceso</h2>
+  </div>
+  <div class="section-body">
+    <p style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.6;">
+      Cada celda muestra el <strong>promedio de personas únicas que ingresaron</strong> (solo entradas) en ese acceso, por hora y día de la semana, durante abril 2026 (25 días, del 1 al 25).
+      El promedio se calcula dividiendo el total de entradas entre el número de días de ese día de la semana en el periodo. El color indica intensidad: más oscuro = más tráfico.
+      Usa los filtros para ver accesos específicos &mdash; por ejemplo, selecciona solo "Torniquete Casa Club" para ver cuándo hay más actividad de socios en Casa Club,
+      o solo "Acceso Principal" para ver el flujo vehicular de la entrada general.
+    </p>
+    
+    <div class="filter-bar" id="groupFilters"></div>
+    <div class="heatmap-scroll-hint" style="display:none;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);margin-bottom:8px;"><span style="font-size:16px;">&#x1F448;</span> Desliza para ver todas las horas</div>
+    <div class="heatmap-wrap" id="heatmapWrap">
+      <table class="heatmap" id="heatmapTable"></table>
+    </div>
+    <div class="heatmap-legend">
+      <span>0</span>
+      <div class="legend-bar" style="background: linear-gradient(90deg, #f1f8e9, #c8e6c9, #81c784, #43a047, #1b5e20);"></div>
+      <span id="legendMax">0</span>
+      <span style="margin-left:8px;">ingresos promedio (solo entradas)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SECTION 2 ========== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">2</span>
+    <h2>Personas dentro del club</h2>
+  </div>
+  <div class="section-body">
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Estimación de personas simultáneamente dentro del club (entradas acumuladas menos salidas por torniquetes peatonales de Casa Club). Se excluye lunes por torniquetes apagados.</p>
+    <div class="chart-container">
+      <canvas id="insideChart"></canvas>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========== SECTION 3 ========== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">3</span>
+    <h2>Flujo vehicular &mdash; animación</h2>
+  </div>
+  <div class="section-body">
+    <div class="anim-controls">
+      <fieldset>
+        <legend>Accesos</legend>
+        <div id="vehFilters"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Dias</legend>
+        <div id="dayFilters"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Controles</legend>
+        <div class="anim-btns">
+          <button class="btn btn-play" id="btnPlay" onclick="togglePlay()">&#9654; Reproducir</button>
+          <button class="btn btn-sm" id="btnReset" onclick="resetAnim()">Reiniciar</button>
+        </div>
+        <div class="anim-btns" style="margin-top:8px;">
+          <span style="font-size:12px;color:var(--text-muted);">Velocidad:</span>
+          <button class="btn btn-speed active" onclick="setSpeed(1,this)">1x</button>
+          <button class="btn btn-speed" onclick="setSpeed(2,this)">2x</button>
+          <button class="btn btn-speed" onclick="setSpeed(4,this)">4x</button>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="anim-hour" id="animHour">05:00</div>
+    <div class="anim-counters">
+      <div class="counter-box entries"><div class="val" id="cntIn">0</div><div class="lbl">Entradas</div></div>
+      <div class="counter-box exits"><div class="val" id="cntOut">0</div><div class="lbl">Salidas</div></div>
+      <div class="counter-box net"><div class="val" id="cntNet">0</div><div class="lbl">Neto</div></div>
+    </div>
+
+    <div class="anim-canvas-wrap">
+      <canvas id="animCanvas"></canvas>
+    </div>
+
+
+  </div>
+</div>
+
+<!-- ========== SECTION 4: GOLF ========== -->
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">4</span>
+    <h2>Campo de golf &mdash; rondas de juego</h2>
+  </div>
+  <div class="section-body">
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Fuente: Concentrado de rondas de juego 2008&ndash;2026 (equipo de Lul&uacute;). Lunes excluidos del promedio diario (campo cerrado). Datos de g&eacute;nero y edades disponibles desde 2022.</p>
+
+    <div class="golf-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+      <div class="chart-container" style="position:relative;height:360px;">
+        <canvas id="golfAnnualChart"></canvas>
+      </div>
+      <div class="chart-container" style="position:relative;height:360px;">
+        <canvas id="golfJanAprChart"></canvas>
+      </div>
+    </div>
+
+    <div class="golf-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:16px;">
+      <div class="chart-container" style="position:relative;height:340px;">
+        <canvas id="golfGenderChart"></canvas>
+      </div>
+      <div class="chart-container" style="position:relative;height:340px;">
+        <canvas id="golfAgeChart"></canvas>
+      </div>
+    </div>
+
+    <div class="note-box" style="margin-top:12px;">
+      <strong>Notas:</strong> 2026 solo incluye datos ene&ndash;abr. Pron&oacute;stico 2027&ndash;2028 basado en regresi&oacute;n lineal de 2022&ndash;2025 (+3,035 jugadores/a&ntilde;o, R&sup2;=0.93).
+    </div>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ==================== DATA ====================
+const D = {"actionTypes":["Todos","Propietarios","Usufructuarios","Honorarias/Especiales","Cinépolis","Empresas/Gerentes","Otros"],"groups":["Acceso Norte","Acceso Principal","Acceso Proveedores","Acceso Sur","Motor Lobby","Torniquete Casa Club","Torniquete PB Casa Club","Torniquetes Panoli/Sur"],"vehicularGroups":["Acceso Principal","Acceso Sur","Acceso Norte","Acceso Proveedores"],"daysPerDow":{"3":4,"2":4,"4":4,"1":3,"6":3,"5":4,"0":3},"data1":{"Todos":{"Acceso Norte":{"0":{"0":0,"1":0,"2":0,"3":1,"4":0,"5":2,"6":9,"7":26,"8":29,"9":30,"10":33,"11":26,"12":14,"13":33,"14":59,"15":40,"16":29,"17":25,"18":25,"19":31,"20":16,"21":11,"22":4,"23":2},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":14,"7":40,"8":27,"9":29,"10":22,"11":22,"12":22,"13":23,"14":52,"15":37,"16":37,"17":24,"18":20,"19":29,"20":14,"21":10,"22":6,"23":2},"2":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":2,"6":10,"7":33,"8":28,"9":30,"10":24,"11":23,"12":19,"13":32,"14":50,"15":39,"16":28,"17":26,"18":24,"19":25,"20":13,"21":13,"22":6,"23":2},"3":{"0":2,"1":0,"2":0,"3":0,"4":0,"5":0,"6":9,"7":34,"8":28,"9":26,"10":28,"11":21,"12":16,"13":20,"14":50,"15":31,"16":30,"17":24,"18":29,"19":25,"20":13,"21":10,"22":6,"23":2},"4":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":1,"6":7,"7":30,"8":28,"9":28,"10":23,"11":18,"12":20,"13":20,"14":51,"15":29,"16":28,"17":26,"18":22,"19":22,"20":11,"21":8,"22":10,"23":4},"5":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":18,"8":20,"9":14,"10":28,"11":22,"12":16,"13":20,"14":26,"15":12,"16":8,"17":7,"18":6,"19":6,"20":8,"21":4,"22":6,"23":2},"6":{"0":1,"1":1,"2":1,"3":1,"4":0,"5":1,"6":0,"7":3,"8":9,"9":10,"10":12,"11":13,"12":13,"13":21,"14":17,"15":19,"16":13,"17":17,"18":20,"19":18,"20":13,"21":8,"22":4,"23":1}},"Acceso Principal":{"0":{"0":7,"1":1,"2":2,"3":1,"4":2,"5":2,"6":27,"7":80,"8":94,"9":89,"10":84,"11":88,"12":101,"13":151,"14":225,"15":178,"16":112,"17":121,"18":159,"19":157,"20":161,"21":111,"22":53,"23":26},"1":{"0":5,"1":2,"2":1,"3":1,"4":2,"5":18,"6":83,"7":157,"8":139,"9":114,"10":91,"11":87,"12":106,"13":157,"14":263,"15":191,"16":168,"17":139,"18":163,"19":186,"20":164,"21":107,"22":53,"23":26},"2":{"0":13,"1":6,"2":2,"3":1,"4":2,"5":14,"6":63,"7":145,"8":122,"9":115,"10":87,"11":97,"12":114,"13":166,"14":237,"15":160,"16":141,"17":130,"18":170,"19":183,"20":145,"21":116,"22":65,"23":33},"3":{"0":16,"1":8,"2":2,"3":3,"4":3,"5":14,"6":54,"7":144,"8":121,"9":102,"10":95,"11":113,"12":110,"13":156,"14":232,"15":159,"16":140,"17":124,"18":145,"19":163,"20":132,"21":94,"22":61,"23":42},"4":{"0":24,"1":10,"2":4,"3":4,"4":3,"5":14,"6":56,"7":124,"8":112,"9":100,"10":89,"11":92,"12":109,"13":133,"14":224,"15":161,"16":120,"17":109,"18":128,"19":137,"20":122,"21":90,"22":72,"23":46},"5":{"0":44,"1":16,"2":18,"3":6,"4":3,"5":4,"6":23,"7":64,"8":94,"9":103,"10":104,"11":110,"12":128,"13":148,"14":117,"15":83,"16":58,"17":55,"18":61,"19":68,"20":61,"21":48,"22":54,"23":31},"6":{"0":31,"1":17,"2":12,"3":7,"4":5,"5":5,"6":19,"7":36,"8":57,"9":65,"10":71,"11":80,"12":87,"13":105,"14":79,"15":78,"16":74,"17":77,"18":95,"19":95,"20":87,"21":60,"22":27,"23":15}},"Acceso Proveedores":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":1,"9":1,"10":2,"11":2,"12":0,"13":1,"14":3,"15":2,"16":3,"17":1,"18":4,"19":2,"20":2,"21":1,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":4,"11":1,"12":1,"13":2,"14":3,"15":3,"16":3,"17":3,"18":3,"19":3,"20":3,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":1,"9":0,"10":0,"11":1,"12":2,"13":1,"14":4,"15":2,"16":2,"17":2,"18":1,"19":4,"20":2,"21":2,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":0,"7":2,"8":2,"9":1,"10":2,"11":1,"12":1,"13":2,"14":5,"15":3,"16":2,"17":2,"18":0,"19":1,"20":2,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":1,"9":1,"10":1,"11":3,"12":0,"13":0,"14":3,"15":1,"16":2,"17":3,"18":1,"19":0,"20":2,"21":1,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":1,"9":3,"10":1,"11":0,"12":1,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":1,"11":0,"12":0,"13":1,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":5,"7":24,"8":35,"9":42,"10":50,"11":40,"12":42,"13":52,"14":96,"15":66,"16":40,"17":39,"18":46,"19":44,"20":32,"21":8,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":8,"7":30,"8":32,"9":31,"10":27,"11":40,"12":37,"13":43,"14":79,"15":49,"16":43,"17":39,"18":43,"19":43,"20":33,"21":10,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":31,"8":37,"9":41,"10":44,"11":35,"12":36,"13":53,"14":75,"15":60,"16":43,"17":35,"18":46,"19":37,"20":31,"21":10,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":33,"8":32,"9":38,"10":40,"11":38,"12":40,"13":50,"14":77,"15":40,"16":38,"17":35,"18":35,"19":37,"20":32,"21":19,"22":8,"23":3},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":27,"8":36,"9":36,"10":36,"11":29,"12":37,"13":52,"14":68,"15":56,"16":31,"17":34,"18":35,"19":37,"20":36,"21":20,"22":10,"23":7},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":12,"8":33,"9":42,"10":36,"11":39,"12":38,"13":38,"14":46,"15":26,"16":17,"17":22,"18":16,"19":16,"20":19,"21":12,"22":5,"23":5},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":4,"8":7,"9":21,"10":22,"11":28,"12":25,"13":37,"14":37,"15":25,"16":24,"17":27,"18":28,"19":28,"20":10,"21":0,"22":0,"23":0}},"Motor Lobby":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":6,"8":7,"9":1,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":2,"18":6,"19":7,"20":3,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":6,"6":8,"7":17,"8":22,"9":11,"10":8,"11":3,"12":0,"13":2,"14":0,"15":3,"16":50,"17":20,"18":16,"19":15,"20":3,"21":1,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":4,"6":8,"7":18,"8":18,"9":9,"10":8,"11":4,"12":0,"13":0,"14":1,"15":3,"16":28,"17":13,"18":10,"19":10,"20":3,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":5,"6":5,"7":14,"8":19,"9":11,"10":5,"11":3,"12":0,"13":1,"14":0,"15":5,"16":38,"17":17,"18":12,"19":10,"20":2,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":5,"6":7,"7":11,"8":16,"9":9,"10":8,"11":5,"12":2,"13":1,"14":1,"15":3,"16":17,"17":5,"18":5,"19":4,"20":1,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":2,"6":0,"7":5,"8":12,"9":13,"10":12,"11":8,"12":4,"13":2,"14":0,"15":1,"16":1,"17":3,"18":2,"19":1,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":3,"9":7,"10":9,"11":4,"12":1,"13":2,"14":1,"15":0,"16":0,"17":1,"18":2,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":9,"6":63,"7":91,"8":74,"9":55,"10":47,"11":33,"12":32,"13":27,"14":22,"15":33,"16":101,"17":88,"18":66,"19":54,"20":17,"21":6,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":6,"6":56,"7":77,"8":74,"9":60,"10":32,"11":36,"12":26,"13":26,"14":22,"15":27,"16":59,"17":59,"18":64,"19":45,"20":19,"21":3,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":7,"6":44,"7":82,"8":70,"9":53,"10":47,"11":37,"12":41,"13":25,"14":24,"15":29,"16":84,"17":58,"18":62,"19":50,"20":18,"21":2,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":7,"6":37,"7":70,"8":64,"9":49,"10":41,"11":40,"12":45,"13":32,"14":28,"15":31,"16":54,"17":44,"18":38,"19":32,"20":12,"21":3,"22":1,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":14,"7":52,"8":69,"9":56,"10":58,"11":48,"12":53,"13":52,"14":39,"15":24,"16":19,"17":19,"18":17,"19":12,"20":6,"21":2,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":9,"7":30,"8":43,"9":44,"10":44,"11":46,"12":58,"13":40,"14":37,"15":23,"16":30,"17":13,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete PB Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":6,"9":18,"10":9,"11":5,"12":2,"13":5,"14":5,"15":2,"16":4,"17":8,"18":10,"19":1,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":4,"9":10,"10":9,"11":4,"12":5,"13":6,"14":3,"15":2,"16":4,"17":6,"18":7,"19":0,"20":1,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":5,"9":11,"10":6,"11":8,"12":6,"13":10,"14":4,"15":4,"16":5,"17":8,"18":8,"19":2,"20":1,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":2,"9":9,"10":8,"11":8,"12":7,"13":6,"14":7,"15":6,"16":5,"17":6,"18":10,"19":2,"20":1,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":2,"9":3,"10":5,"11":7,"12":10,"13":12,"14":14,"15":8,"16":2,"17":2,"18":4,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":4,"10":4,"11":10,"12":8,"13":12,"14":11,"15":5,"16":6,"17":3,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquetes Panoli/Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":23,"8":46,"9":41,"10":17,"11":6,"12":6,"13":5,"14":6,"15":4,"16":3,"17":1,"18":2,"19":1,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":20,"8":36,"9":33,"10":11,"11":4,"12":4,"13":5,"14":3,"15":4,"16":1,"17":3,"18":2,"19":2,"20":3,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":26,"8":41,"9":32,"10":14,"11":4,"12":4,"13":4,"14":4,"15":4,"16":1,"17":2,"18":2,"19":1,"20":2,"21":2,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":21,"8":41,"9":26,"10":14,"11":4,"12":5,"13":4,"14":5,"15":4,"16":4,"17":2,"18":2,"19":2,"20":1,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":20,"8":34,"9":22,"10":14,"11":5,"12":6,"13":4,"14":4,"15":3,"16":2,"17":2,"18":3,"19":1,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":15,"8":18,"9":18,"10":6,"11":3,"12":3,"13":4,"14":2,"15":1,"16":0,"17":2,"18":1,"19":1,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":1,"11":1,"12":0,"13":3,"14":0,"15":0,"16":2,"17":2,"18":3,"19":2,"20":0,"21":0,"22":0,"23":0}}},"Propietarios":{"Acceso Norte":{"0":{"0":0,"1":0,"2":0,"3":1,"4":0,"5":2,"6":7,"7":25,"8":26,"9":28,"10":29,"11":24,"12":12,"13":30,"14":54,"15":38,"16":25,"17":24,"18":24,"19":25,"20":14,"21":10,"22":3,"23":2},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":13,"7":37,"8":26,"9":27,"10":16,"11":19,"12":19,"13":22,"14":47,"15":35,"16":30,"17":22,"18":17,"19":24,"20":13,"21":9,"22":5,"23":2},"2":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":1,"6":8,"7":32,"8":27,"9":27,"10":19,"11":19,"12":17,"13":27,"14":45,"15":37,"16":24,"17":23,"18":22,"19":20,"20":12,"21":12,"22":6,"23":2},"3":{"0":2,"1":0,"2":0,"3":0,"4":0,"5":0,"6":8,"7":33,"8":27,"9":23,"10":23,"11":19,"12":14,"13":19,"14":44,"15":29,"16":26,"17":22,"18":26,"19":22,"20":12,"21":8,"22":5,"23":1},"4":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0,"6":6,"7":27,"8":25,"9":24,"10":18,"11":15,"12":20,"13":18,"14":47,"15":25,"16":26,"17":22,"18":19,"19":20,"20":10,"21":8,"22":8,"23":3},"5":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":16,"8":18,"9":12,"10":25,"11":20,"12":15,"13":20,"14":23,"15":10,"16":7,"17":6,"18":6,"19":6,"20":6,"21":3,"22":6,"23":2},"6":{"0":1,"1":1,"2":1,"3":0,"4":0,"5":1,"6":0,"7":2,"8":8,"9":8,"10":11,"11":9,"12":11,"13":19,"14":15,"15":16,"16":12,"17":17,"18":18,"19":17,"20":13,"21":7,"22":4,"23":1}},"Acceso Principal":{"0":{"0":6,"1":1,"2":2,"3":1,"4":2,"5":1,"6":19,"7":63,"8":82,"9":78,"10":73,"11":79,"12":88,"13":131,"14":199,"15":163,"16":98,"17":106,"18":139,"19":139,"20":144,"21":92,"22":48,"23":25},"1":{"0":5,"1":1,"2":1,"3":1,"4":2,"5":5,"6":45,"7":92,"8":98,"9":88,"10":69,"11":66,"12":86,"13":129,"14":226,"15":151,"16":121,"17":103,"18":131,"19":149,"20":133,"21":90,"22":48,"23":25},"2":{"0":12,"1":6,"2":2,"3":0,"4":1,"5":4,"6":29,"7":86,"8":86,"9":87,"10":70,"11":78,"12":94,"13":138,"14":207,"15":132,"16":102,"17":94,"18":134,"19":147,"20":114,"21":98,"22":58,"23":31},"3":{"0":13,"1":6,"2":2,"3":2,"4":3,"5":6,"6":28,"7":82,"8":81,"9":77,"10":76,"11":90,"12":89,"13":135,"14":195,"15":125,"16":99,"17":92,"18":112,"19":124,"20":112,"21":78,"22":54,"23":38},"4":{"0":20,"1":10,"2":3,"3":2,"4":2,"5":6,"6":29,"7":74,"8":79,"9":72,"10":68,"11":69,"12":89,"13":110,"14":192,"15":129,"16":89,"17":86,"18":100,"19":112,"20":100,"21":76,"22":58,"23":39},"5":{"0":41,"1":14,"2":13,"3":4,"4":2,"5":3,"6":12,"7":32,"8":55,"9":74,"10":70,"11":88,"12":99,"13":121,"14":94,"15":69,"16":47,"17":44,"18":50,"19":60,"20":48,"21":40,"22":46,"23":27},"6":{"0":28,"1":15,"2":11,"3":7,"4":5,"5":4,"6":11,"7":19,"8":36,"9":50,"10":47,"11":63,"12":68,"13":84,"14":63,"15":63,"16":59,"17":65,"18":82,"19":87,"20":76,"21":54,"22":25,"23":14}},"Acceso Proveedores":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":1,"9":1,"10":2,"11":2,"12":0,"13":1,"14":3,"15":2,"16":3,"17":1,"18":4,"19":1,"20":2,"21":1,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":4,"11":1,"12":0,"13":2,"14":3,"15":2,"16":3,"17":3,"18":3,"19":3,"20":3,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":1,"9":0,"10":0,"11":0,"12":2,"13":1,"14":4,"15":2,"16":2,"17":2,"18":0,"19":4,"20":1,"21":2,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":0,"7":2,"8":2,"9":1,"10":2,"11":1,"12":0,"13":1,"14":4,"15":3,"16":2,"17":2,"18":0,"19":1,"20":2,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":1,"9":1,"10":1,"11":2,"12":0,"13":0,"14":3,"15":1,"16":2,"17":3,"18":1,"19":0,"20":1,"21":1,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":0,"9":3,"10":1,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":1,"11":0,"12":0,"13":1,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":5,"7":20,"8":31,"9":38,"10":45,"11":29,"12":40,"13":44,"14":84,"15":56,"16":34,"17":31,"18":42,"19":39,"20":28,"21":7,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":25,"8":28,"9":27,"10":24,"11":33,"12":32,"13":38,"14":66,"15":40,"16":36,"17":30,"18":36,"19":39,"20":27,"21":10,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":24,"8":32,"9":35,"10":36,"11":29,"12":32,"13":46,"14":64,"15":50,"16":36,"17":26,"18":38,"19":32,"20":27,"21":10,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":27,"8":29,"9":33,"10":35,"11":33,"12":36,"13":46,"14":66,"15":35,"16":32,"17":28,"18":30,"19":30,"20":25,"21":16,"22":7,"23":3},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":22,"8":32,"9":31,"10":32,"11":24,"12":33,"13":46,"14":56,"15":45,"16":27,"17":28,"18":31,"19":31,"20":32,"21":17,"22":10,"23":7},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":10,"8":30,"9":38,"10":30,"11":33,"12":32,"13":34,"14":37,"15":24,"16":16,"17":18,"18":13,"19":14,"20":14,"21":10,"22":4,"23":4},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":2,"8":6,"9":17,"10":18,"11":21,"12":23,"13":29,"14":31,"15":21,"16":21,"17":25,"18":25,"19":24,"20":8,"21":0,"22":0,"23":0}},"Motor Lobby":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":4,"8":5,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":2,"18":4,"19":5,"20":2,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":2,"6":3,"7":10,"8":14,"9":7,"10":5,"11":1,"12":0,"13":1,"14":0,"15":1,"16":27,"17":11,"18":12,"19":10,"20":2,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":4,"7":9,"8":12,"9":6,"10":4,"11":2,"12":0,"13":0,"14":1,"15":2,"16":16,"17":8,"18":6,"19":7,"20":2,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":2,"6":2,"7":7,"8":10,"9":5,"10":2,"11":1,"12":0,"13":1,"14":0,"15":3,"16":21,"17":9,"18":6,"19":7,"20":1,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":5,"8":9,"9":4,"10":3,"11":4,"12":1,"13":0,"14":0,"15":2,"16":9,"17":3,"18":4,"19":3,"20":1,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":4,"8":7,"9":9,"10":7,"11":4,"12":2,"13":1,"14":0,"15":0,"16":1,"17":2,"18":2,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":2,"9":5,"10":4,"11":2,"12":1,"13":1,"14":0,"15":0,"16":0,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":6,"6":38,"7":49,"8":46,"9":39,"10":34,"11":20,"12":22,"13":19,"14":12,"15":21,"16":61,"17":46,"18":45,"19":32,"20":12,"21":4,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":4,"6":32,"7":44,"8":47,"9":39,"10":20,"11":24,"12":18,"13":16,"14":12,"15":15,"16":35,"17":29,"18":40,"19":24,"20":10,"21":2,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":5,"6":28,"7":47,"8":46,"9":36,"10":32,"11":23,"12":26,"13":19,"14":15,"15":16,"16":46,"17":31,"18":38,"19":28,"20":12,"21":1,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":4,"6":20,"7":39,"8":40,"9":30,"10":26,"11":23,"12":26,"13":20,"14":17,"15":18,"16":32,"17":23,"18":22,"19":21,"20":9,"21":2,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":9,"7":32,"8":40,"9":32,"10":32,"11":28,"12":35,"13":36,"14":22,"15":17,"16":14,"17":11,"18":11,"19":7,"20":4,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":5,"7":17,"8":30,"9":32,"10":26,"11":28,"12":35,"13":29,"14":22,"15":16,"16":19,"17":10,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete PB Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":1,"9":9,"10":6,"11":2,"12":1,"13":3,"14":3,"15":1,"16":3,"17":5,"18":6,"19":1,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":6,"10":5,"11":3,"12":4,"13":3,"14":2,"15":1,"16":2,"17":3,"18":3,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":6,"10":4,"11":5,"12":4,"13":6,"14":2,"15":2,"16":2,"17":5,"18":4,"19":1,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":3,"10":5,"11":4,"12":4,"13":2,"14":4,"15":4,"16":3,"17":2,"18":4,"19":1,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":3,"11":2,"12":5,"13":8,"14":7,"15":4,"16":1,"17":1,"18":3,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":2,"10":2,"11":8,"12":6,"13":9,"14":6,"15":3,"16":2,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquetes Panoli/Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":22,"8":43,"9":38,"10":17,"11":5,"12":6,"13":3,"14":6,"15":4,"16":3,"17":1,"18":2,"19":1,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":20,"8":31,"9":32,"10":10,"11":4,"12":4,"13":4,"14":2,"15":4,"16":1,"17":3,"18":2,"19":2,"20":3,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":24,"8":37,"9":30,"10":14,"11":4,"12":4,"13":3,"14":4,"15":4,"16":1,"17":2,"18":2,"19":0,"20":2,"21":2,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":20,"8":38,"9":24,"10":14,"11":4,"12":5,"13":4,"14":4,"15":4,"16":4,"17":2,"18":2,"19":2,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":19,"8":31,"9":20,"10":13,"11":4,"12":6,"13":3,"14":3,"15":3,"16":2,"17":2,"18":3,"19":1,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":14,"8":16,"9":17,"10":6,"11":3,"12":3,"13":3,"14":2,"15":1,"16":0,"17":1,"18":1,"19":1,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":1,"11":1,"12":0,"13":2,"14":0,"15":0,"16":1,"17":2,"18":2,"19":2,"20":0,"21":0,"22":0,"23":0}}},"Usufructuarios":{"Acceso Norte":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":1,"8":3,"9":1,"10":3,"11":2,"12":3,"13":2,"14":4,"15":2,"16":1,"17":0,"18":0,"19":5,"20":2,"21":1,"22":1,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":2,"8":1,"9":1,"10":5,"11":2,"12":2,"13":1,"14":4,"15":1,"16":3,"17":1,"18":2,"19":4,"20":0,"21":1,"22":1,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":1,"8":1,"9":1,"10":4,"11":2,"12":2,"13":3,"14":3,"15":1,"16":2,"17":2,"18":1,"19":4,"20":0,"21":1,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":1,"8":1,"9":2,"10":3,"11":2,"12":2,"13":1,"14":3,"15":1,"16":2,"17":2,"18":4,"19":2,"20":1,"21":1,"22":1,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":2,"8":2,"9":2,"10":4,"11":3,"12":0,"13":1,"14":4,"15":2,"16":1,"17":2,"18":3,"19":2,"20":1,"21":1,"22":2,"23":1},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":2,"9":1,"10":2,"11":2,"12":1,"13":1,"14":1,"15":2,"16":2,"17":0,"18":0,"19":0,"20":2,"21":1,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":1,"4":0,"5":0,"6":0,"7":0,"8":1,"9":1,"10":1,"11":3,"12":2,"13":2,"14":2,"15":2,"16":1,"17":0,"18":2,"19":1,"20":1,"21":1,"22":0,"23":0}},"Acceso Principal":{"0":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":1,"6":2,"7":10,"8":8,"9":5,"10":8,"11":6,"12":13,"13":12,"14":17,"15":10,"16":11,"17":9,"18":14,"19":13,"20":15,"21":14,"22":5,"23":1},"1":{"0":0,"1":1,"2":0,"3":0,"4":0,"5":9,"6":24,"7":44,"8":30,"9":19,"10":18,"11":17,"12":16,"13":19,"14":25,"15":28,"16":32,"17":29,"18":24,"19":27,"20":24,"21":13,"22":5,"23":1},"2":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":8,"6":21,"7":44,"8":28,"9":19,"10":13,"11":15,"12":12,"13":20,"14":21,"15":21,"16":28,"17":28,"18":28,"19":28,"20":26,"21":12,"22":6,"23":2},"3":{"0":2,"1":1,"2":0,"3":0,"4":0,"5":7,"6":16,"7":44,"8":28,"9":17,"10":14,"11":19,"12":13,"13":16,"14":28,"15":23,"16":29,"17":25,"18":26,"19":28,"20":15,"21":10,"22":6,"23":4},"4":{"0":4,"1":1,"2":0,"3":1,"4":1,"5":7,"6":17,"7":34,"8":23,"9":22,"10":16,"11":17,"12":14,"13":17,"14":20,"15":23,"16":22,"17":18,"18":20,"19":18,"20":14,"21":10,"22":12,"23":4},"5":{"0":2,"1":2,"2":3,"3":2,"4":0,"5":1,"6":8,"7":23,"8":26,"9":18,"10":24,"11":17,"12":23,"13":18,"14":18,"15":10,"16":9,"17":6,"18":8,"19":6,"20":8,"21":6,"22":6,"23":4},"6":{"0":2,"1":1,"2":1,"3":0,"4":0,"5":1,"6":4,"7":12,"8":13,"9":10,"10":16,"11":13,"12":14,"13":15,"14":11,"15":13,"16":11,"17":10,"18":10,"19":7,"20":9,"21":5,"22":2,"23":0}},"Acceso Proveedores":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":3,"8":4,"9":3,"10":3,"11":9,"12":2,"13":6,"14":8,"15":7,"16":5,"17":6,"18":2,"19":4,"20":3,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":2,"8":4,"9":3,"10":2,"11":5,"12":3,"13":2,"14":9,"15":8,"16":4,"17":6,"18":5,"19":3,"20":4,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":5,"8":4,"9":4,"10":3,"11":5,"12":3,"13":5,"14":8,"15":6,"16":5,"17":6,"18":6,"19":4,"20":3,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":3,"8":2,"9":4,"10":4,"11":4,"12":3,"13":3,"14":9,"15":4,"16":4,"17":3,"18":4,"19":5,"20":4,"21":2,"22":1,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":4,"8":3,"9":2,"10":3,"11":4,"12":3,"13":4,"14":9,"15":7,"16":2,"17":4,"18":3,"19":6,"20":2,"21":2,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":3,"9":3,"10":2,"11":3,"12":5,"13":4,"14":6,"15":1,"16":1,"17":2,"18":2,"19":1,"20":3,"21":1,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":0,"9":2,"10":1,"11":6,"12":2,"13":5,"14":4,"15":2,"16":2,"17":2,"18":1,"19":3,"20":1,"21":0,"22":0,"23":0}},"Motor Lobby":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":2,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":1,"19":1,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":4,"6":2,"7":5,"8":7,"9":4,"10":3,"11":2,"12":0,"13":0,"14":0,"15":2,"16":18,"17":8,"18":3,"19":5,"20":1,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":3,"6":1,"7":9,"8":4,"9":3,"10":4,"11":1,"12":0,"13":0,"14":0,"15":1,"16":9,"17":4,"18":3,"19":2,"20":1,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":4,"6":2,"7":6,"8":7,"9":6,"10":2,"11":1,"12":0,"13":0,"14":0,"15":1,"16":12,"17":4,"18":4,"19":3,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":4,"6":2,"7":4,"8":4,"9":4,"10":4,"11":0,"12":1,"13":1,"14":1,"15":0,"16":4,"17":1,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":2,"6":0,"7":2,"8":5,"9":3,"10":3,"11":4,"12":2,"13":1,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":1,"9":1,"10":3,"11":2,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":2,"6":17,"7":30,"8":22,"9":12,"10":11,"11":8,"12":8,"13":6,"14":6,"15":9,"16":28,"17":35,"18":15,"19":15,"20":4,"21":2,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":2,"6":15,"7":24,"8":22,"9":13,"10":9,"11":9,"12":6,"13":6,"14":8,"15":9,"16":16,"17":23,"18":17,"19":17,"20":7,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":10,"7":25,"8":20,"9":14,"10":12,"11":10,"12":9,"13":4,"14":6,"15":8,"16":29,"17":22,"18":18,"19":14,"20":4,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":2,"6":12,"7":22,"8":18,"9":13,"10":11,"11":13,"12":10,"13":9,"14":6,"15":8,"16":16,"17":16,"18":13,"19":8,"20":1,"21":1,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":15,"8":22,"9":13,"10":15,"11":14,"12":12,"13":11,"14":10,"15":4,"16":4,"17":4,"18":4,"19":4,"20":2,"21":1,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":10,"8":6,"9":8,"10":10,"11":16,"12":17,"13":8,"14":8,"15":6,"16":9,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete PB Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":4,"9":6,"10":3,"11":3,"12":1,"13":1,"14":1,"15":0,"16":1,"17":2,"18":3,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":2,"9":4,"10":4,"11":1,"12":1,"13":3,"14":1,"15":1,"16":2,"17":2,"18":2,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":3,"9":4,"10":2,"11":2,"12":2,"13":4,"14":2,"15":2,"16":2,"17":2,"18":2,"19":0,"20":1,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":5,"10":2,"11":4,"12":3,"13":3,"14":2,"15":1,"16":2,"17":2,"18":4,"19":1,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":2,"10":2,"11":4,"12":4,"13":3,"14":4,"15":3,"16":0,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":1,"11":2,"12":1,"13":1,"14":4,"15":1,"16":3,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquetes Panoli/Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":2,"9":3,"10":0,"11":1,"12":1,"13":1,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":5,"9":0,"10":0,"11":0,"12":0,"13":1,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":4,"9":2,"10":0,"11":0,"12":0,"13":1,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":3,"9":1,"10":0,"11":0,"12":0,"13":1,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":3,"9":1,"10":0,"11":1,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":2,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":1,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Honorarias/Especiales":{"Acceso Norte":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":1,"11":0,"12":0,"13":1,"14":1,"15":0,"16":1,"17":1,"18":1,"19":1,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":1,"11":1,"12":1,"13":0,"14":0,"15":0,"16":1,"17":0,"18":1,"19":1,"20":1,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":1,"11":1,"12":0,"13":1,"14":0,"15":0,"16":1,"17":2,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":1,"11":0,"12":0,"13":0,"14":2,"15":1,"16":1,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":2,"16":0,"17":2,"18":0,"19":0,"20":0,"21":0,"22":1,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":1,"11":0,"12":1,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":0,"13":0,"14":0,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Principal":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":6,"8":4,"9":4,"10":2,"11":3,"12":0,"13":8,"14":8,"15":4,"16":3,"17":6,"18":5,"19":4,"20":2,"21":5,"22":1,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":3,"6":9,"7":11,"8":9,"9":3,"10":4,"11":4,"12":3,"13":8,"14":8,"15":10,"16":9,"17":3,"18":6,"19":8,"20":7,"21":4,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":10,"7":11,"8":6,"9":8,"10":4,"11":4,"12":6,"13":7,"14":7,"15":6,"16":8,"17":7,"18":7,"19":6,"20":5,"21":5,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":6,"7":11,"8":9,"9":6,"10":4,"11":4,"12":7,"13":4,"14":6,"15":8,"16":9,"17":5,"18":5,"19":7,"20":4,"21":6,"22":1,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":8,"7":10,"8":8,"9":4,"10":4,"11":5,"12":5,"13":6,"14":8,"15":8,"16":6,"17":4,"18":6,"19":6,"20":6,"21":3,"22":2,"23":3},"5":{"0":0,"1":0,"2":2,"3":0,"4":0,"5":0,"6":3,"7":6,"8":10,"9":8,"10":6,"11":4,"12":4,"13":6,"14":4,"15":3,"16":2,"17":4,"18":2,"19":2,"20":4,"21":0,"22":0,"23":0},"6":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":4,"8":8,"9":4,"10":8,"11":3,"12":2,"13":4,"14":3,"15":1,"16":3,"17":2,"18":3,"19":0,"20":1,"21":1,"22":1,"23":0}},"Acceso Proveedores":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":1,"11":1,"12":1,"13":2,"14":4,"15":3,"16":1,"17":1,"18":2,"19":1,"20":1,"21":1,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":0,"9":0,"10":2,"11":1,"12":2,"13":2,"14":3,"15":1,"16":3,"17":3,"18":2,"19":2,"20":2,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":0,"9":2,"10":4,"11":1,"12":1,"13":2,"14":3,"15":3,"16":2,"17":2,"18":2,"19":0,"20":2,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":1,"9":2,"10":2,"11":1,"12":1,"13":1,"14":1,"15":1,"16":2,"17":4,"18":1,"19":1,"20":2,"21":1,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":2,"10":2,"11":0,"12":1,"13":2,"14":2,"15":4,"16":2,"17":2,"18":1,"19":1,"20":2,"21":1,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":2,"10":2,"11":2,"12":2,"13":1,"14":1,"15":1,"16":0,"17":1,"18":0,"19":1,"20":2,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":2,"11":1,"12":0,"13":3,"14":2,"15":1,"16":1,"17":0,"18":2,"19":1,"20":1,"21":0,"22":0,"23":0}},"Motor Lobby":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":1,"8":1,"9":0,"10":0,"11":0,"12":0,"13":1,"14":0,"15":0,"16":2,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":0,"8":1,"9":0,"10":0,"11":1,"12":0,"13":0,"14":0,"15":0,"16":0,"17":1,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":2,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":2,"17":2,"18":1,"19":0,"20":1,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":0,"8":2,"9":0,"10":0,"11":1,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":2,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":2,"11":0,"12":0,"13":1,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":6,"8":4,"9":3,"10":1,"11":4,"12":1,"13":1,"14":1,"15":2,"16":5,"17":2,"18":3,"19":5,"20":1,"21":1,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":6,"8":3,"9":4,"10":2,"11":2,"12":1,"13":3,"14":1,"15":1,"16":3,"17":4,"18":6,"19":3,"20":2,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":4,"7":5,"8":2,"9":2,"10":2,"11":2,"12":2,"13":2,"14":1,"15":3,"16":6,"17":3,"18":3,"19":4,"20":1,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":4,"8":4,"9":4,"10":2,"11":3,"12":5,"13":2,"14":2,"15":5,"16":4,"17":2,"18":2,"19":2,"20":1,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":4,"8":4,"9":8,"10":6,"11":4,"12":3,"13":4,"14":5,"15":2,"16":2,"17":3,"18":1,"19":1,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":2,"8":6,"9":3,"10":6,"11":2,"12":2,"13":2,"14":1,"15":1,"16":1,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete PB Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":3,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":2,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":1,"12":0,"13":0,"14":1,"15":0,"16":1,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":2,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":1,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":2,"13":0,"14":2,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":1,"12":1,"13":1,"14":0,"15":0,"16":0,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquetes Panoli/Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Cinépolis":{"Acceso Norte":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Principal":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":5,"7":7,"8":2,"9":1,"10":1,"11":0,"12":1,"13":1,"14":4,"15":1,"16":6,"17":4,"18":2,"19":3,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":3,"8":2,"9":1,"10":1,"11":1,"12":1,"13":1,"14":1,"15":1,"16":3,"17":2,"18":0,"19":2,"20":1,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":5,"8":1,"9":1,"10":2,"11":1,"12":1,"13":0,"14":3,"15":2,"16":3,"17":3,"18":2,"19":3,"20":1,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":5,"8":2,"9":0,"10":0,"11":1,"12":1,"13":1,"14":4,"15":2,"16":2,"17":1,"18":1,"19":1,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":2,"9":2,"10":3,"11":1,"12":2,"13":2,"14":1,"15":1,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":1,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":1,"11":1,"12":2,"13":3,"14":2,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Proveedores":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Motor Lobby":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":1,"19":1,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":1,"8":1,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":3,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":0,"8":1,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":2,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":2,"17":2,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":3,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":5,"8":2,"9":0,"10":1,"11":0,"12":0,"13":0,"14":3,"15":0,"16":6,"17":4,"18":3,"19":2,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":2,"8":2,"9":1,"10":0,"11":2,"12":1,"13":0,"14":1,"15":2,"16":3,"17":2,"18":1,"19":1,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":4,"8":1,"9":1,"10":1,"11":2,"12":2,"13":0,"14":1,"15":2,"16":2,"17":2,"18":3,"19":3,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":4,"8":2,"9":2,"10":0,"11":0,"12":3,"13":1,"14":2,"15":0,"16":1,"17":2,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":3,"9":2,"10":4,"11":2,"12":3,"13":2,"14":1,"15":1,"16":0,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":1,"12":3,"13":1,"14":5,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete PB Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":1,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquetes Panoli/Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Empresas/Gerentes":{"Acceso Norte":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":1,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Principal":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":0,"7":1,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":1,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":0,"13":1,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Proveedores":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Motor Lobby":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":0,"11":0,"12":0,"13":1,"14":0,"15":0,"16":2,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":2,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":0,"11":1,"12":1,"13":0,"14":0,"15":0,"16":1,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":1,"11":1,"12":0,"13":0,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":2,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete PB Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquetes Panoli/Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Otros":{"Acceso Norte":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Principal":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Proveedores":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Acceso Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Motor Lobby":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquete PB Casa Club":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Torniquetes Panoli/Sur":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}}},"data2":{"Todos":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":8,"9":11,"10":7,"11":3,"12":1,"13":1,"14":1,"15":1,"16":1,"17":1,"18":4,"19":8,"20":10,"21":10,"22":3,"23":1},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":16,"7":85,"8":174,"9":207,"10":207,"11":179,"12":167,"13":154,"14":145,"15":128,"16":127,"17":221,"18":253,"19":199,"20":130,"21":53,"22":21,"23":14},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":12,"7":73,"8":150,"9":186,"10":191,"11":160,"12":143,"13":133,"14":121,"15":110,"16":101,"17":147,"18":172,"19":166,"20":110,"21":45,"22":16,"23":12},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":14,"7":60,"8":138,"9":187,"10":189,"11":168,"12":162,"13":157,"14":142,"15":127,"16":125,"17":188,"18":198,"19":166,"20":102,"21":41,"22":16,"23":11},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":12,"7":53,"8":120,"9":156,"10":162,"11":148,"12":147,"13":144,"14":134,"15":127,"16":116,"17":132,"18":130,"19":104,"20":56,"21":23,"22":8,"23":7},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":16,"8":71,"9":126,"10":161,"11":165,"12":158,"13":155,"14":138,"15":114,"16":94,"17":76,"18":64,"19":49,"20":27,"21":10,"22":4,"23":3},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":9,"8":39,"9":75,"10":103,"11":121,"12":135,"13":139,"14":122,"15":104,"16":79,"17":43,"18":15,"19":12,"20":8,"21":4,"22":1,"23":0}},"Propietarios":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":5,"9":7,"10":5,"11":2,"12":0,"13":0,"14":0,"15":1,"16":1,"17":1,"18":3,"19":5,"20":7,"21":7,"22":3,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":8,"7":50,"8":97,"9":118,"10":122,"11":104,"12":95,"13":86,"14":82,"15":71,"16":70,"17":121,"18":138,"19":114,"20":74,"21":32,"22":15,"23":10},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":42,"8":85,"9":110,"10":116,"11":94,"12":82,"13":74,"14":66,"15":60,"16":52,"17":82,"18":91,"19":89,"20":64,"21":28,"22":10,"23":8},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":36,"8":79,"9":108,"10":112,"11":100,"12":94,"13":93,"14":86,"15":76,"16":72,"17":102,"18":107,"19":88,"20":57,"21":23,"22":10,"23":8},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":5,"7":30,"8":66,"9":87,"10":90,"11":82,"12":81,"13":80,"14":75,"15":71,"16":63,"17":72,"18":69,"19":59,"20":33,"21":14,"22":8,"23":6},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":10,"8":42,"9":72,"10":93,"11":92,"12":91,"13":88,"14":82,"15":68,"16":57,"17":47,"18":38,"19":30,"20":17,"21":6,"22":3,"23":2},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":5,"8":23,"9":47,"10":69,"11":78,"12":83,"13":89,"14":77,"15":63,"16":46,"17":20,"18":10,"19":7,"20":4,"21":3,"22":0,"23":0}},"Usufructuarios":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":2,"10":1,"11":1,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":1,"19":1,"20":2,"21":2,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":23,"8":54,"9":66,"10":62,"11":55,"12":52,"13":49,"14":45,"15":40,"16":40,"17":72,"18":85,"19":61,"20":42,"21":17,"22":6,"23":4},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":5,"7":19,"8":46,"9":59,"10":53,"11":49,"12":44,"13":42,"14":39,"15":37,"16":37,"17":48,"18":59,"19":54,"20":34,"21":13,"22":4,"23":3},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":5,"7":16,"8":42,"9":63,"10":61,"11":53,"12":54,"13":48,"14":41,"15":37,"16":37,"17":62,"18":67,"19":58,"20":32,"21":13,"22":5,"23":3},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":17,"8":39,"9":51,"10":52,"11":48,"12":48,"13":45,"14":39,"15":37,"16":32,"17":40,"18":42,"19":31,"20":16,"21":7,"22":1,"23":1},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":5,"8":20,"9":41,"10":46,"11":48,"12":46,"13":45,"14":40,"15":29,"16":24,"17":20,"18":18,"19":14,"20":7,"21":2,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":3,"8":12,"9":18,"10":22,"11":27,"12":38,"13":39,"14":34,"15":27,"16":20,"17":15,"18":4,"19":4,"20":3,"21":1,"22":0,"23":0}},"Honorarias/Especiales":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":3,"9":2,"10":2,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":6,"8":12,"9":14,"10":16,"11":11,"12":12,"13":10,"14":10,"15":10,"16":9,"17":13,"18":13,"19":11,"20":11,"21":3,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":8,"8":13,"9":12,"10":15,"11":11,"12":10,"13":10,"14":9,"15":7,"16":6,"17":8,"18":12,"19":14,"20":9,"21":4,"22":1,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":5,"8":10,"9":11,"10":10,"11":8,"12":7,"13":7,"14":8,"15":7,"16":9,"17":13,"18":13,"19":11,"20":10,"21":4,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":4,"8":8,"9":12,"10":13,"11":11,"12":12,"13":12,"14":12,"15":11,"16":12,"17":12,"18":11,"19":8,"20":4,"21":2,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":6,"9":9,"10":16,"11":17,"12":13,"13":13,"14":10,"15":11,"16":10,"17":7,"18":6,"19":3,"20":2,"21":1,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":3,"9":9,"10":10,"11":14,"12":12,"13":5,"14":7,"15":5,"16":4,"17":3,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Cinépolis":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":1,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":5,"8":10,"9":7,"10":6,"11":6,"12":6,"13":6,"14":6,"15":5,"16":5,"17":12,"18":14,"19":11,"20":2,"21":1,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":4,"8":6,"9":3,"10":4,"11":3,"12":4,"13":4,"14":4,"15":4,"16":4,"17":6,"18":8,"19":6,"20":2,"21":1,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":6,"9":4,"10":4,"11":4,"12":5,"13":6,"14":5,"15":4,"16":5,"17":8,"18":9,"19":8,"20":2,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":6,"9":6,"10":6,"11":5,"12":5,"13":6,"14":6,"15":7,"16":6,"17":7,"18":6,"19":4,"20":2,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":2,"9":4,"10":5,"11":6,"12":6,"13":6,"14":5,"15":4,"16":2,"17":2,"18":2,"19":1,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":1,"11":2,"12":2,"13":5,"14":4,"15":9,"16":8,"17":5,"18":1,"19":1,"20":0,"21":0,"22":0,"23":0}},"Empresas/Gerentes":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":1,"8":2,"9":2,"10":2,"11":2,"12":2,"13":2,"14":2,"15":2,"16":2,"17":2,"18":2,"19":2,"20":1,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":1,"9":2,"10":3,"11":3,"12":3,"13":3,"14":3,"15":2,"16":2,"17":2,"18":2,"19":2,"20":1,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":2,"10":2,"11":2,"12":2,"13":2,"14":2,"15":2,"16":2,"17":2,"18":2,"19":2,"20":1,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":0,"10":1,"11":2,"12":2,"13":2,"14":2,"15":2,"16":2,"17":2,"18":2,"19":2,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":2,"12":2,"13":2,"14":1,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":1,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"Otros":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"data3":{"Todos":{"Acceso Principal":{"in":{"0":{"0":8,"1":1,"2":2,"3":1,"4":2,"5":3,"6":33,"7":110,"8":142,"9":155,"10":112,"11":114,"12":126,"13":231,"14":313,"15":258,"16":153,"17":157,"18":231,"19":192,"20":191,"21":146,"22":81,"23":30},"1":{"0":5,"1":2,"2":2,"3":1,"4":3,"5":19,"6":92,"7":178,"8":183,"9":170,"10":129,"11":128,"12":160,"13":222,"14":371,"15":247,"16":283,"17":175,"18":223,"19":249,"20":206,"21":137,"22":65,"23":29},"2":{"0":22,"1":6,"2":2,"3":1,"4":2,"5":14,"6":71,"7":172,"8":156,"9":148,"10":114,"11":118,"12":140,"13":212,"14":310,"15":194,"16":178,"17":233,"18":240,"19":240,"20":210,"21":153,"22":76,"23":38},"3":{"0":26,"1":8,"2":3,"3":3,"4":3,"5":15,"6":79,"7":165,"8":182,"9":145,"10":131,"11":155,"12":157,"13":199,"14":332,"15":219,"16":184,"17":158,"18":265,"19":208,"20":164,"21":113,"22":75,"23":50},"4":{"0":32,"1":17,"2":4,"3":4,"4":4,"5":24,"6":63,"7":149,"8":146,"9":136,"10":122,"11":117,"12":148,"13":182,"14":290,"15":202,"16":163,"17":189,"18":172,"19":174,"20":164,"21":114,"22":89,"23":56},"5":{"0":83,"1":28,"2":21,"3":6,"4":4,"5":4,"6":26,"7":78,"8":122,"9":149,"10":140,"11":158,"12":177,"13":218,"14":159,"15":108,"16":75,"17":82,"18":79,"19":117,"20":76,"21":55,"22":68,"23":38},"6":{"0":37,"1":26,"2":15,"3":8,"4":5,"5":6,"6":21,"7":41,"8":75,"9":83,"10":84,"11":94,"12":100,"13":129,"14":111,"15":101,"16":101,"17":99,"18":115,"19":124,"20":102,"21":85,"22":31,"23":18}},"out":{"0":{"0":4,"1":1,"2":1,"3":1,"4":0,"5":9,"6":111,"7":174,"8":198,"9":259,"10":269,"11":221,"12":185,"13":163,"14":166,"15":181,"16":323,"17":224,"18":165,"19":124,"20":65,"21":39,"22":20,"23":11},"1":{"0":3,"1":2,"2":0,"3":0,"4":1,"5":9,"6":128,"7":191,"8":230,"9":321,"10":305,"11":248,"12":213,"13":191,"14":171,"15":182,"16":320,"17":270,"18":190,"19":145,"20":96,"21":83,"22":28,"23":15},"2":{"0":7,"1":2,"2":1,"3":0,"4":1,"5":5,"6":90,"7":154,"8":198,"9":316,"10":314,"11":258,"12":171,"13":187,"14":184,"15":192,"16":242,"17":240,"18":167,"19":160,"20":103,"21":88,"22":47,"23":25},"3":{"0":10,"1":3,"2":1,"3":0,"4":1,"5":6,"6":84,"7":154,"8":180,"9":270,"10":280,"11":236,"12":215,"13":175,"14":174,"15":184,"16":238,"17":188,"18":182,"19":169,"20":103,"21":79,"22":36,"23":18},"4":{"0":6,"1":2,"2":1,"3":0,"4":2,"5":5,"6":88,"7":135,"8":173,"9":224,"10":264,"11":227,"12":195,"13":175,"14":188,"15":173,"16":216,"17":186,"18":163,"19":143,"20":113,"21":85,"22":41,"23":32},"5":{"0":32,"1":10,"2":7,"3":4,"4":2,"5":5,"6":19,"7":53,"8":122,"9":170,"10":217,"11":196,"12":191,"13":195,"14":184,"15":138,"16":87,"17":72,"18":74,"19":74,"20":57,"21":47,"22":26,"23":21},"6":{"0":18,"1":6,"2":2,"3":4,"4":4,"5":10,"6":26,"7":37,"8":56,"9":122,"10":108,"11":119,"12":122,"13":103,"14":165,"15":122,"16":98,"17":114,"18":128,"19":80,"20":61,"21":27,"22":16,"23":7}}},"Acceso Sur":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":34,"8":63,"9":84,"10":93,"11":71,"12":76,"13":92,"14":163,"15":116,"16":71,"17":57,"18":71,"19":71,"20":51,"21":12,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":9,"7":46,"8":61,"9":56,"10":52,"11":83,"12":68,"13":87,"14":153,"15":78,"16":92,"17":77,"18":65,"19":73,"20":61,"21":12,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":47,"8":65,"9":88,"10":86,"11":69,"12":80,"13":90,"14":141,"15":106,"16":73,"17":60,"18":75,"19":58,"20":52,"21":18,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":8,"7":58,"8":59,"9":79,"10":71,"11":64,"12":71,"13":96,"14":126,"15":60,"16":61,"17":60,"18":64,"19":56,"20":49,"21":30,"22":10,"23":7},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":8,"7":40,"8":68,"9":75,"10":75,"11":55,"12":69,"13":92,"14":112,"15":96,"16":59,"17":48,"18":52,"19":56,"20":59,"21":30,"22":18,"23":10},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":13,"8":42,"9":50,"10":42,"11":44,"12":46,"13":55,"14":83,"15":40,"16":28,"17":34,"18":23,"19":24,"20":34,"21":29,"22":6,"23":7},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":4,"8":10,"9":31,"10":33,"11":51,"12":36,"13":52,"14":53,"15":36,"16":38,"17":37,"18":55,"19":47,"20":16,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":18,"8":39,"9":50,"10":63,"11":47,"12":44,"13":51,"14":60,"15":52,"16":38,"17":39,"18":31,"19":40,"20":22,"21":5,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":5,"7":35,"8":40,"9":45,"10":48,"11":39,"12":51,"13":38,"14":58,"15":45,"16":46,"17":43,"18":33,"19":31,"20":42,"21":7,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":27,"8":44,"9":50,"10":49,"11":42,"12":42,"13":53,"14":55,"15":64,"16":52,"17":38,"18":47,"19":36,"20":36,"21":12,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":25,"8":35,"9":54,"10":52,"11":42,"12":47,"13":50,"14":56,"15":42,"16":49,"17":35,"18":36,"19":31,"20":30,"21":16,"22":5,"23":2},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":20,"8":40,"9":41,"10":56,"11":40,"12":44,"13":34,"14":57,"15":63,"16":38,"17":30,"18":36,"19":40,"20":36,"21":19,"22":7,"23":4},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":10,"8":26,"9":43,"10":47,"11":38,"12":42,"13":56,"14":46,"15":39,"16":12,"17":19,"18":16,"19":19,"20":20,"21":12,"22":4,"23":4},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":3,"8":10,"9":22,"10":27,"11":26,"12":31,"13":28,"14":39,"15":30,"16":20,"17":25,"18":35,"19":27,"20":6,"21":0,"22":0,"23":0}}},"Acceso Norte":{"in":{"0":{"0":0,"1":0,"2":0,"3":1,"4":0,"5":3,"6":12,"7":33,"8":47,"9":42,"10":44,"11":40,"12":21,"13":50,"14":88,"15":57,"16":39,"17":34,"18":33,"19":44,"20":20,"21":16,"22":5,"23":4},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":19,"7":50,"8":41,"9":37,"10":28,"11":32,"12":31,"13":31,"14":71,"15":51,"16":48,"17":33,"18":28,"19":41,"20":19,"21":13,"22":8,"23":3},"2":{"0":1,"1":0,"2":0,"3":0,"4":1,"5":2,"6":15,"7":43,"8":40,"9":41,"10":34,"11":31,"12":25,"13":44,"14":72,"15":55,"16":39,"17":35,"18":34,"19":32,"20":16,"21":17,"22":11,"23":2},"3":{"0":3,"1":0,"2":0,"3":1,"4":0,"5":0,"6":10,"7":42,"8":44,"9":35,"10":36,"11":27,"12":22,"13":26,"14":71,"15":42,"16":38,"17":34,"18":40,"19":30,"20":17,"21":14,"22":8,"23":4},"4":{"0":2,"1":1,"2":0,"3":0,"4":0,"5":2,"6":10,"7":35,"8":37,"9":46,"10":32,"11":25,"12":27,"13":29,"14":65,"15":38,"16":39,"17":34,"18":32,"19":29,"20":16,"21":11,"22":12,"23":4},"5":{"0":2,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":27,"8":26,"9":18,"10":38,"11":34,"12":20,"13":26,"14":39,"15":15,"16":10,"17":10,"18":9,"19":8,"20":10,"21":4,"22":7,"23":2},"6":{"0":1,"1":1,"2":2,"3":1,"4":0,"5":1,"6":1,"7":3,"8":11,"9":12,"10":16,"11":22,"12":22,"13":32,"14":25,"15":31,"16":18,"17":26,"18":32,"19":26,"20":19,"21":13,"22":6,"23":1}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":5,"6":7,"7":26,"8":39,"9":35,"10":35,"11":36,"12":19,"13":24,"14":39,"15":38,"16":46,"17":37,"18":33,"19":30,"20":21,"21":18,"22":4,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":5,"6":11,"7":23,"8":36,"9":36,"10":34,"11":38,"12":20,"13":28,"14":38,"15":42,"16":48,"17":32,"18":27,"19":30,"20":26,"21":10,"22":9,"23":1},"2":{"0":0,"1":0,"2":3,"3":0,"4":3,"5":1,"6":11,"7":21,"8":36,"9":42,"10":42,"11":27,"12":28,"13":31,"14":34,"15":37,"16":47,"17":28,"18":32,"19":27,"20":22,"21":12,"22":10,"23":2},"3":{"0":2,"1":1,"2":0,"3":2,"4":1,"5":4,"6":7,"7":24,"8":35,"9":33,"10":35,"11":32,"12":25,"13":36,"14":38,"15":42,"16":43,"17":30,"18":28,"19":19,"20":24,"21":11,"22":10,"23":5},"4":{"0":2,"1":0,"2":2,"3":1,"4":1,"5":4,"6":6,"7":22,"8":29,"9":38,"10":34,"11":30,"12":18,"13":33,"14":29,"15":31,"16":40,"17":30,"18":23,"19":21,"20":11,"21":18,"22":8,"23":4},"5":{"0":2,"1":2,"2":3,"3":0,"4":0,"5":2,"6":4,"7":11,"8":18,"9":19,"10":37,"11":20,"12":20,"13":31,"14":39,"15":18,"16":8,"17":10,"18":13,"19":12,"20":11,"21":5,"22":6,"23":3},"6":{"0":5,"1":1,"2":0,"3":2,"4":0,"5":0,"6":2,"7":6,"8":16,"9":19,"10":15,"11":19,"12":27,"13":34,"14":29,"15":17,"16":19,"17":27,"18":21,"19":14,"20":15,"21":3,"22":3,"23":0}}},"Acceso Proveedores":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":3,"9":3,"10":4,"11":3,"12":0,"13":12,"14":6,"15":7,"16":13,"17":2,"18":7,"19":2,"20":3,"21":1,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":11,"8":0,"9":2,"10":19,"11":9,"12":1,"13":8,"14":9,"15":3,"16":8,"17":10,"18":5,"19":4,"20":4,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":17,"9":1,"10":0,"11":2,"12":4,"13":8,"14":10,"15":4,"16":4,"17":5,"18":1,"19":8,"20":2,"21":2,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":3,"5":1,"6":0,"7":5,"8":11,"9":1,"10":6,"11":2,"12":1,"13":4,"14":13,"15":9,"16":2,"17":6,"18":0,"19":2,"20":3,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":4,"8":5,"9":1,"10":1,"11":9,"12":0,"13":0,"14":4,"15":2,"16":5,"17":6,"18":1,"19":0,"20":2,"21":1,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":2,"8":9,"9":11,"10":1,"11":0,"12":3,"13":0,"14":6,"15":0,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":7,"10":3,"11":0,"12":0,"13":1,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":3,"11":1,"12":0,"13":1,"14":1,"15":0,"16":1,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":0,"10":0,"11":1,"12":2,"13":0,"14":1,"15":0,"16":1,"17":0,"18":1,"19":1,"20":0,"21":1,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":1,"12":1,"13":0,"14":1,"15":0,"16":2,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":2,"14":1,"15":0,"16":0,"17":1,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":1,"12":0,"13":0,"14":2,"15":1,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":1,"13":0,"14":1,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}}},"Propietarios":{"Acceso Principal":{"in":{"0":{"0":7,"1":1,"2":2,"3":1,"4":2,"5":1,"6":22,"7":75,"8":126,"9":137,"10":98,"11":102,"12":113,"13":207,"14":269,"15":228,"16":132,"17":138,"18":191,"19":171,"20":172,"21":115,"22":75,"23":29},"1":{"0":5,"1":1,"2":1,"3":1,"4":2,"5":5,"6":53,"7":107,"8":129,"9":135,"10":97,"11":78,"12":130,"13":168,"14":295,"15":200,"16":188,"17":131,"18":187,"19":208,"20":168,"21":110,"22":60,"23":28},"2":{"0":21,"1":6,"2":2,"3":0,"4":1,"5":4,"6":34,"7":102,"8":114,"9":116,"10":90,"11":92,"12":116,"13":181,"14":274,"15":164,"16":132,"17":166,"18":197,"19":192,"20":172,"21":124,"22":69,"23":36},"3":{"0":22,"1":7,"2":2,"3":2,"4":3,"5":7,"6":51,"7":99,"8":132,"9":114,"10":110,"11":122,"12":122,"13":174,"14":253,"15":168,"16":134,"17":117,"18":222,"19":164,"20":141,"21":96,"22":68,"23":45},"4":{"0":27,"1":16,"2":4,"3":3,"4":3,"5":15,"6":35,"7":95,"8":110,"9":91,"10":93,"11":89,"12":127,"13":145,"14":246,"15":167,"16":118,"17":162,"18":140,"19":144,"20":123,"21":93,"22":72,"23":49},"5":{"0":50,"1":26,"2":16,"3":4,"4":3,"5":3,"6":13,"7":34,"8":71,"9":110,"10":94,"11":126,"12":134,"13":174,"14":120,"15":92,"16":55,"17":56,"18":67,"19":106,"20":60,"21":46,"22":60,"23":34},"6":{"0":34,"1":24,"2":14,"3":8,"4":5,"5":5,"6":13,"7":21,"8":46,"9":63,"10":51,"11":77,"12":80,"13":100,"14":93,"15":77,"16":84,"17":83,"18":96,"19":109,"20":90,"21":64,"22":29,"23":17}},"out":{"0":{"0":4,"1":0,"2":1,"3":1,"4":0,"5":7,"6":91,"7":149,"8":173,"9":222,"10":248,"11":198,"12":162,"13":142,"14":145,"15":166,"16":293,"17":202,"18":141,"19":101,"20":58,"21":27,"22":16,"23":9},"1":{"0":2,"1":2,"2":0,"3":0,"4":1,"5":8,"6":106,"7":150,"8":178,"9":259,"10":239,"11":198,"12":172,"13":154,"14":134,"15":148,"16":265,"17":227,"18":135,"19":103,"20":57,"21":52,"22":22,"23":10},"2":{"0":6,"1":2,"2":0,"3":0,"4":1,"5":5,"6":72,"7":122,"8":159,"9":254,"10":249,"11":218,"12":141,"13":143,"14":145,"15":165,"16":201,"17":199,"18":125,"19":110,"20":70,"21":58,"22":31,"23":16},"3":{"0":6,"1":2,"2":0,"3":0,"4":1,"5":6,"6":71,"7":122,"8":141,"9":213,"10":228,"11":192,"12":172,"13":140,"14":138,"15":151,"16":193,"17":156,"18":134,"19":120,"20":67,"21":50,"22":24,"23":12},"4":{"0":6,"1":2,"2":1,"3":0,"4":2,"5":4,"6":71,"7":110,"8":136,"9":175,"10":219,"11":184,"12":157,"13":139,"14":145,"15":143,"16":173,"17":159,"18":128,"19":99,"20":82,"21":63,"22":26,"23":24},"5":{"0":23,"1":4,"2":5,"3":2,"4":1,"5":4,"6":16,"7":40,"8":101,"9":139,"10":169,"11":159,"12":155,"13":147,"14":142,"15":112,"16":73,"17":51,"18":60,"19":60,"20":37,"21":35,"22":20,"23":14},"6":{"0":13,"1":4,"2":1,"3":4,"4":4,"5":9,"6":23,"7":26,"8":48,"9":93,"10":86,"11":98,"12":95,"13":86,"14":132,"15":100,"16":73,"17":80,"18":107,"19":70,"20":52,"21":23,"22":13,"23":6}}},"Acceso Sur":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":27,"8":56,"9":78,"10":85,"11":54,"12":72,"13":81,"14":143,"15":101,"16":64,"17":47,"18":64,"19":63,"20":44,"21":10,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":8,"7":38,"8":54,"9":51,"10":47,"11":65,"12":62,"13":78,"14":136,"15":66,"16":71,"17":64,"18":53,"19":66,"20":54,"21":11,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":37,"8":59,"9":76,"10":69,"11":60,"12":70,"13":79,"14":123,"15":92,"16":63,"17":47,"18":61,"19":52,"20":46,"21":17,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":46,"8":53,"9":71,"10":61,"11":57,"12":65,"13":91,"14":112,"15":52,"16":52,"17":49,"18":58,"19":46,"20":40,"21":25,"22":10,"23":7},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":34,"8":62,"9":68,"10":63,"11":49,"12":64,"13":84,"14":96,"15":81,"16":52,"17":41,"18":48,"19":48,"20":54,"21":27,"22":17,"23":10},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":11,"8":38,"9":45,"10":37,"11":38,"12":38,"13":49,"14":71,"15":37,"16":26,"17":30,"18":20,"19":20,"20":26,"21":27,"22":6,"23":6},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":2,"8":9,"9":26,"10":27,"11":32,"12":35,"13":42,"14":45,"15":31,"16":34,"17":34,"18":49,"19":42,"20":13,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":5,"7":15,"8":34,"9":46,"10":58,"11":38,"12":41,"13":46,"14":47,"15":44,"16":34,"17":35,"18":27,"19":33,"20":21,"21":3,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":32,"8":35,"9":38,"10":43,"11":33,"12":44,"13":33,"14":49,"15":40,"16":43,"17":36,"18":30,"19":25,"20":35,"21":7,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":23,"8":40,"9":43,"10":42,"11":36,"12":37,"13":44,"14":48,"15":58,"16":46,"17":32,"18":40,"19":32,"20":29,"21":11,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":19,"8":32,"9":45,"10":46,"11":35,"12":42,"13":48,"14":51,"15":36,"16":43,"17":31,"18":34,"19":24,"20":22,"21":12,"22":4,"23":1},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":14,"8":35,"9":36,"10":51,"11":37,"12":36,"13":28,"14":49,"15":54,"16":32,"17":26,"18":32,"19":30,"20":33,"21":16,"22":6,"23":4},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":9,"8":24,"9":36,"10":41,"11":32,"12":36,"13":46,"14":38,"15":35,"16":11,"17":17,"18":14,"19":19,"20":18,"21":11,"22":4,"23":4},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":10,"9":19,"10":25,"11":17,"12":24,"13":23,"14":32,"15":25,"16":16,"17":25,"18":31,"19":24,"20":5,"21":0,"22":0,"23":0}}},"Acceso Norte":{"in":{"0":{"0":0,"1":0,"2":0,"3":1,"4":0,"5":3,"6":10,"7":32,"8":42,"9":40,"10":38,"11":37,"12":18,"13":45,"14":82,"15":54,"16":33,"17":32,"18":31,"19":36,"20":17,"21":14,"22":4,"23":4},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":18,"7":46,"8":39,"9":35,"10":22,"11":27,"12":28,"13":28,"14":65,"15":50,"16":39,"17":31,"18":25,"19":35,"20":18,"21":11,"22":7,"23":2},"2":{"0":1,"1":0,"2":0,"3":0,"4":1,"5":1,"6":12,"7":42,"8":38,"9":36,"10":28,"11":26,"12":22,"13":38,"14":67,"15":52,"16":34,"17":30,"18":31,"19":26,"20":14,"21":15,"22":11,"23":2},"3":{"0":2,"1":0,"2":0,"3":1,"4":0,"5":0,"6":9,"7":40,"8":41,"9":30,"10":31,"11":25,"12":20,"13":25,"14":64,"15":40,"16":34,"17":32,"18":35,"19":27,"20":16,"21":13,"22":7,"23":3},"4":{"0":2,"1":1,"2":0,"3":0,"4":0,"5":1,"6":8,"7":32,"8":34,"9":41,"10":26,"11":21,"12":26,"13":28,"14":60,"15":32,"16":36,"17":30,"18":28,"19":26,"20":14,"21":10,"22":10,"23":3},"5":{"0":2,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":23,"8":24,"9":16,"10":33,"11":30,"12":18,"13":25,"14":36,"15":13,"16":8,"17":8,"18":8,"19":8,"20":8,"21":4,"22":7,"23":2},"6":{"0":1,"1":1,"2":1,"3":0,"4":0,"5":1,"6":1,"7":2,"8":10,"9":10,"10":14,"11":17,"12":19,"13":29,"14":23,"15":27,"16":17,"17":25,"18":30,"19":24,"20":18,"21":11,"22":6,"23":1}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":5,"6":7,"7":24,"8":35,"9":33,"10":34,"11":33,"12":19,"13":21,"14":35,"15":34,"16":43,"17":35,"18":30,"19":27,"20":16,"21":15,"22":3,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":4,"6":10,"7":21,"8":33,"9":34,"10":31,"11":37,"12":17,"13":27,"14":33,"15":36,"16":45,"17":29,"18":22,"19":27,"20":22,"21":8,"22":7,"23":1},"2":{"0":0,"1":0,"2":3,"3":0,"4":3,"5":0,"6":9,"7":19,"8":34,"9":39,"10":39,"11":26,"12":24,"13":28,"14":32,"15":32,"16":42,"17":27,"18":30,"19":24,"20":18,"21":10,"22":9,"23":2},"3":{"0":2,"1":0,"2":0,"3":2,"4":1,"5":4,"6":7,"7":23,"8":32,"9":31,"10":32,"11":30,"12":24,"13":33,"14":34,"15":40,"16":40,"17":28,"18":26,"19":18,"20":20,"21":10,"22":8,"23":4},"4":{"0":2,"1":0,"2":2,"3":1,"4":1,"5":4,"6":6,"7":18,"8":27,"9":35,"10":31,"11":28,"12":16,"13":32,"14":27,"15":29,"16":38,"17":27,"18":22,"19":18,"20":9,"21":16,"22":7,"23":4},"5":{"0":2,"1":1,"2":3,"3":0,"4":0,"5":1,"6":4,"7":10,"8":18,"9":17,"10":34,"11":18,"12":18,"13":29,"14":38,"15":16,"16":5,"17":10,"18":12,"19":11,"20":9,"21":4,"22":6,"23":2},"6":{"0":5,"1":0,"2":0,"3":2,"4":0,"5":0,"6":2,"7":5,"8":16,"9":18,"10":13,"11":17,"12":23,"13":32,"14":27,"15":14,"16":17,"17":27,"18":19,"19":12,"20":14,"21":2,"22":2,"23":0}}},"Acceso Proveedores":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":3,"9":3,"10":4,"11":3,"12":0,"13":12,"14":6,"15":7,"16":12,"17":2,"18":7,"19":2,"20":2,"21":1,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":11,"8":0,"9":2,"10":18,"11":9,"12":0,"13":8,"14":9,"15":3,"16":7,"17":3,"18":5,"19":4,"20":3,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":17,"9":1,"10":0,"11":1,"12":4,"13":2,"14":6,"15":4,"16":4,"17":5,"18":0,"19":8,"20":1,"21":2,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":3,"5":1,"6":0,"7":5,"8":11,"9":1,"10":6,"11":2,"12":0,"13":2,"14":13,"15":8,"16":2,"17":5,"18":0,"19":2,"20":3,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":4,"8":5,"9":1,"10":1,"11":4,"12":0,"13":0,"14":4,"15":2,"16":5,"17":6,"18":1,"19":0,"20":2,"21":1,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":2,"8":9,"9":11,"10":1,"11":0,"12":1,"13":0,"14":6,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":7,"10":3,"11":0,"12":0,"13":1,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":2,"11":0,"12":0,"13":1,"14":1,"15":0,"16":1,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":2,"13":0,"14":1,"15":0,"16":1,"17":0,"18":1,"19":1,"20":0,"21":1,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":0,"13":0,"14":1,"15":0,"16":2,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":2,"14":0,"15":0,"16":0,"17":1,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":1,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}}},"Usufructuarios":{"Acceso Principal":{"in":{"0":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":1,"6":4,"7":12,"8":9,"9":6,"10":10,"11":8,"12":13,"13":13,"14":20,"15":26,"16":18,"17":11,"18":32,"19":15,"20":16,"21":20,"22":6,"23":1},"1":{"0":0,"1":1,"2":0,"3":0,"4":0,"5":10,"6":25,"7":47,"8":33,"9":28,"10":27,"11":34,"12":18,"13":23,"14":56,"15":34,"16":65,"17":34,"18":27,"19":30,"20":26,"21":14,"22":5,"23":1},"2":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":8,"6":23,"7":50,"8":30,"9":23,"10":16,"11":18,"12":15,"13":22,"14":25,"15":23,"16":34,"17":48,"18":35,"19":30,"20":29,"21":23,"22":7,"23":2},"3":{"0":3,"1":1,"2":0,"3":0,"4":0,"5":7,"6":17,"7":47,"8":33,"9":19,"10":16,"11":28,"12":16,"13":20,"14":37,"15":39,"16":36,"17":32,"18":36,"19":32,"20":17,"21":11,"22":6,"23":4},"4":{"0":4,"1":1,"2":0,"3":1,"4":1,"5":7,"6":17,"7":38,"8":25,"9":32,"10":19,"11":21,"12":15,"13":29,"14":23,"15":25,"16":29,"17":21,"18":23,"19":22,"20":25,"21":11,"22":14,"23":4},"5":{"0":2,"1":2,"2":3,"3":2,"4":0,"5":1,"6":8,"7":32,"8":30,"9":22,"10":29,"11":24,"12":36,"13":34,"14":32,"15":12,"16":18,"17":22,"18":9,"19":7,"20":9,"21":8,"22":7,"23":4},"6":{"0":2,"1":1,"2":1,"3":0,"4":0,"5":1,"6":4,"7":14,"8":20,"9":15,"10":18,"11":14,"12":15,"13":17,"14":11,"15":15,"16":13,"17":14,"18":15,"19":14,"20":11,"21":15,"22":2,"23":1}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":2,"6":10,"7":18,"8":17,"9":26,"10":15,"11":17,"12":16,"13":12,"14":12,"15":14,"16":23,"17":16,"18":18,"19":11,"20":3,"21":7,"22":3,"23":2},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":16,"7":27,"8":37,"9":43,"10":48,"11":40,"12":31,"13":26,"14":24,"15":27,"16":39,"17":31,"18":43,"19":23,"20":26,"21":22,"22":6,"23":4},"2":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0,"6":14,"7":23,"8":26,"9":49,"10":50,"11":29,"12":20,"13":31,"14":28,"15":21,"16":30,"17":33,"18":30,"19":34,"20":23,"21":20,"22":11,"23":7},"3":{"0":3,"1":0,"2":0,"3":0,"4":0,"5":0,"6":10,"7":25,"8":27,"9":35,"10":38,"11":30,"12":32,"13":26,"14":25,"15":23,"16":32,"17":22,"18":35,"19":30,"20":22,"21":20,"22":9,"23":2},"4":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0,"6":14,"7":16,"8":28,"9":32,"10":34,"11":32,"12":31,"13":28,"14":26,"15":20,"16":30,"17":21,"18":22,"19":28,"20":22,"21":14,"22":9,"23":4},"5":{"0":5,"1":5,"2":2,"3":0,"4":0,"5":0,"6":4,"7":10,"8":16,"9":19,"10":34,"11":26,"12":28,"13":33,"14":32,"15":18,"16":10,"17":14,"18":9,"19":10,"20":13,"21":8,"22":3,"23":6},"6":{"0":3,"1":1,"2":1,"3":1,"4":0,"5":1,"6":3,"7":6,"8":6,"9":23,"10":11,"11":16,"12":16,"13":12,"14":26,"15":18,"16":18,"17":26,"18":12,"19":7,"20":8,"21":2,"22":1,"23":0}}},"Acceso Sur":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":6,"8":7,"9":4,"10":5,"11":14,"12":3,"13":8,"14":10,"15":10,"16":7,"17":9,"18":4,"19":6,"20":4,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":3,"8":6,"9":4,"10":2,"11":11,"12":4,"13":3,"14":13,"15":10,"16":5,"17":8,"18":8,"19":4,"20":4,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":7,"8":5,"9":8,"10":4,"11":7,"12":7,"13":7,"14":14,"15":7,"16":7,"17":8,"18":9,"19":5,"20":4,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":6,"8":3,"9":5,"10":6,"11":6,"12":4,"13":3,"14":13,"15":6,"16":5,"17":6,"18":5,"19":7,"20":4,"21":2,"22":1,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":6,"8":5,"9":4,"10":5,"11":6,"12":4,"13":5,"14":12,"15":8,"16":3,"17":5,"18":3,"19":8,"20":2,"21":2,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":4,"9":3,"10":2,"11":4,"12":7,"13":4,"14":10,"15":1,"16":2,"17":2,"18":2,"19":2,"20":4,"21":1,"22":0,"23":1},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":0,"9":3,"10":1,"11":15,"12":2,"13":6,"14":5,"15":2,"16":2,"17":3,"18":1,"19":3,"20":1,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":4,"9":3,"10":3,"11":9,"12":3,"13":2,"14":9,"15":3,"16":4,"17":4,"18":2,"19":6,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":1,"8":3,"9":6,"10":4,"11":3,"12":4,"13":3,"14":6,"15":2,"16":1,"17":5,"18":2,"19":5,"20":4,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":3,"8":2,"9":6,"10":4,"11":3,"12":4,"13":3,"14":3,"15":2,"16":4,"17":4,"18":5,"19":4,"20":3,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":2,"8":2,"9":6,"10":5,"11":5,"12":4,"13":2,"14":4,"15":2,"16":2,"17":3,"18":2,"19":4,"20":4,"21":3,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":4,"8":2,"9":2,"10":4,"11":3,"12":7,"13":2,"14":6,"15":4,"16":3,"17":3,"18":3,"19":7,"20":3,"21":2,"22":1,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":4,"10":5,"11":4,"12":5,"13":10,"14":5,"15":3,"16":1,"17":1,"18":2,"19":0,"20":2,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":1,"9":2,"10":2,"11":6,"12":5,"13":2,"14":5,"15":2,"16":1,"17":0,"18":3,"19":2,"20":0,"21":0,"22":0,"23":0}}},"Acceso Norte":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":1,"8":4,"9":1,"10":4,"11":2,"12":3,"13":3,"14":5,"15":3,"16":2,"17":0,"18":0,"19":6,"20":2,"21":1,"22":1,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":3,"8":1,"9":1,"10":5,"11":3,"12":2,"13":3,"14":5,"15":2,"16":4,"17":1,"18":3,"19":5,"20":0,"21":1,"22":1,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":1,"8":2,"9":2,"10":4,"11":4,"12":2,"13":4,"14":4,"15":1,"16":2,"17":2,"18":1,"19":5,"20":0,"21":2,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":1,"8":2,"9":2,"10":4,"11":2,"12":2,"13":1,"14":4,"15":1,"16":2,"17":2,"18":4,"19":2,"20":1,"21":2,"22":1,"23":1},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":2,"8":2,"9":2,"10":4,"11":4,"12":1,"13":1,"14":4,"15":4,"16":2,"17":2,"18":4,"19":3,"20":2,"21":1,"22":2,"23":1},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":2,"9":2,"10":2,"11":3,"12":1,"13":1,"14":2,"15":2,"16":2,"17":1,"18":0,"19":0,"20":2,"21":1,"22":0,"23":0},"6":{"0":0,"1":0,"2":1,"3":1,"4":0,"5":0,"6":0,"7":0,"8":1,"9":2,"10":1,"11":4,"12":3,"13":2,"14":2,"15":2,"16":1,"17":0,"18":2,"19":2,"20":1,"21":2,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":2,"8":3,"9":1,"10":1,"11":2,"12":0,"13":2,"14":2,"15":2,"16":3,"17":1,"18":2,"19":1,"20":3,"21":3,"22":1,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":2,"9":1,"10":3,"11":1,"12":3,"13":0,"14":3,"15":5,"16":3,"17":3,"18":4,"19":2,"20":2,"21":2,"22":2,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":1,"8":1,"9":2,"10":2,"11":2,"12":2,"13":1,"14":1,"15":4,"16":3,"17":1,"18":2,"19":2,"20":2,"21":1,"22":1,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":2,"9":1,"10":1,"11":2,"12":1,"13":2,"14":2,"15":2,"16":2,"17":2,"18":2,"19":1,"20":3,"21":0,"22":2,"23":1},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":2,"9":3,"10":2,"11":1,"12":2,"13":1,"14":1,"15":1,"16":1,"17":2,"18":2,"19":1,"20":2,"21":2,"22":0,"23":0},"5":{"0":0,"1":1,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":2,"10":2,"11":2,"12":1,"13":1,"14":1,"15":2,"16":2,"17":0,"18":0,"19":0,"20":2,"21":0,"22":0,"23":1},"6":{"0":0,"1":1,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":2,"11":2,"12":3,"13":2,"14":2,"15":2,"16":2,"17":1,"18":2,"19":2,"20":1,"21":1,"22":0,"23":0}}},"Acceso Proveedores":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":6,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":5,"14":0,"15":0,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":5,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":2,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":1,"12":0,"13":1,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":1,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}}},"Honorarias/Especiales":{"Acceso Principal":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":21,"8":7,"9":11,"10":2,"11":3,"12":0,"13":10,"14":10,"15":4,"16":3,"17":7,"18":8,"19":6,"20":2,"21":11,"22":1,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":3,"6":9,"7":11,"8":20,"9":4,"10":4,"11":15,"12":3,"13":30,"14":15,"15":12,"16":23,"17":4,"18":7,"19":8,"20":11,"21":13,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":2,"6":11,"7":16,"8":9,"9":9,"10":8,"11":6,"12":7,"13":8,"14":9,"15":6,"16":9,"17":17,"18":7,"19":16,"20":8,"21":6,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":8,"7":12,"8":15,"9":9,"10":4,"11":4,"12":14,"13":6,"14":34,"15":9,"16":10,"17":6,"18":5,"19":8,"20":5,"21":6,"22":2,"23":1},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":8,"7":10,"8":8,"9":12,"10":9,"11":6,"12":5,"13":7,"14":16,"15":8,"16":14,"17":4,"18":7,"19":6,"20":15,"21":9,"22":3,"23":3},"5":{"0":30,"1":0,"2":2,"3":0,"4":0,"5":0,"6":4,"7":9,"8":19,"9":16,"10":13,"11":6,"12":6,"13":7,"14":4,"15":3,"16":2,"17":4,"18":2,"19":2,"20":6,"21":0,"22":0,"23":0},"6":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":6,"8":9,"9":4,"10":14,"11":3,"12":3,"13":5,"14":3,"15":1,"16":3,"17":2,"18":3,"19":0,"20":1,"21":6,"22":1,"23":0}},"out":{"0":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0,"6":9,"7":7,"8":7,"9":9,"10":5,"11":6,"12":6,"13":9,"14":7,"15":1,"16":6,"17":6,"18":5,"19":12,"20":3,"21":4,"22":2,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":7,"7":12,"8":6,"9":10,"10":15,"11":9,"12":8,"13":10,"14":8,"15":5,"16":12,"17":10,"18":9,"19":11,"20":12,"21":9,"22":1,"23":1},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":8,"8":7,"9":10,"10":15,"11":8,"12":10,"13":11,"14":8,"15":5,"16":9,"17":8,"18":10,"19":10,"20":9,"21":9,"22":4,"23":1},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":4,"7":7,"8":9,"9":17,"10":9,"11":11,"12":11,"13":8,"14":7,"15":8,"16":9,"17":8,"18":11,"19":13,"20":11,"21":9,"22":3,"23":1},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":8,"8":6,"9":10,"10":8,"11":10,"12":5,"13":7,"14":13,"15":9,"16":11,"17":4,"18":9,"19":11,"20":9,"21":6,"22":6,"23":4},"5":{"0":4,"1":0,"2":1,"3":1,"4":0,"5":0,"6":0,"7":2,"8":5,"9":10,"10":13,"11":8,"12":6,"13":10,"14":7,"15":6,"16":4,"17":6,"18":4,"19":3,"20":6,"21":3,"22":2,"23":0},"6":{"0":1,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":4,"8":1,"9":6,"10":10,"11":4,"12":10,"13":4,"14":5,"15":3,"16":6,"17":4,"18":8,"19":3,"20":1,"21":3,"22":2,"23":1}}},"Acceso Sur":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":2,"10":2,"11":3,"12":1,"13":3,"14":9,"15":5,"16":1,"17":1,"18":3,"19":2,"20":3,"21":1,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":3,"8":0,"9":0,"10":3,"11":6,"12":3,"13":5,"14":4,"15":2,"16":16,"17":4,"18":3,"19":3,"20":3,"21":1,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":0,"9":4,"10":12,"11":2,"12":3,"13":4,"14":4,"15":6,"16":3,"17":3,"18":4,"19":1,"20":2,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":3,"8":3,"9":3,"10":4,"11":2,"12":2,"13":2,"14":1,"15":2,"16":4,"17":5,"18":2,"19":2,"20":5,"21":2,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":3,"10":7,"11":0,"12":1,"13":3,"14":4,"15":7,"16":4,"17":2,"18":1,"19":1,"20":3,"21":1,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":2,"10":3,"11":2,"12":2,"13":2,"14":2,"15":1,"16":0,"17":2,"18":0,"19":1,"20":3,"21":1,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":2,"10":3,"11":2,"12":0,"13":5,"14":2,"15":2,"16":2,"17":0,"18":6,"19":2,"20":2,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":2,"10":2,"11":0,"12":0,"13":2,"14":4,"15":5,"16":0,"17":0,"18":2,"19":2,"20":1,"21":2,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":1,"9":1,"10":1,"11":2,"12":3,"13":2,"14":2,"15":3,"16":1,"17":2,"18":0,"19":1,"20":2,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":2,"9":1,"10":2,"11":2,"12":2,"13":6,"14":4,"15":4,"16":2,"17":2,"18":2,"19":0,"20":3,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":4,"8":1,"9":3,"10":2,"11":1,"12":2,"13":0,"14":1,"15":2,"16":3,"17":1,"18":0,"19":1,"20":3,"21":1,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":2,"9":2,"10":2,"11":0,"12":1,"13":3,"14":2,"15":4,"16":2,"17":1,"18":0,"19":2,"20":1,"21":2,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":3,"10":1,"11":1,"12":1,"13":0,"14":2,"15":1,"16":0,"17":1,"18":1,"19":0,"20":1,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":4,"12":0,"13":3,"14":2,"15":2,"16":2,"17":0,"18":2,"19":1,"20":1,"21":0,"22":0,"23":0}}},"Acceso Norte":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":1,"11":0,"12":0,"13":1,"14":1,"15":0,"16":2,"17":2,"18":1,"19":1,"20":1,"21":1,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":1,"11":1,"12":2,"13":0,"14":0,"15":0,"16":2,"17":0,"18":1,"19":1,"20":1,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":2,"11":1,"12":0,"13":1,"14":0,"15":1,"16":2,"17":2,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":1,"11":0,"12":0,"13":0,"14":2,"15":1,"16":2,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":1,"9":1,"10":2,"11":0,"12":0,"13":0,"14":0,"15":2,"16":0,"17":2,"18":0,"19":0,"20":0,"21":0,"22":1,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":1,"11":1,"12":1,"13":0,"14":1,"15":0,"16":0,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":0,"13":0,"14":0,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":0,"10":0,"11":1,"12":0,"13":0,"14":1,"15":2,"16":0,"17":1,"18":1,"19":1,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":1,"20":1,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":1,"7":0,"8":1,"9":1,"10":0,"11":0,"12":1,"13":1,"14":0,"15":1,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":0,"10":1,"11":0,"12":0,"13":0,"14":1,"15":0,"16":1,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":1,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":1,"18":0,"19":0,"20":0,"21":0,"22":1,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":1,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Acceso Proveedores":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":4,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":2,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}}},"Cinépolis":{"Acceso Principal":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":13,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":6,"7":10,"8":2,"9":1,"10":1,"11":0,"12":9,"13":1,"14":4,"15":1,"16":6,"17":6,"18":2,"19":3,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":3,"8":2,"9":1,"10":1,"11":1,"12":1,"13":1,"14":1,"15":1,"16":3,"17":2,"18":0,"19":2,"20":1,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":2,"7":6,"8":1,"9":1,"10":2,"11":1,"12":5,"13":0,"14":8,"15":2,"16":3,"17":3,"18":2,"19":4,"20":2,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":3,"7":6,"8":2,"9":0,"10":0,"11":1,"12":1,"13":1,"14":4,"15":2,"16":2,"17":1,"18":1,"19":1,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":2,"9":2,"10":3,"11":1,"12":2,"13":2,"14":1,"15":1,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":1,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":1,"11":1,"12":2,"13":6,"14":3,"15":8,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":1,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":7,"9":7,"10":3,"11":1,"12":1,"13":0,"14":3,"15":1,"16":5,"17":1,"18":3,"19":8,"20":0,"21":1,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":5,"9":2,"10":1,"11":2,"12":0,"13":1,"14":1,"15":1,"16":2,"17":0,"18":1,"19":5,"20":1,"21":2,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":2,"9":4,"10":2,"11":2,"12":0,"13":2,"14":2,"15":1,"16":4,"17":1,"18":2,"19":6,"20":2,"21":1,"22":0,"23":2},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":2,"9":6,"10":2,"11":1,"12":1,"13":1,"14":3,"15":0,"16":2,"17":2,"18":3,"19":4,"20":1,"21":2,"22":0,"23":1},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":2,"10":2,"11":2,"12":1,"13":2,"14":1,"15":2,"16":0,"17":0,"18":1,"19":0,"20":0,"21":1,"22":0,"23":0},"6":{"0":1,"1":1,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":1,"13":1,"14":3,"15":1,"16":1,"17":3,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Acceso Sur":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Acceso Norte":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":0,"13":0,"14":0,"15":0,"16":2,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Acceso Proveedores":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}}},"Empresas/Gerentes":{"Acceso Principal":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":0,"7":1,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":1,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":1,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":0,"13":1,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":1,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":2,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":1,"10":0,"11":0,"12":0,"13":0,"14":3,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":2,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":2,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":2,"14":1,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":1,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":1,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Acceso Sur":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":2,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":2,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":1,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":2,"11":2,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":1,"19":0,"20":1,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":1,"16":0,"17":0,"18":0,"19":1,"20":1,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":1,"16":0,"17":0,"18":0,"19":2,"20":1,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":1,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":1,"13":0,"14":0,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Acceso Norte":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":1,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":1,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":1,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":1,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":1,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Acceso Proveedores":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}}},"Otros":{"Acceso Principal":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":1,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":1,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":1,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":1,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":1,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Acceso Sur":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Acceso Norte":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":1,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":1,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}},"Acceso Proveedores":{"in":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}},"out":{"0":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"1":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"2":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"3":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"4":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"5":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0},"6":{"0":0,"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,"17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0}}}}},"cohortData":{"Todos":[748,557,426,240,56],"Propietarios":[492,347,261,145,22],"Usufructuarios":[194,152,116,72,23],"Honorarias/Especiales":[38,39,24,13,8],"Cinépolis":[23,19,21,9,1],"Empresas/Gerentes":[0,0,3,1,2],"Otros":[1,0,1,0,0]}};
+// Merge "Empresas/Gerentes" into "Otros" (treated as a single rubro)
+(function mergeEmpresasIntoOtros(){
+  function deepAdd(dst, src){
+    if(src == null) return dst;
+    if(typeof src === 'number'){ return (typeof dst === 'number' ? dst : 0) + src; }
+    if(typeof src !== 'object') return dst;
+    if(dst == null || typeof dst !== 'object') dst = Array.isArray(src) ? [] : {};
+    for(const k in src){ dst[k] = deepAdd(dst[k], src[k]); }
+    return dst;
+  }
+  ['data1','data2','data3'].forEach(function(key){
+    const tbl = D[key];
+    if(!tbl || !tbl['Empresas/Gerentes']) return;
+    tbl['Otros'] = deepAdd(tbl['Otros'] || {}, tbl['Empresas/Gerentes']);
+    delete tbl['Empresas/Gerentes'];
+  });
+  D.actionTypes = D.actionTypes.filter(function(t){ return t !== 'Empresas/Gerentes'; });
+})();
+const DOW_NAMES = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const DOW_SHORT = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const HOURS_DISPLAY = [];
+for(let h=5;h<=23;h++) HOURS_DISPLAY.push(h);
+
+// ==================== GLOBAL ACTION TYPE FILTER ====================
+let selectedActionType = "Todos";
+
+function initActionTypeFilter(){
+  const container = document.getElementById('actionTypeButtons');
+  D.actionTypes.forEach(atype => {
+    const btn = document.createElement('button');
+    btn.className = 'action-type-btn' + (atype === selectedActionType ? ' active' : '');
+    btn.dataset.type = atype;
+    btn.textContent = atype;
+    btn.onclick = () => {
+      selectedActionType = atype;
+      document.querySelectorAll('.action-type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      // Re-render all sections
+      renderHeatmap();
+      updateInsideChart();
+      if(animPlaying){ rebuildSchedule(); } else { drawLanes(); }
+    };
+    container.appendChild(btn);
+  });
+}
+
+// ==================== SECTION 1: HEATMAP ====================
+const torniqueteGroups = ['Torniquete Casa Club','Torniquete PB Casa Club','Torniquetes Panoli/Sur','Motor Lobby'];
+
+function initGroupFilters(){
+  const bar = document.getElementById('groupFilters');
+  // Select all / none buttons
+  let btnAll = document.createElement('button');
+  btnAll.className='btn-sm'; btnAll.textContent='Todos'; btnAll.onclick=()=>{
+    document.querySelectorAll('#groupFilters input').forEach(c=>{c.checked=true; c.parentElement.classList.add('checked');});
+    renderHeatmap();
+  };
+  let btnNone = document.createElement('button');
+  btnNone.className='btn-sm'; btnNone.textContent='Ninguno'; btnNone.onclick=()=>{
+    document.querySelectorAll('#groupFilters input').forEach(c=>{c.checked=false; c.parentElement.classList.remove('checked');});
+    renderHeatmap();
+  };
+  bar.appendChild(btnAll); bar.appendChild(btnNone);
+
+  D.groups.forEach(g=>{
+    const lbl = document.createElement('label');
+    lbl.className = 'checked';
+    const cb = document.createElement('input');
+    cb.type='checkbox'; cb.checked=true; cb.value=g;
+    cb.onchange=()=>{ lbl.classList.toggle('checked',cb.checked); renderHeatmap(); };
+    lbl.appendChild(cb);
+    lbl.appendChild(document.createTextNode(' '+g));
+    bar.appendChild(lbl);
+  });
+}
+
+function getSelectedGroups(){
+  return Array.from(document.querySelectorAll('#groupFilters input:checked')).map(c=>c.value);
+}
+
+function renderHeatmap(){
+  const groups = getSelectedGroups();
+  const table = document.getElementById('heatmapTable');
+  let maxVal = 0;
+  // Compute sums
+  const grid = {};
+  HOURS_DISPLAY.forEach(h=>{
+    grid[h]={};
+    for(let dow=1;dow<7;dow++){
+      let sum=0;
+      groups.forEach(g=>{
+        const src = D.data1[selectedActionType];
+        if(src && src[g] && src[g][dow] && src[g][dow][h]!==undefined)
+          sum += src[g][dow][h];
+      });
+      grid[h][dow]=sum;
+      if(sum>maxVal) maxVal=sum;
+    }
+  });
+  document.getElementById('legendMax').textContent = maxVal;
+
+  let html='<thead><tr><th>Hora</th>';
+  DOW_NAMES.forEach((d,i)=>{
+    if(i===0) return; // Skip Monday
+    html += '<th>' + d + '</th>';
+  });
+  html+='<th style="background:#e8f5e9;font-weight:700;">TOTAL</th>';
+  html+='</tr></thead><tbody>';
+
+  const colTotals = {};
+  for(let dow=1;dow<7;dow++) colTotals[dow]=0;
+  let grandTotal = 0;
+
+  HOURS_DISPLAY.forEach(h=>{
+    let rowTotal = 0;
+    html+='<tr><td class="hour-label">'+String(h).padStart(2,'0')+':00</td>';
+    for(let dow=1;dow<7;dow++){
+      const v = grid[h][dow];
+      rowTotal += v;
+      colTotals[dow] += v;
+      const intensity = maxVal>0 ? v/maxVal : 0;
+      const bg = heatColor(intensity);
+      const textColor = intensity > 0.6 ? '#fff' : '#1a1a1a';
+      html += `<td style="background:${bg};color:${textColor}">${v}</td>`;
+    }
+    grandTotal += rowTotal;
+    html += `<td style="background:#e8f5e9;font-weight:700;border-left:2px solid #81c784;">${rowTotal}</td>`;
+    html+='</tr>';
+  });
+
+  // TOTAL row
+  html+='<tr><td class="hour-label" style="background:#e8f5e9;font-weight:700;">TOTAL</td>';
+  for(let dow=1;dow<7;dow++){
+    html += `<td style="background:#e8f5e9;font-weight:700;border-top:2px solid #81c784;">${colTotals[dow]}</td>`;
+  }
+  html += `<td style="background:#c8e6c9;font-weight:800;border-top:2px solid #81c784;border-left:2px solid #81c784;">${grandTotal}</td>`;
+  html+='</tr>';
+
+  html+='</tbody>';
+  table.innerHTML=html;
+}
+
+function heatColor(t){
+  if(t===0) return '#ffffff';
+  // Green ramp
+  const colors = [
+    [241,248,233],[200,230,201],[165,214,167],[129,199,132],[76,175,80],[56,142,60],[27,94,32]
+  ];
+  const idx = t * (colors.length-1);
+  const lo = Math.floor(idx), hi = Math.min(lo+1,colors.length-1);
+  const f = idx-lo;
+  const r = Math.round(colors[lo][0]+(colors[hi][0]-colors[lo][0])*f);
+  const g = Math.round(colors[lo][1]+(colors[hi][1]-colors[lo][1])*f);
+  const b = Math.round(colors[lo][2]+(colors[hi][2]-colors[lo][2])*f);
+  return `rgb(${r},${g},${b})`;
+}
+
+// ==================== SECTION 2: LINE CHART ====================
+const dayColors = ['#e53935','#1e88e5','#43a047','#fb8c00','#8e24aa','#00acc1','#d81b60'];
+let insideChart;
+function getChartDatasets(){
+  const datasets = [];
+  const src = D.data2[selectedActionType];
+  // Exclude dow=0 (Monday)
+  for(let dow=1;dow<=6;dow++){
+    const vals = HOURS_DISPLAY.map(h=> src?.[dow]?.[h] ?? 0);
+    datasets.push({
+      label: DOW_NAMES[dow],
+      data: vals,
+      borderColor: dayColors[dow],
+      backgroundColor: dayColors[dow]+'22',
+      borderWidth: 2.5,
+      tension: 0.3,
+      pointRadius: 3,
+      pointHoverRadius: 6,
+      fill: false
+    });
+  }
+  return datasets;
+}
+
+function initInsideChart(){
+  const ctx = document.getElementById('insideChart').getContext('2d');
+  insideChart = new Chart(ctx, {
+    type:'line',
+    data: { labels: HOURS_DISPLAY.map(h=>h+':00'), datasets: getChartDatasets() },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position:'top', labels:{usePointStyle:true, boxWidth:8} },
+        tooltip: { mode:'index', intersect:false }
+      },
+      scales: {
+        y: { beginAtZero:true, title:{display:true,text:'Personas dentro del club'}, grid:{color:'#eee'} },
+        x: { title:{display:true,text:'Hora'}, grid:{display:false} }
+      },
+      interaction: { mode:'nearest', axis:'x', intersect:false }
+    }
+  });
+}
+
+function updateInsideChart(){
+  if(!insideChart) return;
+  const datasets = getChartDatasets();
+  insideChart.data.datasets = datasets;
+  insideChart.update();
+}
+
+// ==================== SECTION 3: VEHICLE ANIMATION (continuous flow, 3+3 lanes) ====================
+const VEH_COLORS = {
+  'Acceso Principal':'#1565c0',
+  'Acceso Sur':'#e65100','Acceso Norte':'#00838f','Acceso Proveedores':'#4e342e'
+};
+const NO_EXIT = [];
+const LANES_PER_DIR = 3;
+
+let animPlaying = false, animSpeed = 1;
+let animTime = 0;
+let animCars = [];
+let spawnSchedule = [];
+let spawnIdx = 0;
+let totalIn = 0, totalOut = 0;
+let lastFrame = 0;
+let rafId = null;
+
+const CYCLE_SECONDS = 36;
+
+// Layout constants
+const SUBLANE_H = 11;     // height of each sub-lane
+const DIVIDER_H = 3;      // center divider between entry/exit
+const LABEL_H = 18;       // space for top label
+const GAP_BETWEEN = 8;    // gap between access groups
+const CAR_W = 16, CAR_H = 8;
+
+function getBlockH(){ return LABEL_H + LANES_PER_DIR*SUBLANE_H + DIVIDER_H + LANES_PER_DIR*SUBLANE_H + 2; }
+function getCanvasH(vehs){ return Math.max(200, vehs.length * (getBlockH()+GAP_BETWEEN) + 30); }
+
+function initVehFilters(){
+  const div = document.getElementById('vehFilters');
+  D.vehicularGroups.forEach(g=>{
+    const lbl = document.createElement('label');
+    const cb = document.createElement('input');
+    cb.type='checkbox'; cb.checked=true; cb.value=g;
+    cb.onchange = ()=>{ resizeCanvas(); if(!animPlaying) drawLanes(); };
+    lbl.appendChild(cb);
+    const dot = document.createElement('span');
+    dot.style.cssText=`display:inline-block;width:10px;height:10px;border-radius:50%;background:${VEH_COLORS[g]||'#999'};margin-right:2px;`;
+    lbl.appendChild(dot);
+    lbl.appendChild(document.createTextNode(' '+g+(NO_EXIT.includes(g)?' *':'')));
+    div.appendChild(lbl);
+  });
+}
+
+function initDayFilters(){
+  const div = document.getElementById('dayFilters');
+  DOW_NAMES.forEach((d,i)=>{
+    const lbl = document.createElement('label');
+    const cb = document.createElement('input');
+    cb.type='checkbox'; cb.value=i; cb.checked=(i===1);
+    cb.onchange = ()=>{ if(animPlaying){ rebuildSchedule(); } };
+    lbl.appendChild(cb); lbl.appendChild(document.createTextNode(' '+d+(i===0?' [!]':'')));
+    div.appendChild(lbl);
+  });
+}
+
+function getSelectedVeh(){ return Array.from(document.querySelectorAll('#vehFilters input:checked')).map(c=>c.value); }
+function getSelectedDays(){ return Array.from(document.querySelectorAll('#dayFilters input:checked')).map(c=>+c.value); }
+
+function setSpeed(s,btn){
+  animSpeed=s;
+  document.querySelectorAll('.btn-speed').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function buildSchedule(){
+  const vehs = getSelectedVeh();
+  const days = getSelectedDays();
+  const schedule = [];
+  const scale = 3;
+
+  for(let h=0; h<24; h++){
+    vehs.forEach(g=>{
+      let inVal=0, outVal=0;
+      const src3 = D.data3[selectedActionType];
+      days.forEach(dow=>{
+        inVal  += (src3?.[g]?.['in']?.[dow]?.[h] ?? 0);
+        outVal += (src3?.[g]?.['out']?.[dow]?.[h] ?? 0);
+      });
+      if(days.length>1){ inVal=Math.round(inVal/days.length); outVal=Math.round(outVal/days.length); }
+
+      const nIn = Math.max(0, Math.round(inVal/scale));
+      const nOut = Math.max(0, Math.round(outVal/scale));
+
+      for(let i=0; i<nIn; i++){
+        const t = h + (i + 0.1 + Math.random()*0.8) / Math.max(nIn,1);
+        schedule.push({time:t, group:g, dir:'in', inVal: inVal/Math.max(nIn,1), lane: i % LANES_PER_DIR});
+      }
+      for(let i=0; i<nOut; i++){
+        const t = h + (i + 0.1 + Math.random()*0.8) / Math.max(nOut,1);
+        schedule.push({time:t, group:g, dir:'out', outVal: outVal/Math.max(nOut,1), lane: i % LANES_PER_DIR});
+      }
+    });
+  }
+
+  schedule.sort((a,b)=>a.time - b.time);
+  return schedule;
+}
+
+function rebuildSchedule(){
+  spawnSchedule = buildSchedule();
+  spawnIdx = 0;
+  while(spawnIdx < spawnSchedule.length && spawnSchedule[spawnIdx].time <= animTime) spawnIdx++;
+  totalIn=0; totalOut=0;
+  const vehs = getSelectedVeh();
+  const days = getSelectedDays();
+  for(let h=0; h<Math.floor(animTime); h++){
+    vehs.forEach(g=>{
+      let iv=0, ov=0;
+      const src3=D.data3[selectedActionType]; days.forEach(dow=>{ iv+=(src3?.[g]?.['in']?.[dow]?.[h]??0); ov+=(src3?.[g]?.['out']?.[dow]?.[h]??0); });
+      if(days.length>1){ iv=Math.round(iv/days.length); ov=Math.round(ov/days.length); }
+      totalIn+=iv; totalOut+=ov;
+    });
+  }
+  updateAnimDisplay();
+}
+
+function togglePlay(){
+  if(animPlaying){ pauseAnim(); } else { startAnim(); }
+}
+
+function startAnim(){
+  if(animTime >= 24){ resetAnim(); }
+  spawnSchedule = buildSchedule();
+  spawnIdx = 0;
+  while(spawnIdx < spawnSchedule.length && spawnSchedule[spawnIdx].time <= animTime) spawnIdx++;
+  animPlaying = true;
+  lastFrame = performance.now();
+  document.getElementById('btnPlay').innerHTML='&#10074;&#10074; Pausar';
+  rafId = requestAnimationFrame(animFrame);
+}
+
+function pauseAnim(){
+  animPlaying = false;
+  document.getElementById('btnPlay').innerHTML='&#9654; Reproducir';
+  if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+}
+
+function resetAnim(){
+  pauseAnim();
+  animTime=0; totalIn=0; totalOut=0; spawnIdx=0;
+  animCars=[]; spawnSchedule=[];
+  updateAnimDisplay();
+  drawLanes();
+}
+
+function updateAnimDisplay(){
+  const h = Math.min(Math.floor(animTime), 23);
+  const m = Math.floor((animTime - Math.floor(animTime)) * 60);
+  document.getElementById('animHour').textContent =
+    String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0');
+  document.getElementById('cntIn').textContent = totalIn.toLocaleString('es-MX');
+  document.getElementById('cntOut').textContent = totalOut.toLocaleString('es-MX');
+  document.getElementById('cntNet').textContent = (totalIn-totalOut).toLocaleString('es-MX');
+}
+
+// Canvas setup
+const canvas = document.getElementById('animCanvas');
+const cctx = canvas.getContext('2d');
+
+function resizeCanvas(){
+  const wrap = canvas.parentElement;
+  const vehs = getSelectedVeh();
+  const H = getCanvasH(vehs);
+  const dpr = window.devicePixelRatio||1;
+  canvas.width = wrap.clientWidth * dpr;
+  canvas.height = H * dpr;
+  canvas.style.height = H + 'px';
+  cctx.setTransform(dpr,0,0,dpr,0,0);
+  if(!animPlaying) drawLanes();
+}
+window.addEventListener('resize', resizeCanvas);
+
+// Get y-position for a specific sub-lane within a group block
+function getLaneY(blockY, dir, laneIdx){
+  if(dir==='in'){
+    return blockY + LABEL_H + laneIdx * SUBLANE_H;
+  } else {
+    return blockY + LABEL_H + LANES_PER_DIR * SUBLANE_H + DIVIDER_H + laneIdx * SUBLANE_H;
+  }
+}
+
+function animFrame(now){
+  if(!animPlaying) return;
+  const dt = (now - lastFrame) / 1000;
+  lastFrame = now;
+  const hoursPerSec = 24 / CYCLE_SECONDS;
+  animTime += dt * hoursPerSec * animSpeed;
+
+  if(animTime >= 24){
+    animTime = 24;
+    updateAnimDisplay();
+    drawScene();
+    pauseAnim();
+    return;
+  }
+
+  while(spawnIdx < spawnSchedule.length && spawnSchedule[spawnIdx].time <= animTime){
+    const ev = spawnSchedule[spawnIdx];
+    const carSpeed = 0.007 + Math.random()*0.003;
+    const car = {group:ev.group, dir:ev.dir, lane:ev.lane, progress:-0.02-Math.random()*0.04, speed:carSpeed};
+    if(ev.dir==='in'){
+      totalIn += Math.round(ev.inVal||0);
+    } else {
+      totalOut += Math.round(ev.outVal||0);
+    }
+    animCars.push(car);
+    spawnIdx++;
+  }
+
+  updateAnimDisplay();
+  drawScene();
+  rafId = requestAnimationFrame(animFrame);
+}
+
+function drawLanes(){
+  const vehs = getSelectedVeh();
+  const W = canvas.clientWidth, H = getCanvasH(vehs);
+  cctx.clearRect(0,0,W,H);
+
+  if(vehs.length===0){
+    cctx.fillStyle='#999'; cctx.font='15px sans-serif'; cctx.textAlign='center';
+    cctx.fillText('Selecciona al menos un acceso vehicular', W/2, H/2);
+    return;
+  }
+
+  const blockH = getBlockH();
+
+  vehs.forEach((g,idx)=>{
+    const by = 10 + idx*(blockH+GAP_BETWEEN);
+    const roadY = by + LABEL_H;
+    const roadH = LANES_PER_DIR*SUBLANE_H*2 + DIVIDER_H;
+
+    // Road surface
+    cctx.fillStyle='#e8e8e8';
+    cctx.fillRect(0, roadY, W, roadH);
+
+    // Entry lanes (top)  -  slightly greenish tint
+    cctx.fillStyle='rgba(200,230,201,0.25)';
+    cctx.fillRect(0, roadY, W, LANES_PER_DIR*SUBLANE_H);
+
+    // Exit lanes (bottom)  -  slightly reddish tint
+    cctx.fillStyle='rgba(255,205,210,0.25)';
+    cctx.fillRect(0, roadY + LANES_PER_DIR*SUBLANE_H + DIVIDER_H, W, LANES_PER_DIR*SUBLANE_H);
+
+    // Lane dividers (dashed, between sub-lanes)
+    cctx.setLineDash([6,6]);
+    cctx.strokeStyle='#ccc'; cctx.lineWidth=0.5;
+    for(let i=1; i<LANES_PER_DIR; i++){
+      // Entry lane dividers
+      const ey = roadY + i*SUBLANE_H;
+      cctx.beginPath(); cctx.moveTo(0,ey); cctx.lineTo(W,ey); cctx.stroke();
+      // Exit lane dividers
+      const sy = roadY + LANES_PER_DIR*SUBLANE_H + DIVIDER_H + i*SUBLANE_H;
+      cctx.beginPath(); cctx.moveTo(0,sy); cctx.lineTo(W,sy); cctx.stroke();
+    }
+    cctx.setLineDash([]);
+
+    // Center divider (solid double yellow line)
+    const divY = roadY + LANES_PER_DIR*SUBLANE_H;
+    cctx.fillStyle='#f9a825';
+    cctx.fillRect(0, divY, W, DIVIDER_H);
+
+    // Gate bar at center
+    const gateX = W/2;
+    cctx.fillStyle=VEH_COLORS[g]||'#666';
+    cctx.fillRect(gateX-2, roadY-2, 4, roadH+4);
+
+    // Top label
+    cctx.fillStyle=VEH_COLORS[g]||'#666';
+    cctx.font='bold 12px sans-serif';
+    cctx.textAlign='left'; cctx.textBaseline='top';
+    cctx.fillText(g+(NO_EXIT.includes(g)?' (solo entrada)':''), 8, by+1);
+
+    // Direction labels at edges
+    cctx.font='10px sans-serif';
+    cctx.fillStyle='#2e7d32'; cctx.textAlign='left';
+    cctx.fillText('Entrada ->', 8, roadY + LANES_PER_DIR*SUBLANE_H - 12);
+    cctx.fillStyle='#c62828'; cctx.textAlign='right';
+    cctx.fillText('Salida <-', W-8, roadY + LANES_PER_DIR*SUBLANE_H + DIVIDER_H + LANES_PER_DIR*SUBLANE_H - 12);
+  });
+
+  // Progress bar
+  if(animTime > 0){
+    const barY = H - 6;
+    cctx.fillStyle='#e0e0e0'; cctx.fillRect(0, barY, W, 4);
+    cctx.fillStyle='#1565c0'; cctx.fillRect(0, barY, W*(animTime/24), 4);
+  }
+}
+
+function drawScene(){
+  drawLanes();
+
+  const vehs = getSelectedVeh();
+  const W = canvas.clientWidth;
+  const blockH = getBlockH();
+
+  animCars.forEach(car=>{
+    const idx = vehs.indexOf(car.group);
+    if(idx<0) return;
+    const by = 10 + idx*(blockH+GAP_BETWEEN);
+    const laneY = getLaneY(by, car.dir, car.lane);
+    const cy = laneY + (SUBLANE_H - CAR_H)/2;
+
+    car.progress += car.speed;
+
+    if(car.dir==='in'){
+      const cx = car.progress * W;
+      cctx.fillStyle = VEH_COLORS[car.group] || '#2e7d32';
+      drawCar(cctx, cx, cy, CAR_W, CAR_H, false);
+    } else {
+      const cx = (1 - car.progress) * W;
+      cctx.fillStyle = '#c62828';
+      drawCar(cctx, cx, cy, CAR_W, CAR_H, true);
+    }
+  });
+
+  animCars = animCars.filter(c => c.progress < 1.15);
+}
+
+function drawCar(ctx, x, y, w, h, flip){
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, 2);
+  ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.4)';
+  if(!flip){
+    ctx.fillRect(x+w-4, y+1, 3, h-2);
+  } else {
+    ctx.fillRect(x+1, y+1, 3, h-2);
+  }
+}
+
+
+// ==================== SECTION 2.5: COHORT TIME CHART ====================
+// ==================== SUMMARY CARDS (STATIC) ====================
+const SUMMARY = (function(){
+  const raw = {"Propietarios":{"personas":1267,"totalHoras":21281,"horasSemana":4.7,"color":"#1565c0"},"Usufructuarios":{"personas":557,"totalHoras":11360,"horasSemana":5.7,"color":"#2e7d32"},"Honorarias/Especiales":{"personas":122,"totalHoras":2780,"horasSemana":6.4,"color":"#6a1b9a"},"Cinépolis":{"personas":73,"totalHoras":1349,"horasSemana":5.2,"color":"#e65100"},"Empresas/Gerentes":{"personas":6,"totalHoras":437,"horasSemana":20.4,"color":"#00695c"},"Otros":{"personas":2,"totalHoras":29,"horasSemana":4.0,"color":"#546e7a"}};
+  // Merge Empresas/Gerentes into Otros (weighted average for hrs/sem)
+  const eg = raw['Empresas/Gerentes'], otros = raw['Otros'];
+  const personas = eg.personas + otros.personas;
+  const totalHoras = eg.totalHoras + otros.totalHoras;
+  const horasSemana = personas ? +((eg.horasSemana * eg.personas + otros.horasSemana * otros.personas) / personas).toFixed(1) : 0;
+  raw['Otros'] = { personas, totalHoras, horasSemana, color: otros.color };
+  delete raw['Empresas/Gerentes'];
+  return raw;
+})();
+
+function renderSummaryCards(){
+  const container = document.getElementById('summaryCards');
+  const total = Object.values(SUMMARY).reduce((acc, d) => {
+    acc.personas += d.personas;
+    acc.totalHoras += d.totalHoras;
+    return acc;
+  }, { personas: 0, totalHoras: 0 });
+  const totalColor = '#1a5c2e';
+  let html = '';
+  html += `<div style="border-left:4px solid ${totalColor};background:#f1f8e9;border-radius:8px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,0.06);grid-column:1 / -1;">
+    <div style="font-size:14px;font-weight:700;color:${totalColor};margin-bottom:8px;">Total</div>
+    <div style="font-size:36px;font-weight:800;color:#1a1a1a;line-height:1.1;">${total.personas.toLocaleString('es-MX')}</div>
+    <div style="font-size:12px;color:#999;margin-bottom:10px;">personas</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div><span style="font-size:16px;font-weight:700;color:#333;">${total.totalHoras.toLocaleString('es-MX')}</span><br><span style="font-size:11px;color:#888;">Total horas</span></div>
+    </div>
+  </div>`;
+  for(const [tipo, d] of Object.entries(SUMMARY)){
+    html += `<div style="border-left:4px solid ${d.color};background:#fafafa;border-radius:8px;padding:16px 18px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+      <div style="font-size:14px;font-weight:700;color:${d.color};margin-bottom:8px;">${tipo}</div>
+      <div style="font-size:36px;font-weight:800;color:#1a1a1a;line-height:1.1;">${d.personas.toLocaleString('es-MX')}</div>
+      <div style="font-size:12px;color:#999;margin-bottom:10px;">personas</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;">
+        <div><span style="font-size:16px;font-weight:700;color:#333;">${d.totalHoras.toLocaleString('es-MX')}</span><br><span style="font-size:11px;color:#888;">Total horas</span></div>
+        <div><span style="font-size:16px;font-weight:700;color:#333;">${d.horasSemana}</span><br><span style="font-size:11px;color:#888;">Prom. hrs/sem</span></div>
+      </div>
+    </div>`;
+  }
+  container.innerHTML = html;
+}
+
+// ==================== SECTION 4: GOLF DATA & CHARTS ====================
+const golfYears = [2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026];
+const golfAnnualTotals = [22117,18364,14257,12099,15549,15583,17343,19614,21120,21164,21100,23005,31342,32300,28229,30321,32236,37708,13019];
+const golfJanAprTotals = [7641,7050,5111,4581,4582,5740,5549,6364,6649,6995,7445,7005,8072,11220,9156,9865,9488,11136,13019];
+const golfJanAprDailyAvg = [73.5,68.4,49.6,44.5,44.5,55.7,53.9,61.8,63.9,67.9,73.0,68.0,77.6,108.9,88.9,95.8,92.1,108.1,126.4];
+// Forecast: linear regression 2022-2025, slope=+3035/year, R^2=0.928
+const golfForecast2027 = 42747;
+const golfForecast2028 = 45782;
+// Gender (data available 2022+)
+const golfGenderYears = [2022,2023,2024,2025,2026];
+const golfMasc = [11804,25159,27364,32276,11228];
+const golfFem = [2041,5162,4872,5432,1791];
+const golfFemPct = [14.7,17.0,15.1,14.4,13.8];
+// Age brackets (data available 2022+)
+const golfAgeYears = [2022,2023,2024,2025,2026];
+const golfAge = {
+  '1-20':  [2015,4490,5583,8661,2891],
+  '21-30': [1667,2512,2924,3721,1222],
+  '31-40': [2112,4650,4201,4461,1487],
+  '41-50': [3177,7529,7878,8323,2537],
+  '51-60': [3400,7347,7377,6914,2810],
+  '61+':   [1474,3793,4273,5628,2072]
+};
+
+function initGolfCharts(){
+  // ---- Chart 1: Annual totals + forecast ----
+  const allYears = [...golfYears, 2027, 2028];
+  const allTotals = [...golfAnnualTotals, golfForecast2027, golfForecast2028];
+  const bgColors = allYears.map(y => {
+    if(y >= 2027) return 'rgba(21,101,192,0.2)';
+    if(y === 2026) return 'rgba(21,101,192,0.4)';
+    return 'rgba(21,101,192,0.8)';
+  });
+  const bdColors = allYears.map(y => {
+    if(y >= 2027) return 'rgba(21,101,192,0.5)';
+    if(y === 2026) return 'rgba(21,101,192,0.6)';
+    return 'rgba(21,101,192,1)';
+  });
+  const borderDash = allYears.map(y => y >= 2027 ? [4,4] : []);
+
+  new Chart(document.getElementById('golfAnnualChart'), {
+    type: 'bar',
+    data: {
+      labels: allYears.map(String),
+      datasets: [{
+        label: 'Jugadores/año',
+        data: allTotals,
+        backgroundColor: bgColors,
+        borderColor: bdColors,
+        borderWidth: 1,
+        borderRadius: 3,
+        borderDash: undefined
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: { display: true, text: 'Total de jugadores por año', font: { size: 14, weight: 'bold' }, color: '#333' },
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(ctx){
+              var suffix = '';
+              if(ctx.label==='2026') suffix = ' (ene-abr)';
+              else if(ctx.label==='2027'||ctx.label==='2028') suffix = ' (pronóstico)';
+              return ctx.parsed.y.toLocaleString('es-MX') + ' jugadores' + suffix;
+            }
+          }
+        },
+        annotation: undefined
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { callback: function(v){ return (v/1000).toFixed(0)+'k'; } }, title: { display: true, text: 'Jugadores' } },
+        x: { ticks: { maxRotation: 45 } }
+      }
+    },
+    plugins: [{
+      id: 'forecastLine',
+      afterDraw: function(chart){
+        var meta = chart.getDatasetMeta(0);
+        var ctx2 = chart.ctx;
+        // Draw dashed border on forecast bars
+        [meta.data.length-2, meta.data.length-1].forEach(function(i){
+          var bar = meta.data[i];
+          if(!bar) return;
+          ctx2.save();
+          ctx2.setLineDash([4,3]);
+          ctx2.strokeStyle = 'rgba(21,101,192,0.7)';
+          ctx2.lineWidth = 1.5;
+          ctx2.strokeRect(bar.x - bar.width/2, bar.y, bar.width, bar.base - bar.y);
+          ctx2.restore();
+        });
+        // Label forecast
+        ctx2.save();
+        ctx2.font = '10px sans-serif';
+        ctx2.fillStyle = '#888';
+        ctx2.textAlign = 'center';
+        var b27 = meta.data[meta.data.length-2];
+        var b28 = meta.data[meta.data.length-1];
+        if(b27) ctx2.fillText('pron.', b27.x, b27.y - 4);
+        if(b28) ctx2.fillText('pron.', b28.x, b28.y - 4);
+        // Label 2026
+        var b26 = meta.data[meta.data.length-3];
+        if(b26) ctx2.fillText('ene-abr', b26.x, b26.y - 4);
+        ctx2.restore();
+      }
+    }]
+  });
+
+  // ---- Chart 2: Jan-Apr trend ----
+  new Chart(document.getElementById('golfJanAprChart'), {
+    type: 'bar',
+    data: {
+      labels: golfYears.map(String),
+      datasets: [
+        {
+          label: 'Total ene-abr',
+          data: golfJanAprTotals,
+          backgroundColor: 'rgba(46,125,50,0.7)',
+          borderColor: 'rgba(46,125,50,1)',
+          borderWidth: 1,
+          borderRadius: 3,
+          yAxisID: 'y',
+          order: 2
+        },
+        {
+          label: 'Prom. diario (sin lunes)',
+          data: golfJanAprDailyAvg,
+          type: 'line',
+          borderColor: '#e65100',
+          backgroundColor: 'rgba(230,81,0,0.1)',
+          pointBackgroundColor: '#e65100',
+          pointRadius: 3,
+          borderWidth: 2,
+          fill: false,
+          yAxisID: 'y1',
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        title: { display: true, text: 'Tendencia enero – abril', font: { size: 14, weight: 'bold' }, color: '#333' },
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: function(ctx){
+              if(ctx.datasetIndex === 0) return 'Total: ' + ctx.parsed.y.toLocaleString('es-MX') + ' jugadores';
+              return 'Prom. diario: ' + ctx.parsed.y + ' jugadores/día';
+            }
+          }
+        }
+      },
+      scales: {
+        y: { beginAtZero: true, position: 'left', ticks: { callback: function(v){ return (v/1000).toFixed(0)+'k'; } }, title: { display: true, text: 'Total jugadores' } },
+        y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Prom. diario' } },
+        x: { ticks: { maxRotation: 45 } }
+      }
+    }
+  });
+
+  // ---- Chart 3: Gender trend (stacked bar + % line) ----
+  new Chart(document.getElementById('golfGenderChart'), {
+    type: 'bar',
+    data: {
+      labels: golfGenderYears.map(function(y){ return y === 2026 ? '2026*' : String(y); }),
+      datasets: [
+        {
+          label: 'Masculino',
+          data: golfMasc,
+          backgroundColor: 'rgba(21,101,192,0.7)',
+          borderColor: 'rgba(21,101,192,1)',
+          borderWidth: 1,
+          borderRadius: 3,
+          stack: 'gender',
+          yAxisID: 'y',
+          order: 2
+        },
+        {
+          label: 'Femenino',
+          data: golfFem,
+          backgroundColor: 'rgba(194,24,91,0.7)',
+          borderColor: 'rgba(194,24,91,1)',
+          borderWidth: 1,
+          borderRadius: 3,
+          stack: 'gender',
+          yAxisID: 'y',
+          order: 2
+        },
+        {
+          label: '% Femenino',
+          data: golfFemPct,
+          type: 'line',
+          borderColor: '#c2185b',
+          backgroundColor: 'rgba(194,24,91,0.1)',
+          pointBackgroundColor: '#c2185b',
+          pointRadius: 4,
+          borderWidth: 2,
+          fill: false,
+          yAxisID: 'y1',
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        title: { display: true, text: 'Género: hombres vs mujeres', font: { size: 14, weight: 'bold' }, color: '#333' },
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: function(ctx){
+              if(ctx.datasetIndex === 2) return '% Femenino: ' + ctx.parsed.y + '%';
+              return ctx.dataset.label + ': ' + ctx.parsed.y.toLocaleString('es-MX');
+            }
+          }
+        }
+      },
+      scales: {
+        y: { beginAtZero: true, stacked: true, position: 'left', ticks: { callback: function(v){ return (v/1000).toFixed(0)+'k'; } }, title: { display: true, text: 'Jugadores' } },
+        y1: { beginAtZero: true, max: 25, position: 'right', grid: { drawOnChartArea: false }, ticks: { callback: function(v){ return v+'%'; } }, title: { display: true, text: '% Femenino' } },
+        x: { stacked: true }
+      }
+    }
+  });
+
+  // ---- Chart 4: Age distribution (stacked bar, % of total) ----
+  var ageColors = {
+    '1-20': '#4fc3f7', '21-30': '#29b6f6', '31-40': '#0288d1',
+    '41-50': '#f57c00', '51-60': '#e65100', '61+': '#bf360c'
+  };
+  var ageDatasets = [];
+  var ageKeys = Object.keys(golfAge);
+  // Convert to % for each year
+  var yearTotals = golfAgeYears.map(function(_,i){
+    return ageKeys.reduce(function(s,k){ return s + golfAge[k][i]; }, 0);
+  });
+
+  ageKeys.forEach(function(k){
+    var pctData = golfAge[k].map(function(v,i){
+      return yearTotals[i] > 0 ? Math.round(1000 * v / yearTotals[i]) / 10 : 0;
+    });
+    var lbl = k === '61+' ? '61 años y más' : k + ' años';
+    ageDatasets.push({
+      label: lbl,
+      data: pctData,
+      backgroundColor: ageColors[k],
+      borderColor: '#fff',
+      borderWidth: 0.5,
+      borderRadius: 2
+    });
+  });
+
+  new Chart(document.getElementById('golfAgeChart'), {
+    type: 'bar',
+    data: {
+      labels: golfAgeYears.map(function(y){ return y === 2026 ? '2026*' : String(y); }),
+      datasets: ageDatasets
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        title: { display: true, text: 'Distribución por edad (% del total)', font: { size: 14, weight: 'bold' }, color: '#333' },
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } },
+        tooltip: {
+          callbacks: {
+            label: function(ctx){
+              var abs = golfAge[ageKeys[ctx.datasetIndex]][ctx.dataIndex];
+              return ctx.dataset.label + ': ' + ctx.parsed.y + '% (' + abs.toLocaleString('es-MX') + ')';
+            }
+          }
+        }
+      },
+      scales: {
+        y: { beginAtZero: true, stacked: true, max: 100, ticks: { callback: function(v){ return v+'%'; } }, title: { display: true, text: '% del total' } },
+        x: { stacked: true }
+      }
+    }
+  });
+}
+
+// ==================== HEATMAP SCROLL HINT ====================
+(function(){
+  var wrap = document.getElementById('heatmapWrap');
+  if(!wrap) return;
+  function checkScroll(){
+    var canScroll = wrap.scrollWidth > wrap.clientWidth + 2;
+    var atEnd = wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 4;
+    wrap.classList.toggle('show-fade', canScroll && !atEnd);
+  }
+  wrap.addEventListener('scroll', checkScroll);
+  window.addEventListener('resize', checkScroll);
+  setTimeout(checkScroll, 500);
+})();
+
+// ==================== INIT ====================
+renderSummaryCards();
+initActionTypeFilter();
+initGroupFilters();
+renderHeatmap();
+try { initInsideChart(); } catch(e) {
+  console.error('Chart.js error:', e);
+  document.getElementById('insideChart').parentElement.innerHTML =
+    '<p style="color:#e65100;padding:20px;">Error al cargar la gráfica. Verifica conexión a internet (Chart.js se carga desde CDN).</p>';
+}
+initVehFilters();
+initDayFilters();
+try { initGolfCharts(); } catch(e) { console.error('Golf charts error:', e); }
+resizeCanvas();
+updateAnimDisplay();
+drawLanes();
+</script>
+</body>
+</html>
