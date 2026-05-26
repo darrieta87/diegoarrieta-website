@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1f3d2e">
+<title>Diagnóstico Club 3M · Casa Club Tres Marías</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1f1c;
+    --ink-soft: #3d4641;
+    --muted: #6b736e;
+    --paper: #f4f1ea;
+    --paper-warm: #ebe6db;
+    --paper-deep: #e3ddd0;
+    --line: #d8d2c4;
+    --line-soft: #e8e3d6;
+    --accent: #1f3d2e;
+    --accent-soft: #2d5a44;
+    --accent-pale: #e8ede9;
+    --gold: #a8843d;
+    --gold-soft: #c8a868;
+    --red: #b4422f;
+    --green-good: #2d8a5a;
+    --amber: #c08a2a;
+    --serif: "Fraunces", "Times New Roman", serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+    font-size: 17px;
+  }
+
+  /* ============ PIN GATE (same UX as v1) ============ */
+  .gate {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, #1a3528 0%, #1f3d2e 60%, #284a39 100%);
+    color: #f4f1ea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+  }
+  .gate.hidden { display: none; }
+  .gate-card {
+    width: 100%;
+    max-width: 460px;
+    text-align: center;
+  }
+  .gate-mark {
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(244,241,234,0.55);
+    font-weight: 500;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .gate-mark::before, .gate-mark::after {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: rgba(244,241,234,0.3);
+  }
+  .gate h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(34px, 9vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    color: #f4f1ea;
+  }
+  .gate h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: #c8b687;
+  }
+  .gate-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(15px, 4vw, 18px);
+    color: rgba(244,241,234,0.75);
+    margin-bottom: 44px;
+    line-height: 1.45;
+  }
+  .gate-label {
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(244,241,234,0.55);
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+  .pin-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .pin-cell {
+    width: 52px;
+    height: 64px;
+    background: rgba(244,241,234,0.06);
+    border: 1px solid rgba(244,241,234,0.2);
+    border-radius: 8px;
+    color: #f4f1ea;
+    font-family: var(--serif);
+    font-size: 30px;
+    font-weight: 400;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .pin-cell:focus {
+    border-color: #c8b687;
+    background: rgba(200,182,135,0.08);
+  }
+  .pin-cell.filled { border-color: rgba(200,182,135,0.5); }
+  .gate.error .pin-row { animation: shake 0.4s; }
+  .gate.error .pin-cell {
+    border-color: rgba(180,66,47,0.7);
+    background: rgba(180,66,47,0.1);
+  }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+  .gate-error {
+    font-size: 13px;
+    color: rgba(244,241,234,0.55);
+    min-height: 1.5em;
+    letter-spacing: 0.04em;
+  }
+  .gate-error.show { color: #e89880; }
+  .gate-foot {
+    margin-top: 56px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(244,241,234,0.4);
+  }
+  @media (max-width: 360px) {
+    .pin-cell { width: 46px; height: 58px; font-size: 26px; }
+    .pin-row { gap: 8px; }
+  }
+
+  /* ============ ARTICLE ============ */
+  .article { display: none; }
+  .article.show { display: block; }
+
+  .container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 22px;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(180deg, #1a3528 0%, #1f3d2e 70%, #284a39 100%);
+    color: var(--paper);
+    padding: 80px 0 70px;
+    margin-bottom: 56px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 24px;
+    background: linear-gradient(180deg, transparent, var(--paper));
+  }
+  .hero .kicker {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(244,241,234,0.5);
+    font-weight: 600;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero .kicker::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: rgba(244,241,234,0.4);
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(40px, 11vw, 64px);
+    line-height: 1.0;
+    letter-spacing: -0.025em;
+    margin-bottom: 16px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--gold-soft);
+  }
+  .hero .lede {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(18px, 4.6vw, 22px);
+    color: rgba(244,241,234,0.85);
+    line-height: 1.4;
+    margin-bottom: 40px;
+  }
+  .hero .meta {
+    border-top: 1px solid rgba(244,241,234,0.2);
+    padding-top: 22px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 24px;
+    font-size: 14px;
+    color: rgba(244,241,234,0.85);
+  }
+  .hero .meta .label {
+    display: block;
+    font-size: 10px;
+    color: rgba(244,241,234,0.5);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  /* ===== MODE TOGGLE (Completa / Express) ===== */
+  .mode-block {
+    margin-top: 32px;
+    padding-top: 26px;
+    border-top: 1px solid rgba(244,241,234,0.2);
+  }
+  .mode-block .mode-label {
+    font-size: 10px;
+    color: rgba(244,241,234,0.5);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .mode-toggle {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    background: rgba(244,241,234,0.06);
+    border: 1px solid rgba(244,241,234,0.2);
+    border-radius: 999px;
+  }
+  .mode-toggle button {
+    background: transparent;
+    border: none;
+    color: rgba(244,241,234,0.7);
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 11px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mode-toggle button .mins {
+    opacity: 0.6;
+    font-weight: 500;
+    margin-left: 6px;
+  }
+  .mode-toggle button.active {
+    background: var(--gold-soft);
+    color: var(--accent);
+  }
+  .mode-toggle button.active .mins { opacity: 0.7; }
+
+  /* Reading mode: each idea has two parallel versions.
+     .only-full shows in full mode, .only-express shows in express mode. */
+  body.mode-full .only-express { display: none !important; }
+  body.mode-express .only-full { display: none !important; }
+
+  /* ===== FLOATING BACK-TO-TOP (FAB) ===== */
+  .fab-back {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    width: 46px;
+    height: 46px;
+    background: var(--accent);
+    color: var(--paper);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 0.25s, transform 0.25s, background 0.2s;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fab-back:active { transform: scale(0.95); }
+  .fab-back.show {
+    opacity: 0.92;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .fab-back .arrow {
+    transform: rotate(-90deg);
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 600;
+  }
+  @supports (padding: max(0px)) {
+    .fab-back {
+      bottom: max(18px, calc(14px + env(safe-area-inset-bottom)));
+    }
+  }
+
+  /* ===== SECTIONS ===== */
+  section.s {
+    padding: 0 0 56px;
+  }
+  section.s + section.s { padding-top: 8px; }
+
+  /* Section eyebrow — chapter opener weight */
+  .eyebrow {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--accent);
+  }
+  .eyebrow .num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(44px, 12vw, 60px);
+    line-height: 0.85;
+    color: var(--gold);
+    letter-spacing: -0.01em;
+    flex-shrink: 0;
+  }
+  .eyebrow .lbl {
+    font-family: var(--sans);
+    font-size: clamp(14px, 3.6vw, 17px);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  /* Section titles */
+  h2.t {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(28px, 7.5vw, 36px);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+  h2.t em { font-style: italic; color: var(--accent); }
+
+  h3.st {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    color: var(--ink);
+    margin: 24px 0 12px;
+    letter-spacing: -0.005em;
+  }
+  h3.st em { font-style: italic; color: var(--accent); font-weight: 400; }
+
+  p.body {
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+  p.lede {
+    font-family: var(--serif);
+    font-size: 21px;
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 24px;
+    font-weight: 400;
+  }
+  p.lede strong, p.body strong { color: var(--accent); font-weight: 600; }
+  p.lede em, p.body em { font-style: italic; }
+
+  /* Dash list */
+  ul.dash {
+    list-style: none;
+    margin: 0 0 24px;
+    padding: 0;
+  }
+  ul.dash li {
+    position: relative;
+    padding: 10px 0 10px 22px;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  ul.dash li:last-child { border-bottom: none; }
+  ul.dash li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 1.05em;
+    width: 12px; height: 1.5px;
+    background: var(--accent);
+  }
+  ul.dash li strong { color: var(--ink); font-weight: 600; }
+
+  /* Bullet list (objectives style) */
+  ul.bul {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0;
+  }
+  ul.bul li {
+    padding: 6px 0 6px 18px;
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    position: relative;
+  }
+  ul.bul li::before {
+    content: "·";
+    position: absolute;
+    left: 4px; top: -1px;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 22px;
+  }
+  ul.bul li strong { color: var(--ink); font-weight: 600; }
+
+  /* Callout box */
+  .callout {
+    background: white;
+    border-left: 4px solid var(--gold);
+    padding: 18px 20px;
+    margin: 22px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .callout .cl-label {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .callout p {
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .callout.accent {
+    border-left-color: var(--accent);
+    background: var(--accent-pale);
+  }
+  .callout.accent .cl-label { color: var(--accent); }
+
+  /* Big stat */
+  .stat-row {
+    display: flex;
+    gap: 16px;
+    margin: 18px 0 28px;
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .stat-row .stat {
+    flex: 1;
+  }
+  .stat-row .stat .num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 40px;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .stat-row .stat .lbl {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  /* Status rows (cibermundo) */
+  .status {
+    background: white;
+    border-left: 4px solid;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-radius: 0 6px 6px 0;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .status.green { border-left-color: var(--green-good); }
+  .status.amber { border-left-color: var(--amber); }
+  .status.red { border-left-color: var(--red); }
+  .status .ico { font-size: 24px; line-height: 1.1; flex-shrink: 0; }
+  .status .body { flex: 1; }
+  .status .body .h {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+  .status .body .m {
+    font-size: 13.5px;
+    line-height: 1.4;
+    color: var(--ink-soft);
+  }
+
+  /* Theme card (3 temas) */
+  .theme {
+    border-top: 2px solid var(--accent);
+    padding: 22px 0 6px;
+    margin-bottom: 8px;
+  }
+  .theme .tnum {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 56px;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .theme h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.2;
+    margin: 0 0 10px;
+    color: var(--ink);
+  }
+  .theme p {
+    font-size: 15.5px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* Objective block */
+  .obj {
+    background: white;
+    padding: 22px 22px 18px;
+    margin-bottom: 14px;
+    border-top: 3px solid var(--accent);
+    border-radius: 0 0 6px 6px;
+  }
+  .obj .obj-num {
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .obj h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 1.2;
+    margin: 0 0 10px;
+    color: var(--ink);
+  }
+  .obj .obj-lede {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .obj ul.bul li { font-size: 14.5px; padding-left: 16px; }
+  .obj ul.bul li::before { font-size: 20px; left: 2px; top: -2px; }
+
+  /* Avances / Próximos columns become stacked sections */
+  .col {
+    margin-bottom: 26px;
+  }
+  .col .col-head {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 12px;
+  }
+  .col ul.bul li { font-size: 15.5px; padding: 8px 0 8px 18px; border-bottom: 1px solid var(--line-soft); }
+  .col ul.bul li:last-child { border-bottom: none; }
+  .col ul.bul li::before { top: 4px; left: 4px; }
+  .col ul.bul .when {
+    display: block;
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 3px;
+  }
+
+  /* Vendor cards */
+  .vendor {
+    background: white;
+    padding: 22px;
+    margin-bottom: 14px;
+    border-top: 3px solid var(--accent);
+    border-radius: 0 0 6px 6px;
+  }
+  .vendor h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 1.15;
+    margin: 0 0 4px;
+    color: var(--ink);
+  }
+  .vendor h3 em {
+    display: block;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--accent);
+    margin-top: 4px;
+  }
+  .vendor p {
+    margin-top: 14px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  /* Risk groups */
+  .risk-group {
+    margin-bottom: 26px;
+  }
+  .risk-group .rg-head {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .risk-group .rg-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink-soft);
+    padding-bottom: 10px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid var(--accent);
+  }
+  .risk {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex;
+    gap: 12px;
+  }
+  .risk:last-child { border-bottom: none; }
+  .risk .rn {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--red);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 22px;
+  }
+  .risk .rb { flex: 1; }
+  .risk .rb strong {
+    display: block;
+    font-size: 15px;
+    color: var(--ink);
+    font-weight: 600;
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .risk .rb p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  /* ===== GREEN BREAK SECTION (slide 06) ===== */
+  section.s.green {
+    background: linear-gradient(180deg, #1a3528 0%, #1f3d2e 60%, #284a39 100%);
+    color: var(--paper);
+    padding: 56px 0 56px;
+    margin: 24px 0 32px;
+  }
+  section.s.green .eyebrow {
+    border-bottom-color: rgba(244,241,234,0.25);
+  }
+  section.s.green .eyebrow .num { color: var(--gold-soft); }
+  section.s.green .eyebrow .lbl { color: rgba(244,241,234,0.85); }
+  section.s.green h2.t { color: var(--paper); }
+  section.s.green h2.t em { color: var(--gold-soft); }
+  section.s.green p.body { color: rgba(244,241,234,0.85); }
+  section.s.green .stat-row {
+    border-color: rgba(244,241,234,0.2);
+  }
+  section.s.green .stat-row .stat .num { color: var(--gold-soft); }
+  section.s.green .stat-row .stat .lbl { color: rgba(244,241,234,0.6); }
+  section.s.green .status {
+    background: rgba(244,241,234,0.06);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  section.s.green .status .body .h { color: var(--paper); }
+  section.s.green .status .body .m { color: rgba(244,241,234,0.75); }
+  section.s.green .kicker-italic {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--gold-soft);
+    font-size: 21px;
+    margin-top: 28px;
+    line-height: 1.35;
+  }
+
+  /* ===== VISION (closing) ===== */
+  .vision {
+    background: linear-gradient(180deg, #1a3528 0%, #1f3d2e 100%);
+    color: var(--paper);
+    padding: 56px 0 64px;
+    margin-top: 24px;
+  }
+  .vision .eyebrow { color: var(--gold-soft); border-bottom-color: rgba(244,241,234,0.25); }
+  .vision .eyebrow .num { color: var(--gold-soft); }
+  .vision .eyebrow .lbl { color: var(--gold-soft); }
+  .vision h2.t { color: var(--paper); }
+  .vision h2.t em { color: var(--gold-soft); }
+  .vision .vlist {
+    list-style: none;
+    counter-reset: vsn;
+    padding: 0;
+    margin: 12px 0 0;
+  }
+  .vision .vlist li {
+    counter-increment: vsn;
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 1.4;
+    color: rgba(244,241,234,0.95);
+    padding: 16px 0 16px 44px;
+    position: relative;
+    border-bottom: 1px solid rgba(244,241,234,0.15);
+  }
+  .vision .vlist li:last-child { border-bottom: none; }
+  .vision .vlist li::before {
+    content: counter(vsn, decimal-leading-zero);
+    position: absolute;
+    left: 0; top: 21px;
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--gold-soft);
+    font-weight: 700;
+  }
+
+  /* ===== FOOT ===== */
+  .article-foot {
+    background: var(--paper-deep);
+    padding: 32px 0;
+    text-align: center;
+  }
+  .article-foot .signature {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .article-foot .meta {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* Larger screens: keep mobile-feel but a bit wider */
+  @media (min-width: 700px) {
+    body { font-size: 18px; }
+    .container { padding: 0 32px; }
+    p.body { font-size: 18px; }
+    p.lede { font-size: 24px; }
+    h2.t { font-size: 40px; }
+    h3.st { font-size: 24px; }
+    .theme h3 { font-size: 24px; }
+    .theme .tnum { font-size: 64px; }
+    .obj h3 { font-size: 22px; }
+    .vision .vlist li { font-size: 20px; }
+  }
+
+  /* iPhone notch / home indicator safe area on the hero & vision */
+  @supports (padding: max(0px)) {
+    .hero { padding-top: max(80px, calc(70px + env(safe-area-inset-top))); }
+    .vision { padding-bottom: max(64px, calc(56px + env(safe-area-inset-bottom))); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ PIN GATE ============ -->
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <div class="gate-card">
+    <div class="gate-mark">Acceso protegido</div>
+    <h1 id="gateTitle">Diagnóstico <em>Club 3M</em></h1>
+    <div class="gate-sub">Casa Club Tres Marías · Mayo 2026</div>
+    <div class="gate-label">Ingresa tu PIN</div>
+    <div class="pin-row" id="pinRow">
+      <input class="pin-cell" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="Dígito 1">
+      <input class="pin-cell" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="Dígito 2">
+      <input class="pin-cell" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="Dígito 3">
+      <input class="pin-cell" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="off" aria-label="Dígito 4">
+    </div>
+    <div class="gate-error" id="gateErr">&nbsp;</div>
+    <div class="gate-foot">Diego Arrieta · Presidencia 3M</div>
+  </div>
+</div>
+
+<!-- ============ ARTICLE ============ -->
+<div class="article" id="article">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container">
+      <div class="kicker">Club de Golf Tres Marías</div>
+      <h1>Diagnóstico <em>Club 3M</em></h1>
+      <p class="lede">Ocho semanas de trabajo en el club — del 15 de marzo al 8 de mayo de 2026.</p>
+      <div class="meta">
+        <div><span class="label">Preparado por</span>Diego Arrieta</div>
+        <div><span class="label">Para</span>Presidencia 3M</div>
+        <div><span class="label">Periodo</span>15 mar — 8 may 2026</div>
+        <div><span class="label">Fecha</span>8 · mayo · 2026</div>
+      </div>
+      <div class="mode-block">
+        <div class="mode-label">Modo de lectura</div>
+        <div class="mode-toggle" role="tablist" aria-label="Selecciona modo de lectura">
+          <button type="button" data-mode="full" class="active" role="tab" aria-selected="true">Completa<span class="mins">10 min</span></button>
+          <button type="button" data-mode="express" role="tab" aria-selected="false">Express<span class="mins">5 min</span></button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- 02 RESUMEN -->
+    <section class="s">
+      <div class="container">
+        <div class="eyebrow"><span class="num">01</span><span class="lbl">Resumen ejecutivo</span></div>
+        <h2 class="t">Lo esencial, en una <em>página.</em></h2>
+        <p class="lede">En 8 semanas recorrí todas las áreas del club en <strong>+75 sesiones presenciales</strong>. Documenté <strong>89 oportunidades concretas</strong> que se explican por tres temas de fondo: la operación es ineficiente por costumbre, la tecnología se gestiona sin estrategia, y se dirige con pocos datos.</p>
+        <p class="body only-full">El club tiene con qué resolverlo: <strong>equipo estable</strong>, <strong>tecnología disponible</strong> (pagada y sin usar), y un <strong>nuevo DG con energía</strong> para modernizar. Ya hay avances en los tres frentes — digitalización, experiencia del socio, y transición de Dirección General.</p>
+        <p class="body only-express">Hay con qué resolverlo: <strong>equipo estable</strong>, <strong>tecnología pagada sin usar</strong>, <strong>nuevo DG con energía</strong>. Ya hay avances en los tres frentes.</p>
+        <div class="callout">
+          <div class="cl-label">Para marzo 2027</div>
+          <p>El socio interactúa con el club desde su teléfono, Daniel dirige con atención presencial, tech aprovechada bien implementada, y Presidencia tiene visibilidad en todo momento.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 MÉTODO -->
+    <section class="s">
+      <div class="container">
+        <div class="eyebrow"><span class="num">02</span><span class="lbl">Método</span></div>
+        <h2 class="t">Ocho semanas, todas las áreas, <em>.</em></h2>
+        <ul class="dash">
+          <li><strong>+75 sesiones presenciales</strong> con todas las áreas — cada una grabada y procesada con inteligencia artificial.</li>
+          <li class="only-full"><strong>Conversaciones</strong> con Dirección General, Administración, A&amp;B, Sistemas, Seguridad, Deportes (Golf, Tenis, Pádel, SPA, Pilates), Atención a Socios, RH y Campo.</li>
+          <li class="only-express"><strong>Conversaciones</strong> con todas las áreas: DG, Admin, A&amp;B, Sistemas, Deportes, RH y Campo.</li>
+          <li class="only-full"><strong>Revisión de sistemas</strong>: Clubes, MySCIE, POS, agenda SPA, Google Workspace.</li>
+          <li class="only-express"><strong>Revisión de sistemas</strong> actuales.</li>
+          <li class="only-full"><strong>Reuniones con proveedores</strong> tecnológicos: Kiritek y Cibermundo.</li>
+          <li class="only-express"><strong>Reuniones</strong> con Kiritek y Cibermundo.</li>
+          <li><strong>Observación directa</strong> en operación.</li>
+        </ul>
+        <div class="callout accent">
+          <div class="cl-label">El objetivo</div>
+          <p>Entender cómo opera el club hoy, dónde están las oportunidades de mayor impacto, y construir un plan realista de mejora.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 HALLAZGOS -->
+    <section class="s">
+      <div class="container">
+        <div class="eyebrow"><span class="num">03</span><span class="lbl">Hallazgos</span></div>
+        <h2 class="t">Base sólida, momento <em>ideal</em> para evolucionar.</h2>
+
+        <h3 class="st">El club tiene una base sólida</h3>
+        <ul class="dash">
+          <li><strong>Equipo consolidado</strong> — la mayoría con +10 años de servicio.</li>
+          <li class="only-full"><strong>Infraestructura tecnológica estable</strong> y disponible (ecosistema Cibermundo + amplia capacidad Kiritek).</li>
+          <li class="only-express"><strong>Infraestructura tecnológica estable</strong> y disponible.</li>
+          <li class="only-full"><strong>Un nuevo Director General</strong> con energía para modernizar operación y mejorar experiencia de socios.</li>
+          <li class="only-express"><strong>Un nuevo Director General</strong> con energía para modernizar.</li>
+        </ul>
+
+        <h3 class="st">La oportunidad principal</h3>
+        <p class="body">El club <strong>creció más rápido</strong> que su capacidad de evolucionar sus procesos y tecnología. Con <strong>550+ familias</strong>, <strong>480 empleados</strong> y una <strong>transición de Dirección General</strong> en curso, es el momento ideal para instalar la infraestructura organizacional que el club ya requiere.</p>
+      </div>
+    </section>
+
+    <!-- 05 TRES TEMAS -->
+    <section class="s">
+      <div class="container">
+        <div class="eyebrow"><span class="num">04</span><span class="lbl">Diagnóstico</span></div>
+        <h2 class="t">89 oportunidades, <em>tres temas de fondo.</em></h2>
+        <p class="body only-full">Del diagnóstico salieron <strong>89 oportunidades documentadas</strong> en todas las áreas del club. Casi todos comparten las mismas tres causas:</p>
+        <p class="body only-express">Las <strong>89 oportunidades</strong> comparten las mismas tres causas:</p>
+
+        <div class="theme">
+          <div class="tnum">01</div>
+          <h3>Esfuerzo alto, eficiencia baja</h3>
+          <p>Jornadas largas haciendo las cosas como siempre. No hay cultura de buscar formas más eficientes de operar.</p>
+        </div>
+        <div class="theme">
+          <div class="tnum">02</div>
+          <h3>Tecnología sin estrategia</h3>
+          <p>Sistemas resuelve el día a día, pero nadie coordina necesidades entre áreas, prioriza proyectos, ni los cierra.</p>
+        </div>
+        <div class="theme">
+          <div class="tnum">03</div>
+          <h3>Operación empírica</h3>
+          <p>Pocas métricas, sin objetivos claros por área, info que no fluye. Se decide por intuición y con data limitada.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 CIBERMUNDO -->
+    <section class="s green">
+      <div class="container">
+        <div class="eyebrow"><span class="num">05</span><span class="lbl">Tecnología</span></div>
+        <h2 class="t">Módulos Cibermundo <em>con uso parcial.</em></h2>
+        <div class="stat-row">
+          <div class="stat">
+            <div class="num">+20</div>
+            <div class="lbl">años con el proveedor</div>
+          </div>
+          <div class="stat">
+            <div class="num">9</div>
+            <div class="lbl">módulos contratados</div>
+          </div>
+        </div>
+
+        <div class="status green">
+          <div class="ico">✅</div>
+          <div class="body">
+            <div class="h">Core activo</div>
+            <div class="m">Clubes · POS · Back Office · Web Clubes · Facturación Recibos</div>
+          </div>
+        </div>
+        <div class="status amber">
+          <div class="ico">⚡</div>
+          <div class="body">
+            <div class="h">Parcial</div>
+            <div class="m">Web POS (solo Hoyo 6, pronto Carritos Bar)</div>
+          </div>
+        </div>
+        <div class="status red">
+          <div class="ico">🔴</div>
+          <div class="body">
+            <div class="h">Disponible pero sin activar</div>
+            <div class="m">App Socios · Web Reservas · Dashboard</div>
+          </div>
+        </div>
+
+        <p class="kicker-italic">La prioridad es activarla.</p>
+      </div>
+    </section>
+
+    <!-- 07 OBJETIVOS -->
+    <section class="s">
+      <div class="container">
+        <div class="eyebrow"><span class="num">06</span><span class="lbl">Plan</span></div>
+        <h2 class="t">Tres grandes objetivos. Hacia dónde dirigir <em>los esfuerzos.</em></h2>
+
+        <div class="obj">
+          <div class="obj-num">Objetivo 01</div>
+          <h3>Digitalizar la operación</h3>
+          <p class="obj-lede">Menos papel, menos captura doble, más visibilidad para quienes dirigen.</p>
+          <ul class="bul only-full">
+            <li>Reducir las ~350 mil impresiones anuales (proyecto paperless).</li>
+            <li>Conectar sistemas para eliminar doble captura (Clubes → MySCIE → accesos).</li>
+            <li>Métricas claras: gastos, ingresos, uso de instalaciones, estatus de proyectos.</li>
+          </ul>
+          <ul class="bul only-express">
+            <li>Reducir ~350 mil impresiones anuales.</li>
+            <li>Eliminar doble captura entre sistemas.</li>
+            <li>Métricas: gastos, ingresos, uso, proyectos.</li>
+          </ul>
+        </div>
+
+        <div class="obj">
+          <div class="obj-num">Objetivo 02</div>
+          <h3>Experiencia del socio</h3>
+          <p class="obj-lede">Que el socio tenga información a la mano y pueda hacer cosas desde su celular.</p>
+          <ul class="bul only-full">
+            <li><strong>Consultar:</strong> horarios deportes, servicios SPA, saldos, torneos, disponibilidad Golf.</li>
+            <li><strong>Actuar:</strong> reservar canchas, agendar SPA, pagar, dar acceso a invitados con QR.</li>
+          </ul>
+          <ul class="bul only-express">
+            <li><strong>Consultar:</strong> horarios, saldos, torneos, disponibilidad Golf.</li>
+            <li><strong>Actuar:</strong> agendar, pagar, accesos con QR.</li>
+          </ul>
+        </div>
+
+        <div class="obj">
+          <div class="obj-num">Objetivo 03</div>
+          <h3>Transición de Dirección General</h3>
+          <p class="obj-lede">Que Daniel arranque como DG con estructura, información y respaldo.</p>
+          <ul class="bul only-full">
+            <li>Organigrama con roles claros (DG, gerencias, deportes) — validación pendiente.</li>
+            <li>Herramientas para dirigir con datos y presencia, no solo intuición.</li>
+            <li>Acompañamiento a gerencias durante el cambio.</li>
+          </ul>
+          <ul class="bul only-express">
+            <li>Organigrama con roles claros — validación pendiente.</li>
+            <li>Dirigir con datos y presencia, no solo intuición.</li>
+            <li>Acompañamiento a gerencias.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 AVANCES -->
+    <section class="s">
+      <div class="container">
+        <div class="eyebrow"><span class="num">07</span><span class="lbl">Avances</span></div>
+        <h2 class="t">Lo que <em>ya se movió.</em></h2>
+        <p class="body" style="margin-bottom:20px; color: var(--muted); font-size: 14.5px; letter-spacing: 0.04em;">16 marzo — 7 mayo</p>
+
+        <div class="col">
+          <div class="col-head">Hacia digitalización · Obj. 1</div>
+          <ul class="bul">
+            <li>+75 sesiones diagnósticas con todas las áreas.</li>
+            <li class="only-full">Lista priorizada de necesidades tech enviada a Kiritek para planeación.</li>
+            <li class="only-express">Lista priorizada enviada a Kiritek.</li>
+            <li class="only-full">Nuevo formato seguimiento proyectos definido con Daniel (piloto mayo).</li>
+            <li class="only-express">Nuevo formato de seguimiento (piloto mayo).</li>
+          </ul>
+        </div>
+
+        <div class="col">
+          <div class="col-head">Hacia experiencia socio · Obj. 2</div>
+          <ul class="bul">
+            <li><strong>Reservas Tenis:</strong> necesidad documentada y en desarrollo con Cibermundo.</li>
+            <li class="only-full"><strong>Reservas Pilates:</strong> necesidad definida y compartida con Cibermundo.</li>
+            <li class="only-express"><strong>Reservas Pilates:</strong> definida con Cibermundo.</li>
+            <li class="only-full">Canal directo establecido con ambos proveedores.</li>
+            <li class="only-express">Canal directo con proveedores.</li>
+          </ul>
+        </div>
+
+        <div class="col">
+          <div class="col-head">Hacia transición DG · Obj. 3</div>
+          <ul class="bul">
+            <li>Propuesta de organigrama trabajada con Daniel, Nacho y Lulú.</li>
+            <li class="only-full">Presentación formal de Daniel como nuevo DG en todas las áreas (5 mayo).</li>
+            <li class="only-express">Presentación formal de Daniel como DG (5 mayo).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 SIGUIENTES -->
+    <section class="s">
+      <div class="container">
+        <div class="eyebrow"><span class="num">08</span><span class="lbl">Roadmap</span></div>
+        <h2 class="t">Qué viene en los <em>próximos meses.</em></h2>
+
+        <div class="col">
+          <div class="col-head">Digitalizar operación · Obj. 1</div>
+          <ul class="bul">
+            <li><span class="when">Junio — julio</span>Eliminar captura manual ingresos en MySCIE.</li>
+            <li class="only-full"><span class="when">Junio</span>Carritos bar con comandas electrónicas.</li>
+            <li class="only-express"><span class="when">Jun</span>Comandas electrónicas en carritos bar.</li>
+            <li class="only-full"><span class="when">Julio</span>Primeras reducciones paperless.</li>
+            <li class="only-express"><span class="when">Jul</span>Primeras reducciones paperless.</li>
+          </ul>
+        </div>
+
+        <div class="col">
+          <div class="col-head">Experiencia socio · Obj. 2</div>
+          <ul class="bul">
+            <li><span class="when">Junio</span>Registro interno golf (métricas de uso).</li>
+            <li class="only-full"><span class="when">Junio — agosto</span>Registro + reservas tenis y SPA.</li>
+            <li class="only-express"><span class="when">Jun–ago</span>Reservas tenis y SPA.</li>
+            <li class="only-full"><span class="when">Julio — agosto</span>Registro + reservas pilates.</li>
+            <li class="only-express"><span class="when">Jul–ago</span>Reservas pilates.</li>
+          </ul>
+        </div>
+
+        <div class="col">
+          <div class="col-head">Transición DG · Obj. 3</div>
+          <ul class="bul">
+            <li><span class="when">Mayo</span>Seguimiento estructurado de proyectos dirección/gerencias.</li>
+            <li class="only-full"><span class="when">Junio</span>Integración Ana Laura y Betty al proceso de compras.</li>
+            <li class="only-express"><span class="when">Jun</span>Ana Laura y Betty integradas a compras.</li>
+            <li class="only-full"><span class="when">Junio</span>Reportes para Presidencia y DG.</li>
+            <li class="only-express"><span class="when">Jun</span>Reportes para Presidencia y DG.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 PROVEEDORES -->
+    <section class="s">
+      <div class="container">
+        <div class="eyebrow"><span class="num">09</span><span class="lbl">Proveedores</span></div>
+        <h2 class="t">Dos proveedores, <em>dos roles.</em></h2>
+
+        <div class="vendor">
+          <h3>Cibermundo<em>Adaptar lo ya construido</em></h3>
+          <p class="only-full">Adaptar herramientas que ya tienen construidas — reservas, app socios, POS, agenda SPA. Para corto y mediano plazo, funciona bien.</p>
+          <p class="only-express">Adaptar lo que ya tienen — reservas, app, POS. Funciona para corto y mediano plazo.</p>
+        </div>
+
+        <div class="vendor">
+          <h3>Kiritek<em>Construir a la medida + ESTRATEGIA</em></h3>
+          <p class="only-full">Gran capacidad técnica para desarrollos a la medida y proyectos de cero — integraciones, automatizaciones, reportes. Excelente recurso para cuando necesitamos construir algo nuevo.</p>
+          <p class="only-express">Capacidad técnica para Construir a la medida + ESTRATEGIA — integraciones, automatizaciones, reportes.</p>
+        </div>
+
+        <div class="callout">
+          <div class="cl-label">Realidad</div>
+          <p>Cibermundo no es proveedor AAA. Pero hoy el club no estaría listo para sacar provecho de uno — primero necesitamos definir qué queremos (visión) y plan para llegar allí (estrategia). Eso es lo que estamos construyendo.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 RIESGOS -->
+    <section class="s">
+      <div class="container">
+        <div class="eyebrow"><span class="num">10</span><span class="lbl">Riesgos</span></div>
+        <h2 class="t">Lo que puede <em>descarrilar</em> esto.</h2>
+
+        <div class="risk-group">
+          <div class="rg-head">Objetivo 01</div>
+          <div class="rg-sub">Digitalizar operación</div>
+          <div class="risk">
+            <div class="rn">1</div>
+            <div class="rb"><strong>Que la tecnología se implemente y no se use.</strong><p>El patrón ya existe. Si se repite, se pierde credibilidad.</p></div>
+          </div>
+          <div class="risk">
+            <div class="rn">2</div>
+            <div class="rb"><strong>Que el conocimiento se vaya con el consultor.</strong><p class="only-full">La capacidad interna debe quedar instalada antes de marzo 2027.</p><p class="only-express">Capacidad interna instalada antes de marzo 2027.</p></div>
+          </div>
+          <div class="risk">
+            <div class="rn">3</div>
+            <div class="rb"><strong>Resistencia del equipo.</strong><p class="only-full">22 años de costumbre. El cambio tiene que sentirse como ayuda, no como imposición.</p><p class="only-express">22 años de costumbre. El cambio debe sentirse como ayuda, no como imposición.</p></div>
+          </div>
+        </div>
+
+        <div class="risk-group">
+          <div class="rg-head">Objetivo 02</div>
+          <div class="rg-sub">Experiencia socio</div>
+          <div class="risk">
+            <div class="rn">1</div>
+            <div class="rb"><strong>Primera impresión digital negativa.</strong><p>Si falla, los socios rechazan lo digital y se cierra la puerta.</p></div>
+          </div>
+          <div class="risk">
+            <div class="rn">2</div>
+            <div class="rb"><strong>Seguridad y privacidad.</strong><p class="only-full">Socios de alto perfil. Cualquier falla en datos daña la confianza de forma desproporcionada.</p><p class="only-express">Socios de alto perfil; falla en datos daña la confianza.</p></div>
+          </div>
+          <div class="risk">
+            <div class="rn">3</div>
+            <div class="rb"><strong>Hábitos arraigados.</strong><p class="only-full">El socio resuelve por teléfono o en persona. Lo digital tiene que ser notablemente mejor.</p><p class="only-express">Lo digital tiene que ser notablemente mejor que el teléfono.</p></div>
+          </div>
+        </div>
+
+        <div class="risk-group">
+          <div class="rg-head">Objetivo 03</div>
+          <div class="rg-sub">Transición DG</div>
+          <div class="risk">
+            <div class="rn">1</div>
+            <div class="rb"><strong>Liderazgo Fraccionado</strong><p>Para que Daniel ejerza autoridad real, Nacho debe soltar las decisiones operativas y la oficina de DG.</p></div>
+          </div>
+          <div class="risk">
+            <div class="rn">2</div>
+            <div class="rb"><strong>Daniel absorbido por talacha.</strong><p class="only-full">Que no termine firmando papeles en vez de caminar pasillos.</p><p class="only-express">Que camine pasillos, no firme papeles.</p></div>
+          </div>
+          <div class="risk">
+            <div class="rn">3</div>
+            <div class="rb"><strong>Evitar decisiones difíciles.</strong><p class="only-full">Si evita fricción con colegas, pierde la ventana de credibilidad.</p><p class="only-express">Evitar fricción con colegas = perder credibilidad.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 12 VISIÓN -->
+  <section class="vision">
+    <div class="container">
+      <div class="eyebrow"><span class="num">11</span><span class="lbl">Visión · Marzo 2027</span></div>
+      <h2 class="t">Cómo se ve el club <em>en diez meses.</em></h2>
+      <ol class="vlist">
+        <li>El socio reserva, consulta y paga desde su teléfono.</li>
+        <li>Los operadores trabajan de forma eficiente y digital, sin papel.</li>
+        <li>Daniel dirige con información, sin depender de la memoria de nadie.</li>
+        <li>La tecnología que ya se pagó está activa y generando valor.</li>
+        <li>Kiritek integrado como brazo técnico del club — anticipando necesidades y resolviendo con velocidad.</li>
+        <li>Presidencia y DG tienen acceso a la data clave 24/7 sin tener que pedirla.</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer class="article-foot">
+    <div class="container">
+      <div class="signature">Diego Arrieta</div>
+      <div class="meta">8 · Mayo · 2026 · Club de Golf Tres Marías</div>
+    </div>
+  </footer>
+</div>
+
+<button type="button" class="fab-back" id="fabBack" aria-label="Regresar al inicio" title="Regresar al inicio">
+  <span class="arrow">‹</span>
+</button>
+
+<script>
+(function(){
+  // ============ PIN GATE ============
+  var PIN = '0717';
+  var STORAGE_KEY = '3m-diag-2026-may-auth';
+  var gate = document.getElementById('gate');
+  var article = document.getElementById('article');
+  var cells = document.querySelectorAll('.pin-cell');
+  var errEl = document.getElementById('gateErr');
+
+  function unlock() {
+    try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch(_){}
+    gate.classList.add('hidden');
+    article.classList.add('show');
+    window.scrollTo(0, 0);
+  }
+
+  function checkPin() {
+    var entered = Array.prototype.map.call(cells, function(c){ return c.value; }).join('');
+    if (entered.length < 4) return;
+    if (entered === PIN) {
+      unlock();
+    } else {
+      gate.classList.add('error');
+      errEl.textContent = 'PIN incorrecto. Intenta de nuevo.';
+      errEl.classList.add('show');
+      setTimeout(function(){
+        gate.classList.remove('error');
+        cells.forEach(function(c){ c.value = ''; c.classList.remove('filled'); });
+        cells[0].focus();
+      }, 500);
+    }
+  }
+
+  cells.forEach(function(cell, i){
+    cell.addEventListener('input', function(){
+      var v = cell.value.replace(/\D/g, '');
+      cell.value = v.slice(-1);
+      if (cell.value) cell.classList.add('filled'); else cell.classList.remove('filled');
+      errEl.classList.remove('show');
+      errEl.innerHTML = '&nbsp;';
+      if (cell.value && i < cells.length - 1) cells[i+1].focus();
+      if (i === cells.length - 1 && cell.value) checkPin();
+    });
+    cell.addEventListener('keydown', function(e){
+      if (e.key === 'Backspace' && !cell.value && i > 0) {
+        cells[i-1].focus();
+        cells[i-1].value = '';
+        cells[i-1].classList.remove('filled');
+      }
+      if (e.key === 'Enter') checkPin();
+    });
+    cell.addEventListener('paste', function(e){
+      e.preventDefault();
+      var paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').slice(0,4);
+      paste.split('').forEach(function(ch, idx){
+        if (cells[idx]) {
+          cells[idx].value = ch;
+          cells[idx].classList.add('filled');
+        }
+      });
+      if (paste.length === 4) checkPin();
+      else if (cells[paste.length]) cells[paste.length].focus();
+    });
+  });
+
+  setTimeout(function(){ cells[0].focus(); }, 200);
+
+  try {
+    if (sessionStorage.getItem(STORAGE_KEY) === '1') unlock();
+  } catch(_){}
+
+  // ============ FLOATING BACK-TO-TOP ============
+  var fab = document.getElementById('fabBack');
+  if (fab) {
+    fab.addEventListener('click', function(){
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    var SHOW_AFTER = 600;
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function(){
+        var y = window.scrollY || window.pageYOffset || 0;
+        if (y > SHOW_AFTER) fab.classList.add('show');
+        else fab.classList.remove('show');
+        ticking = false;
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  // ============ MODE TOGGLE (Completa / Express) ============
+  var MODE_KEY = '3m-diag-mode';
+  var modeBtns = document.querySelectorAll('.mode-toggle button');
+  function setMode(mode, scrollTop) {
+    if (mode !== 'express') mode = 'full';
+    document.body.classList.toggle('mode-express', mode === 'express');
+    document.body.classList.toggle('mode-full', mode !== 'express');
+    modeBtns.forEach(function(b){
+      var active = b.getAttribute('data-mode') === mode;
+      b.classList.toggle('active', active);
+      b.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    try { sessionStorage.setItem(MODE_KEY, mode); } catch(_){}
+    if (scrollTop) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  modeBtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      setMode(b.getAttribute('data-mode'), false);
+    });
+  });
+  // Restore previous choice (if any) — default is full
+  try {
+    var saved = sessionStorage.getItem(MODE_KEY);
+    if (saved === 'express') setMode('express', false);
+    else setMode('full', false);
+  } catch(_) { setMode('full', false); }
+})();
+</script>
+</body>
+</html>

@@ -10,12 +10,29 @@ This is the source code for [diegoarrieta.com](https://diegoarrieta.com), a pers
 
 ```
 /
-├── index.html          # Main website (single-page, static)
-├── README.md           # This file
-├── CLAUDE.md           # AI assistant context for working on this project
-├── CNAME               # Custom domain config for GitHub Pages
-└── assets/             # Images, fonts, and other static files (coming soon)
+├── index.html                 # Main website (single-page, static)
+├── README.md                  # This file
+├── CLAUDE.md                  # AI assistant context for working on this project
+├── CNAME                      # Custom domain config for GitHub Pages
+├── assets/                    # Images and static files (e.g. diego-portrait.jpg)
+├── clientes/                  # Client/consulting deliverables
+│   └── tres-marias/           #   Club de Golf Tres Marías (3M)
+│       ├── diagnostico-mayo-2026.html
+│       ├── diagnostico-mayo-2026-vertical.html
+│       ├── accesos-abril-2026.html
+│       ├── bot-discovery.html
+│       └── master-app/        #   Interactive member-app demo
+│           ├── index.html
+│           └── demo.html
+├── personal/                  # Personal & family projects
+│   └── mateo/
+│       └── mundial-2026.html  #   Mateo's World Cup 2026 sticker album
+└── (root *.html stubs)        # Redirects from old URLs → new paths (keep shared links alive)
 ```
+
+> Note: the `*.html` files still sitting in the root (e.g. `3m-diagnostico-2026-mayo.html`,
+> `mateo-mundial-2026.html`) are tiny redirect stubs that forward already-shared links to their
+> new home. They can be deleted once those links are no longer in circulation.
 
 ## Tech Stack
 
