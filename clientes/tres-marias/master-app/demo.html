@@ -22,6 +22,51 @@
 </style>
 </head>
 <body>
+
+<!-- ===== PIN GATE (protección ligera, lado cliente) ===== -->
+<style>
+  #pinGate{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#1a5c2e 0%,#0d3d1c 100%);display:flex;align-items:center;justify-content:center;padding:20px;}
+  #pinGate .pin-box{background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.3);padding:32px 28px;max-width:340px;width:100%;text-align:center;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;}
+  #pinGate h2{font-size:19px;color:#1a5c2e;margin-bottom:6px;font-weight:700;}
+  #pinGate p.sub{font-size:13px;color:#666;margin-bottom:18px;}
+  #pinGate input{width:100%;font-size:26px;letter-spacing:10px;text-align:center;padding:12px;border:2px solid #e0e0e0;border-radius:10px;outline:none;font-variant-numeric:tabular-nums;}
+  #pinGate input:focus{border-color:#2d8a4e;}
+  #pinGate button{margin-top:14px;width:100%;background:#1a5c2e;color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s;}
+  #pinGate button:hover{background:#2d8a4e;}
+  #pinGate .err{color:#c62828;font-size:13px;height:18px;margin-top:10px;}
+  body.locked{overflow:hidden;}
+</style>
+<div id="pinGate">
+  <div class="pin-box">
+    <h2>Club de Golf Tres Marías</h2>
+    <p class="sub">Ingresa el PIN para ver el dashboard</p>
+    <input id="pinInput" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
+    <div class="err" id="pinErr"></div>
+    <button type="button" id="pinBtn">Entrar</button>
+  </div>
+</div>
+<script>
+(function(){
+  var PIN="0717", KEY="3m_pin_ok";
+  function unlock(){
+    var g=document.getElementById('pinGate');
+    if(g) g.style.display='none';
+    document.body.classList.remove('locked');
+    window.dispatchEvent(new Event('resize'));
+  }
+  if(sessionStorage.getItem(KEY)==="1"){ unlock(); return; }
+  document.body.classList.add('locked');
+  function tryPin(){
+    var inp=document.getElementById('pinInput');
+    if(inp.value.trim()===PIN){ sessionStorage.setItem(KEY,"1"); unlock(); }
+    else { document.getElementById('pinErr').textContent='PIN incorrecto'; inp.value=''; inp.focus(); }
+  }
+  document.getElementById('pinBtn').addEventListener('click',tryPin);
+  document.getElementById('pinInput').addEventListener('keydown',function(e){ if(e.key==='Enter') tryPin(); });
+  window.addEventListener('load',function(){ var i=document.getElementById('pinInput'); if(i) i.focus(); });
+})();
+</script>
+<!-- ===== /PIN GATE ===== -->
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useEffect } = React;
