@@ -1,0 +1,12 @@
+name = "discovery-api"
+main = "worker.js"
+compatibility_date = "2024-12-01"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "f56cab8f9fb2486cb9e8585048094832"
+
+# Secrets (set via `npx wrangler secret put <NAME>`):
+#   ANTHROPIC_API_KEY
+#   RESEND_API_KEY
+#   NOTIFICATION_EMAIL
