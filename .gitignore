@@ -3,3 +3,6 @@
 
 # Claude Code (config y transcripts locales)
 .claude/
+
+# Node
+node_modules/
