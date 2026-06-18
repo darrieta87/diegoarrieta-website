@@ -296,6 +296,41 @@ export default {
       return response;
     }
 
+    if (url.pathname === "/tts" && request.method === "POST") {
+      const { text } = await request.json();
+      if (!text || !env.ELEVENLABS_API_KEY) {
+        return new Response(JSON.stringify({ error: "TTS not available" }), {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...cors },
+        });
+      }
+      const ttsResponse = await fetch(
+        "https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL",
+        {
+          method: "POST",
+          headers: {
+            "xi-api-key": env.ELEVENLABS_API_KEY,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text,
+            model_id: "eleven_multilingual_v2",
+            voice_settings: { stability: 0.5, similarity_boost: 0.75 },
+          }),
+        }
+      );
+      if (!ttsResponse.ok) {
+        const err = await ttsResponse.text();
+        return new Response(JSON.stringify({ error: "TTS error", detail: err }), {
+          status: 502,
+          headers: { "Content-Type": "application/json", ...cors },
+        });
+      }
+      return new Response(ttsResponse.body, {
+        headers: { "Content-Type": "audio/mpeg", ...cors },
+      });
+    }
+
     return new Response("Not found", { status: 404, headers: cors });
   },
 };

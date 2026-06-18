@@ -228,6 +228,51 @@ body.locked { overflow: hidden; }
   background: var(--white);
 }
 
+/* ===== VOICE TOGGLE ===== */
+.voice-toggle {
+  text-align: center;
+  padding: 6px 16px 0;
+  background: var(--paper);
+}
+.voice-toggle button {
+  background: none; border: 1px solid var(--sand);
+  border-radius: 20px; padding: 6px 14px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 13px; color: var(--grey);
+  cursor: pointer; display: inline-flex;
+  align-items: center; gap: 6px;
+  transition: all 0.2s;
+}
+.voice-toggle button.active {
+  background: var(--ocean); color: #fff;
+  border-color: var(--ocean);
+}
+.voice-toggle button.active svg { stroke: #fff; }
+
+/* ===== MIC BUTTON ===== */
+.mic-btn {
+  width: 44px; height: 44px;
+  border: 2px solid var(--ocean); border-radius: 50%;
+  background: var(--white); color: var(--ocean);
+  font-size: 20px; cursor: pointer;
+  display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0;
+  transition: all 0.15s;
+}
+.mic-btn:hover { background: var(--ocean); color: #fff; }
+.mic-btn:hover svg { stroke: #fff; }
+.mic-btn.recording {
+  background: #c62828; border-color: #c62828;
+  animation: pulse 1.5s infinite;
+}
+.mic-btn.recording svg { stroke: #fff; }
+.mic-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(198,40,40,0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(198,40,40,0); }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -264,8 +309,17 @@ body.locked { overflow: hidden; }
   </div>
 </div>
 
+<div class="voice-toggle" id="voiceToggle">
+  <button id="voiceModeBtn" aria-label="Activar modo voz">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    <span id="voiceLabel">Activar voz</span>
+  </button>
+</div>
 <div class="input-area">
   <textarea id="msgInput" placeholder="Escribe tu respuesta..." rows="1" disabled></textarea>
+  <button class="mic-btn" id="micBtn" disabled aria-label="Grabar voz" style="display:none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+  </button>
   <button class="send-btn" id="sendBtn" disabled aria-label="Enviar">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
   </button>
@@ -305,7 +359,12 @@ const welcome = document.getElementById('welcome');
 const SESSION_KEY = `discovery_session_${BRIEF_ID}`;
 const sessionId = localStorage.getItem(SESSION_KEY) || (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
 localStorage.setItem(SESSION_KEY, sessionId);
+const micBtn = document.getElementById('micBtn');
+const voiceModeBtn = document.getElementById('voiceModeBtn');
+const voiceLabel = document.getElementById('voiceLabel');
 let isSending = false;
+let voiceMode = false;
+let recognition = null;
 
 function scrollToBottom() {
   requestAnimationFrame(() => {
@@ -353,7 +412,8 @@ function setInputEnabled(enabled) {
   isSending = !enabled;
   msgInput.disabled = !enabled;
   sendBtn.disabled = !enabled;
-  if (enabled) msgInput.focus();
+  micBtn.disabled = !enabled;
+  if (enabled && !voiceMode) msgInput.focus();
 }
 
 async function sendMessage(text) {
@@ -413,6 +473,9 @@ async function sendMessage(text) {
         } catch { /* skip */ }
       }
     }
+    if (voiceMode && fullText) {
+      speakText(fullText);
+    }
   } catch (err) {
     console.error('Chat error:', err);
     hideTyping();
@@ -420,6 +483,22 @@ async function sendMessage(text) {
   }
 
   setInputEnabled(true);
+}
+
+async function speakText(text) {
+  try {
+    const res = await fetch(`${API_URL}/tts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) return;
+    const blob = await res.blob();
+    const audio = new Audio(URL.createObjectURL(blob));
+    audio.play();
+  } catch (e) {
+    console.error('TTS error:', e);
+  }
 }
 
 // Auto-grow textarea
@@ -447,6 +526,63 @@ msgInput.addEventListener('keydown', function(e) {
     msgInput.style.height = 'auto';
     sendMessage(text);
   }
+});
+
+// ===== VOICE MODE =====
+voiceModeBtn.addEventListener('click', function() {
+  voiceMode = !voiceMode;
+  voiceModeBtn.classList.toggle('active', voiceMode);
+  voiceLabel.textContent = voiceMode ? 'Voz activada' : 'Activar voz';
+  micBtn.style.display = voiceMode ? 'flex' : 'none';
+});
+
+micBtn.addEventListener('click', function() {
+  if (isSending) return;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    addMessage('agent', 'Tu navegador no soporta reconocimiento de voz. Usa Chrome o Safari.');
+    return;
+  }
+
+  if (recognition) {
+    recognition.stop();
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = 'es-MX';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  micBtn.classList.add('recording');
+
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript;
+    micBtn.classList.remove('recording');
+    recognition = null;
+    if (text.trim()) {
+      msgInput.value = text;
+      sendMessage(text.trim());
+      msgInput.value = '';
+    }
+  };
+
+  recognition.onerror = function(e) {
+    console.error('Speech error:', e.error);
+    micBtn.classList.remove('recording');
+    recognition = null;
+    if (e.error === 'not-allowed') {
+      addMessage('agent', 'Necesito permiso para usar el micrófono. Revisa los permisos de tu navegador.');
+    }
+  };
+
+  recognition.onend = function() {
+    micBtn.classList.remove('recording');
+    recognition = null;
+  };
+
+  recognition.start();
 });
 
 function initChat() {
