@@ -302,7 +302,9 @@ const msgInput = document.getElementById('msgInput');
 const sendBtn = document.getElementById('sendBtn');
 const welcome = document.getElementById('welcome');
 
-const sessionId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+const SESSION_KEY = `discovery_session_${BRIEF_ID}`;
+const sessionId = localStorage.getItem(SESSION_KEY) || (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+localStorage.setItem(SESSION_KEY, sessionId);
 let isSending = false;
 
 function scrollToBottom() {

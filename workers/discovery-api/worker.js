@@ -73,7 +73,7 @@ async function getSession(env, sessionId) {
 
 async function saveSession(env, sessionId, session) {
   await env.SESSIONS.put(`session:${sessionId}`, JSON.stringify(session), {
-    expirationTtl: 7200,
+    expirationTtl: 2592000,
   });
 }
 
