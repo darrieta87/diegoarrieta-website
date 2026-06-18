@@ -287,6 +287,7 @@ export default {
       });
     }
 
+
     if (url.pathname === "/chat" && request.method === "POST") {
       const response = await handleChat(request, env);
       for (const [key, val] of Object.entries(cors)) {
