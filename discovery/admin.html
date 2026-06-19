@@ -349,10 +349,14 @@ async function openConfigModal() {
     <div class="modal">
       <h3>Configuración General</h3>
       <label>Modelo</label>
-      <input type="text" id="cfgModel" value="${config.model || 'claude-sonnet-4-6'}">
+      <select id="cfgModel" style="width:100%;font-size:14px;padding:10px 12px;border:1px solid var(--sand);border-radius:8px;outline:none;background:var(--paper);margin-bottom:14px">
+        <option value="claude-sonnet-4-6" ${config.model === 'claude-sonnet-4-6' ? 'selected' : ''}>Sonnet 4.6 — $3/$15 · Rápido, inteligente (recomendado)</option>
+        <option value="claude-sonnet-4-5" ${config.model === 'claude-sonnet-4-5' ? 'selected' : ''}>Sonnet 4.5 — $3/$15 · Bueno para entrevistas simples</option>
+        <option value="claude-opus-4-6" ${config.model === 'claude-opus-4-6' ? 'selected' : ''}>Opus 4.6 — $5/$25 · Muy inteligente, mejores follow-ups</option>
+        <option value="claude-opus-4-8" ${config.model === 'claude-opus-4-8' ? 'selected' : ''}>Opus 4.8 — $5/$25 · El más capaz, los mejores follow-ups</option>
+      </select>
       <label>Master Prompt (aplica a TODOS los agents)</label>
       <textarea id="cfgPrompt" style="min-height:200px">${escapeHtml(config.master_prompt || '')}</textarea>
-      <label><input type="checkbox" id="cfgVoice" ${config.voice_enabled ? 'checked' : ''}> Voz habilitada</label>
       <div class="actions" style="margin-top:16px">
         <button class="btn secondary" onclick="closeModal()">Cancelar</button>
         <button class="btn primary" onclick="saveConfig()">Guardar</button>
@@ -366,7 +370,7 @@ async function saveConfig() {
   await api("PUT", "/api/config", {
     model: document.getElementById("cfgModel").value,
     master_prompt: document.getElementById("cfgPrompt").value,
-    voice_enabled: document.getElementById("cfgVoice").checked,
+    voice_enabled: false,
   });
   closeModal();
   loadBriefs();

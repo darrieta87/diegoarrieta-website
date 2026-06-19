@@ -546,12 +546,12 @@ async function handleTTS(request, env) {
 // ===== BRIEF INFO (public) =====
 
 async function handleBriefInfo(env, slug) {
-  const brief = await loadBrief(env, slug);
+  const [brief, config] = await Promise.all([loadBrief(env, slug), getConfig(env)]);
   if (!brief) return Response.json({ error: "Brief not found" }, { status: 404 });
   return Response.json({
     title: brief.title,
     area: brief.area,
-    config: brief.config,
+    config: { voice_enabled: config.voice_enabled, model: config.model },
   });
 }
 

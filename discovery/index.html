@@ -309,6 +309,9 @@ async function loadBriefInfo() {
       document.getElementById("authBriefTitle").textContent = briefInfo.title || "";
       document.getElementById("chatTitle").textContent = "Entrevista Discovery";
       document.getElementById("chatSub").textContent = briefInfo.title || "";
+      if (!briefInfo.config?.voice_enabled) {
+        document.querySelector(".voice-toggle").style.display = "none";
+      }
     } else {
       document.getElementById("authBriefTitle").textContent = "Brief no encontrado";
     }
