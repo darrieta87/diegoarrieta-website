@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Discovery Admin — ozom.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --clay: #C4956A; --rust: #B85C3A; --ocean: #2D5F6E; --sage: #7A8B6F;
+  --ink: #1A1714; --paper: #F5F0E8; --sand: #E8DFD0;
+  --white: #FEFCF8; --grey: #6B6560; --grey-light: #9B9590;
+  --green: #4a8c5c; --red: #b3402e;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Source Sans 3', -apple-system, sans-serif;
+  background: var(--paper); color: var(--ink); min-height: 100vh;
+}
+
+/* LOGIN */
+#loginScreen {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 100vh; padding: 20px;
+}
+.login-box {
+  background: var(--white); border-radius: 16px; padding: 36px 28px;
+  max-width: 340px; width: 100%; text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,.08);
+}
+.login-box .logo { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--clay); margin-bottom: 12px; }
+.login-box h2 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 16px; }
+.login-box input {
+  width: 100%; font-size: 16px; padding: 12px 14px; border: 2px solid var(--sand);
+  border-radius: 12px; outline: none; background: var(--paper); margin-bottom: 12px;
+}
+.login-box input:focus { border-color: var(--rust); }
+.login-box button {
+  width: 100%; background: var(--rust); color: #fff; border: none; border-radius: 12px;
+  padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer;
+}
+.login-box button:hover { background: var(--ocean); }
+.login-box .err { color: var(--red); font-size: 13px; min-height: 18px; margin-top: 8px; }
+
+/* NAV */
+.nav {
+  background: var(--white); border-bottom: 1px solid var(--sand);
+  padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
+}
+.nav .title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; }
+.nav .label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--clay); }
+.nav .logout { font-size: 13px; color: var(--grey); cursor: pointer; text-decoration: underline; }
+
+/* MAIN */
+.main { max-width: 900px; margin: 0 auto; padding: 24px; }
+
+/* BREADCRUMB */
+.breadcrumb { font-size: 13px; color: var(--grey); margin-bottom: 16px; }
+.breadcrumb a { color: var(--ocean); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* CARDS */
+.card {
+  background: var(--white); border: 1px solid var(--sand); border-radius: 12px;
+  padding: 20px; margin-bottom: 14px; cursor: pointer; transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.card h3 { font-family: 'Playfair Display', serif; font-size: 16px; margin-bottom: 4px; }
+.card .meta { font-size: 13px; color: var(--grey); }
+.card .stats { display: flex; gap: 16px; margin-top: 10px; }
+.card .stat { font-size: 13px; }
+.card .stat .n { font-weight: 700; font-size: 18px; color: var(--ink); }
+.card .stat .l { color: var(--grey-light); font-size: 11px; }
+
+.badge {
+  display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px;
+  border-radius: 10px; margin-left: 8px;
+}
+.badge.active { background: #e8f5e9; color: var(--green); }
+.badge.completed { background: #e3f2fd; color: var(--ocean); }
+
+/* DETAIL */
+.section-title {
+  font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 16px;
+}
+.question-list { list-style: none; padding: 0; }
+.question-list li {
+  padding: 10px 14px; border-left: 3px solid var(--clay); margin-bottom: 8px;
+  background: var(--white); font-size: 14px; border-radius: 0 8px 8px 0;
+}
+
+/* CONVERSATION DETAIL */
+.transcript { margin-top: 16px; }
+.transcript .msg { margin-bottom: 10px; }
+.transcript .msg .role {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-light);
+  margin-bottom: 2px;
+}
+.transcript .msg .text {
+  padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.6;
+}
+.transcript .msg.user .text { background: var(--rust); color: #fff; display: inline-block; max-width: 85%; }
+.transcript .msg.assistant .text { background: var(--white); border: 1px solid var(--sand); max-width: 85%; }
+
+.answer-card {
+  background: var(--white); border: 1px solid var(--sand); border-radius: 12px;
+  padding: 16px; margin-bottom: 10px;
+}
+.answer-card .q { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+.answer-card .a { font-size: 14px; color: var(--ink); margin-bottom: 4px; }
+.answer-card .notes { font-size: 13px; color: var(--grey); font-style: italic; }
+
+/* EDIT MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 1000;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.modal {
+  background: var(--white); border-radius: 16px; padding: 28px;
+  max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto;
+}
+.modal h3 { font-family: 'Playfair Display', serif; margin-bottom: 16px; }
+.modal label { font-size: 13px; font-weight: 600; color: var(--grey); display: block; margin-bottom: 4px; }
+.modal textarea, .modal input[type="text"] {
+  width: 100%; font-size: 14px; padding: 10px 12px; border: 1px solid var(--sand);
+  border-radius: 8px; outline: none; background: var(--paper); margin-bottom: 14px;
+  font-family: 'Source Sans 3', sans-serif;
+}
+.modal textarea { min-height: 120px; resize: vertical; }
+.modal textarea:focus, .modal input:focus { border-color: var(--rust); }
+.modal .actions { display: flex; gap: 10px; justify-content: flex-end; }
+.modal .btn {
+  padding: 10px 20px; border: none; border-radius: 10px; font-size: 14px;
+  font-weight: 600; cursor: pointer;
+}
+.modal .btn.primary { background: var(--rust); color: #fff; }
+.modal .btn.secondary { background: var(--sand); color: var(--ink); }
+
+.hidden { display: none !important; }
+.url-box {
+  background: var(--paper); border: 1px solid var(--sand); border-radius: 8px;
+  padding: 10px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  word-break: break-all; margin: 8px 0 16px; color: var(--ocean);
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="logo">ozom.ai · admin</div>
+    <h2>Discovery Admin</h2>
+    <input id="pwInput" type="password" placeholder="Password" autocomplete="current-password">
+    <button id="loginBtn">Entrar</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <div class="nav">
+    <div>
+      <div class="label">ozom.ai · discovery</div>
+      <div class="title">Admin Panel</div>
+    </div>
+    <span class="logout" id="logoutBtn">Salir</span>
+  </div>
+  <div class="main" id="content"></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal-overlay hidden"></div>
+
+<script>
+const API_URL = "https://discovery-api.darrieta87.workers.dev";
+const SITE_URL = "https://diegoarrieta.com";
+let token = sessionStorage.getItem("admin_token") || "";
+const content = document.getElementById("content");
+
+// ===== AUTH =====
+if (token) { showApp(); loadBriefs(); }
+
+document.getElementById("loginBtn").addEventListener("click", tryLogin);
+document.getElementById("pwInput").addEventListener("keydown", (e) => { if (e.key === "Enter") tryLogin(); });
+
+async function tryLogin() {
+  const pw = document.getElementById("pwInput").value;
+  if (!pw) return;
+  try {
+    const res = await api("GET", "/api/briefs", null, pw);
+    if (res.ok) {
+      token = pw;
+      sessionStorage.setItem("admin_token", token);
+      showApp();
+      loadBriefs();
+    } else {
+      document.getElementById("loginErr").textContent = "Password incorrecto";
+    }
+  } catch {
+    document.getElementById("loginErr").textContent = "Error de conexión";
+  }
+}
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  sessionStorage.removeItem("admin_token");
+  location.reload();
+});
+
+function showApp() {
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+}
+
+// ===== API =====
+async function api(method, path, body, pw) {
+  const opts = {
+    method,
+    headers: { Authorization: `Bearer ${pw || token}`, "Content-Type": "application/json" },
+  };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(`${API_URL}${path}`, opts);
+}
+
+// ===== VIEWS =====
+async function loadBriefs() {
+  content.innerHTML = "<p>Cargando...</p>";
+  const [briefsRes, configRes] = await Promise.all([
+    api("GET", "/api/briefs"),
+    api("GET", "/api/config"),
+  ]);
+  const briefs = await briefsRes.json();
+  const config = await configRes.json();
+
+  content.innerHTML = `
+    <div class="card" onclick="openConfigModal()" style="border-left:3px solid var(--ocean)">
+      <h3 style="font-size:14px;color:var(--ocean)">⚙ Configuración General</h3>
+      <div class="meta">Modelo: <strong>${config.model}</strong> · Voz: ${config.voice_enabled ? 'Activada' : 'Desactivada'}</div>
+      <div class="meta" style="margin-top:4px">Master prompt: ${(config.master_prompt || '').slice(0, 80)}...</div>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px">
+      <h2 class="section-title" style="margin:0">Briefs</h2>
+      <button onclick="openCreateBriefModal()" style="background:var(--rust);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">+ Nuevo Brief</button>
+    </div>
+    ${briefs.map(b => `
+      <div class="card" onclick="loadBrief('${b.slug}')">
+        <h3>${b.title} <span class="badge active">${b.is_active ? 'Activo' : 'Inactivo'}</span></h3>
+        <div class="meta">${b.area || ''} · ${b.slug}</div>
+        <div class="stats">
+          <div class="stat"><div class="n">${b.stats?.questions || 0}</div><div class="l">Preguntas</div></div>
+          <div class="stat"><div class="n">${b.stats?.conversations || 0}</div><div class="l">Conversaciones</div></div>
+          <div class="stat"><div class="n">${b.stats?.answers || 0}</div><div class="l">Respuestas</div></div>
+        </div>
+      </div>
+    `).join("")}
+  `;
+}
+
+async function loadBrief(slug) {
+  content.innerHTML = "<p>Cargando...</p>";
+  const res = await api("GET", `/api/briefs/${slug}`);
+  const brief = await res.json();
+
+  const convRows = (brief.conversations || []).map(c => {
+    const name = c.operator?.name || c.operator?.email || "Anónimo";
+    const msgs = (c.messages || []).length;
+    const date = new Date(c.created_at).toLocaleDateString("es-MX", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+    return `
+      <div class="card" onclick="loadConversation('${c.id}', '${slug}')">
+        <h3>${name} <span class="badge ${c.status}">${c.status === 'completed' ? 'Completada' : 'Activa'}</span></h3>
+        <div class="meta">${date} · ${msgs} mensajes · ${c.answer_count || 0} respuestas</div>
+      </div>
+    `;
+  }).join("");
+
+  content.innerHTML = `
+    <div class="breadcrumb"><a href="#" onclick="loadBriefs(); return false">Briefs</a> → ${brief.title}</div>
+    <h2 class="section-title">${brief.title}</h2>
+    <div class="url-box">${SITE_URL}/discovery/?b=${slug}</div>
+    <div style="margin-bottom:16px;display:flex;gap:8px">
+      <button onclick="openEditModal('${slug}')" style="background:var(--ocean);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:13px;cursor:pointer">Editar brief</button>
+      <button onclick="openEmailsModal('${slug}')" style="background:var(--sage);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:13px;cursor:pointer">Emails permitidos</button>
+    </div>
+
+    ${(brief.allowed_emails || []).length ? `<div style="font-size:13px;color:var(--grey);margin-bottom:16px">Acceso: ${brief.allowed_emails.join(', ')}</div>` : '<div style="font-size:13px;color:var(--grey-light);margin-bottom:16px">Acceso: cualquier email</div>'}
+
+    <h3 style="font-size:14px;color:var(--grey);margin-bottom:10px">Preguntas (${(brief.questions || []).length})</h3>
+    <ul class="question-list">
+      ${(brief.questions || []).map((q, i) => `<li>${i + 1}. ${q.text}</li>`).join("")}
+    </ul>
+
+    <h3 style="font-size:14px;color:var(--grey);margin:20px 0 10px">Conversaciones (${(brief.conversations || []).length})</h3>
+    ${convRows || '<p style="color:var(--grey-light);font-size:14px">Sin conversaciones todavía.</p>'}
+  `;
+}
+
+async function loadConversation(id, slug) {
+  content.innerHTML = "<p>Cargando...</p>";
+  const res = await api("GET", `/api/conversations/${id}`);
+  const conv = await res.json();
+  const name = conv.operator?.name || conv.operator?.email || "Anónimo";
+  const msgs = conv.messages || [];
+
+  const answersHtml = (conv.answers || []).map(a => `
+    <div class="answer-card">
+      <div class="q">${a.answer_text ? '✓' : '○'} Pregunta</div>
+      <div class="a">${a.answer_text}</div>
+      ${a.agent_notes ? `<div class="notes">Notas: ${a.agent_notes}</div>` : ''}
+    </div>
+  `).join("");
+
+  const transcriptHtml = msgs.map(m => `
+    <div class="msg ${m.role}">
+      <div class="role">${m.role === "user" ? name : "Agente"}</div>
+      <div class="text">${escapeHtml(m.content)}</div>
+    </div>
+  `).join("");
+
+  content.innerHTML = `
+    <div class="breadcrumb">
+      <a href="#" onclick="loadBriefs(); return false">Briefs</a> →
+      <a href="#" onclick="loadBrief('${slug}'); return false">Brief</a> →
+      ${name}
+    </div>
+    <h2 class="section-title">Conversación con ${name}</h2>
+    <div class="meta" style="margin-bottom:16px">
+      ${conv.operator?.role || ''} ${conv.operator?.area ? '· ' + conv.operator.area : ''} ·
+      ${new Date(conv.created_at).toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })} ·
+      <span class="badge ${conv.status}">${conv.status === 'completed' ? 'Completada' : 'Activa'}</span>
+    </div>
+
+    ${conv.answers?.length ? `<h3 style="font-size:14px;color:var(--grey);margin-bottom:10px">Respuestas extraídas (${conv.answers.length})</h3>${answersHtml}` : ''}
+
+    <h3 style="font-size:14px;color:var(--grey);margin:20px 0 10px">Transcripción (${msgs.length} mensajes)</h3>
+    <div class="transcript">${transcriptHtml}</div>
+  `;
+}
+
+// ===== CONFIG MODAL =====
+async function openConfigModal() {
+  const res = await api("GET", "/api/config");
+  const config = await res.json();
+  const modal = document.getElementById("modal");
+
+  modal.innerHTML = `
+    <div class="modal">
+      <h3>Configuración General</h3>
+      <label>Modelo</label>
+      <input type="text" id="cfgModel" value="${config.model || 'claude-sonnet-4-6'}">
+      <label>Master Prompt (aplica a TODOS los agents)</label>
+      <textarea id="cfgPrompt" style="min-height:200px">${escapeHtml(config.master_prompt || '')}</textarea>
+      <label><input type="checkbox" id="cfgVoice" ${config.voice_enabled ? 'checked' : ''}> Voz habilitada</label>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn primary" onclick="saveConfig()">Guardar</button>
+      </div>
+    </div>
+  `;
+  modal.classList.remove("hidden");
+}
+
+async function saveConfig() {
+  await api("PUT", "/api/config", {
+    model: document.getElementById("cfgModel").value,
+    master_prompt: document.getElementById("cfgPrompt").value,
+    voice_enabled: document.getElementById("cfgVoice").checked,
+  });
+  closeModal();
+  loadBriefs();
+}
+
+// ===== CREATE BRIEF MODAL =====
+function openCreateBriefModal() {
+  const modal = document.getElementById("modal");
+  modal.innerHTML = `
+    <div class="modal">
+      <h3>Nuevo Brief</h3>
+      <label>Archivo Markdown (.md)</label>
+      <input type="file" id="briefFile" accept=".md,.txt" style="margin-bottom:14px;font-size:14px">
+      <label>Slug (para la URL — sin espacios, minúsculas)</label>
+      <input type="text" id="briefSlug" placeholder="ej: registro-visitas">
+      <label>Título</label>
+      <input type="text" id="briefTitle" placeholder="ej: Registro de Visitas y Acompañantes">
+      <label>Área</label>
+      <input type="text" id="briefArea" placeholder="ej: Accesos y Recepción">
+      <label>Emails permitidos (uno por línea, vacío = cualquiera)</label>
+      <textarea id="briefEmails" style="min-height:80px" placeholder="andrea@email.com\nrogelio@email.com"></textarea>
+      <div class="err" id="createErr"></div>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn primary" id="createBriefBtn" onclick="createBrief()">Crear Brief</button>
+      </div>
+    </div>
+  `;
+  modal.classList.remove("hidden");
+
+  document.getElementById("briefFile").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const name = file.name.replace(/\.md$|\.txt$/, "");
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    document.getElementById("briefSlug").value = slug;
+    if (!document.getElementById("briefTitle").value) {
+      document.getElementById("briefTitle").value = name.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    }
+  });
+}
+
+async function createBrief() {
+  const fileInput = document.getElementById("briefFile");
+  const slug = document.getElementById("briefSlug").value.trim();
+  const title = document.getElementById("briefTitle").value.trim();
+  const area = document.getElementById("briefArea").value.trim();
+  const emailsText = document.getElementById("briefEmails").value.trim();
+
+  if (!slug || !title) {
+    document.getElementById("createErr").textContent = "Slug y título son requeridos";
+    return;
+  }
+
+  let brief_markdown = "";
+  if (fileInput.files[0]) {
+    brief_markdown = await fileInput.files[0].text();
+  }
+
+  const allowed_emails = emailsText ? emailsText.split("\n").map(e => e.trim().toLowerCase()).filter(Boolean) : [];
+
+  const btn = document.getElementById("createBriefBtn");
+  btn.disabled = true; btn.textContent = "Creando...";
+
+  try {
+    const res = await api("POST", "/api/briefs", {
+      slug, title, area,
+      context: brief_markdown.slice(0, 500),
+      brief_markdown,
+      allowed_emails,
+      questions: [],
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      document.getElementById("createErr").textContent = err.error || "Error al crear";
+      btn.disabled = false; btn.textContent = "Crear Brief";
+      return;
+    }
+    closeModal();
+    loadBriefs();
+  } catch (e) {
+    document.getElementById("createErr").textContent = "Error de conexión";
+    btn.disabled = false; btn.textContent = "Crear Brief";
+  }
+}
+
+// ===== EMAILS MODAL =====
+async function openEmailsModal(slug) {
+  const res = await api("GET", `/api/briefs/${slug}`);
+  const brief = await res.json();
+  const modal = document.getElementById("modal");
+  const emails = (brief.allowed_emails || []).join("\n");
+
+  modal.innerHTML = `
+    <div class="modal">
+      <h3>Emails permitidos: ${brief.title}</h3>
+      <p style="font-size:13px;color:var(--grey);margin-bottom:12px">Un email por línea. Si está vacío, cualquier persona con el link puede entrar.</p>
+      <textarea id="editEmails" style="min-height:120px" placeholder="andrea@email.com\nrogelio@email.com">${emails}</textarea>
+      <div class="actions" style="margin-top:16px">
+        <button class="btn secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn primary" onclick="saveEmails('${slug}')">Guardar</button>
+      </div>
+    </div>
+  `;
+  modal.classList.remove("hidden");
+}
+
+async function saveEmails(slug) {
+  const emailsText = document.getElementById("editEmails").value.trim();
+  const allowed_emails = emailsText ? emailsText.split("\n").map(e => e.trim().toLowerCase()).filter(Boolean) : [];
+  await api("PUT", `/api/briefs/${slug}`, { allowed_emails });
+  closeModal();
+  loadBrief(slug);
+}
+
+// ===== EDIT BRIEF MODAL =====
+async function openEditModal(slug) {
+  const res = await api("GET", `/api/briefs/${slug}`);
+  const brief = await res.json();
+  const modal = document.getElementById("modal");
+
+  modal.innerHTML = `
+    <div class="modal">
+      <h3>Editar: ${brief.title}</h3>
+      <label>Brief Markdown (el contenido completo que el agente ve)</label>
+      <textarea id="editMarkdown" style="min-height:300px;font-family:'JetBrains Mono',monospace;font-size:12px">${escapeHtml(brief.brief_markdown || brief.context || '')}</textarea>
+      <div class="actions">
+        <button class="btn secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn primary" onclick="saveBrief('${slug}')">Guardar</button>
+      </div>
+    </div>
+  `;
+  modal.classList.remove("hidden");
+}
+
+async function saveBrief(slug) {
+  const brief_markdown = document.getElementById("editMarkdown").value;
+  await api("PUT", `/api/briefs/${slug}`, { brief_markdown, context: brief_markdown.slice(0, 500) });
+  closeModal();
+  loadBrief(slug);
+}
+
+function closeModal() { document.getElementById("modal").classList.add("hidden"); }
+document.getElementById("modal").addEventListener("click", (e) => { if (e.target === e.currentTarget) closeModal(); });
+
+function escapeHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
+}
+</script>
+</body>
+</html>

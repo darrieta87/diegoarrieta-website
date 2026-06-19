@@ -95,39 +95,30 @@ async function getOrCreateConversation(env, briefId, operatorId, sessionKey) {
   return created[0];
 }
 
+// ===== CONFIG =====
+
+async function getConfig(env) {
+  const rows = await sb(env).query("config", "id=eq.1");
+  return rows[0] || { master_prompt: "", model: "claude-sonnet-4-6", voice_enabled: true };
+}
+
 // ===== SYSTEM PROMPT =====
 
-function buildSystemPrompt(brief, operator) {
-  const questionList = brief.questions
-    .map((q, i) => `${i + 1}. ${q.text}`)
-    .join("\n");
+function buildSystemPrompt(config, brief, operator) {
+  const briefContent = brief.brief_markdown || brief.context || "";
 
-  const customPrompt = brief.system_prompt || "";
+  return `Eres un asistente de entrevistas de discovery para ozom.ai.
 
-  return `Eres un asistente de entrevistas de discovery para ozom.ai. Tu trabajo es entrevistar a ${operator.name} (${operator.role || "operador"}) del Club de Golf Tres Marías.
+## Operador
+Estás entrevistando a ${operator.name} (${operator.role || "operador"}, ${operator.area || "Club de Golf Tres Marías"}).
 
-## Contexto
-${brief.context}
+${config.master_prompt}
 
-## Tu personalidad
-- Eres cálido, amigable y profesional
-- Hablas en español mexicano informal pero respetuoso (tuteo)
-- Eres curioso y genuinamente interesado en las respuestas
-- Haces preguntas de seguimiento cuando la respuesta es vaga o interesante
-- Nunca juzgas las respuestas — todo es valioso
-- Eres conciso — no des párrafos largos, mantén la conversación ágil
-${customPrompt ? `\n## Instrucciones adicionales\n${customPrompt}` : ""}
+## Brief completo
+${briefContent}
 
-## Preguntas que debes cubrir
-${questionList}
-
-## Instrucciones
-1. Saluda brevemente a ${operator.name}. Preséntate como el asistente de Diego Arrieta de ozom.ai. Explica que esta es una entrevista corta (10-15 min) para entender mejor su trabajo y diseñar herramientas que le ayuden.
-2. Haz las preguntas UNA POR UNA. No hagas varias a la vez.
-3. Si una respuesta es interesante o vaga, haz UNA pregunta de seguimiento antes de pasar a la siguiente.
-4. No repitas preguntas que ya se respondieron en esta conversación o en conversaciones anteriores.
-5. Cuando hayas cubierto todas las preguntas, agradece sinceramente y despídete.
-6. Inmediatamente después de despedirte, genera un resumen estructurado (esto no se muestra al usuario):
+## Al terminar
+Cuando hayas cubierto todas las preguntas abiertas del brief, agradece sinceramente y despídete. Inmediatamente después, genera un resumen estructurado (esto no se muestra al usuario):
 
 <discovery_summary>
 {
@@ -238,7 +229,15 @@ async function handleChat(request, env) {
     });
   }
 
-  const operator = await getOrCreateOperator(env, operator_email, operator_name, operator_role, operator_area);
+  const allowedEmails = brief.allowed_emails || [];
+  if (allowedEmails.length > 0 && !allowedEmails.includes(operator_email.toLowerCase())) {
+    return Response.json({ error: "No tienes acceso a esta entrevista. Contacta a Diego Arrieta." }, { status: 403 });
+  }
+
+  const [operator, config] = await Promise.all([
+    getOrCreateOperator(env, operator_email, operator_name, operator_role, operator_area),
+    getConfig(env),
+  ]);
   const conversation = await getOrCreateConversation(env, brief.id, operator.id, session_key);
   const messages = conversation.messages || [];
 
@@ -246,13 +245,13 @@ async function handleChat(request, env) {
     messages.push({ role: "user", content: message });
   }
 
-  const systemPrompt = buildSystemPrompt(brief, operator);
+  const systemPrompt = buildSystemPrompt(config, brief, operator);
   const claudeMessages =
     messages.length === 0
       ? [{ role: "user", content: "Hola, estoy listo para la entrevista." }]
       : messages;
 
-  const model = brief.config?.model || "claude-sonnet-4-6";
+  const model = config.model || "claude-sonnet-4-6";
 
   const claudeResponse = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -430,7 +429,7 @@ async function handleVerifyOtp(request, env) {
 
 function isAdmin(request, env) {
   const auth = request.headers.get("Authorization");
-  return auth === `Bearer ${env.SUPABASE_SERVICE_KEY}`;
+  return auth === `Bearer ${env.SUPABASE_SERVICE_KEY}` || auth === `Bearer ${env.ADMIN_PASSWORD}`;
 }
 
 async function handleAdminAPI(request, env, path) {
@@ -438,16 +437,39 @@ async function handleAdminAPI(request, env, path) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
   }
 
-  // GET /api/briefs
+  // GET /api/config
+  if (path === "/api/config" && request.method === "GET") {
+    const config = await getConfig(env);
+    return Response.json(config);
+  }
+
+  // PUT /api/config
+  if (path === "/api/config" && request.method === "PUT") {
+    const data = await request.json();
+    await sb(env).update("config", data, "id=eq.1");
+    return Response.json({ ok: true });
+  }
+
+  // GET /api/briefs (with stats)
   if (path === "/api/briefs" && request.method === "GET") {
     const briefs = await sb(env).query("briefs", "order=created_at.desc");
-    return Response.json(briefs);
+    const enriched = await Promise.all(briefs.map(async (b) => {
+      const questions = await sb(env).query("questions", `brief_id=eq.${b.id}`);
+      const conversations = await sb(env).query("conversations", `brief_id=eq.${b.id}`);
+      const answers = await sb(env).query("answers", `conversation_id=in.(${conversations.map(c => c.id).join(",") || "00000000-0000-0000-0000-000000000000"})`);
+      return { ...b, stats: { questions: questions.length, conversations: conversations.length, answers: answers.length }};
+    }));
+    return Response.json(enriched);
   }
 
   // POST /api/briefs — create brief + questions
   if (path === "/api/briefs" && request.method === "POST") {
-    const { slug, title, area, context, system_prompt, config, questions } = await request.json();
-    const [brief] = await sb(env).insert("briefs", { slug, title, area, context, system_prompt, config });
+    const { slug, title, area, context, system_prompt, config, questions, brief_markdown, allowed_emails } = await request.json();
+    const [brief] = await sb(env).insert("briefs", {
+      slug, title, area, context, system_prompt, config,
+      brief_markdown: brief_markdown || null,
+      allowed_emails: allowed_emails || [],
+    });
     if (questions?.length) {
       const qs = questions.map((text, i) => ({ brief_id: brief.id, text, sort_order: i }));
       await sb(env).insert("questions", qs);
@@ -462,7 +484,12 @@ async function handleAdminAPI(request, env, path) {
     const brief = await loadBrief(env, briefMatch[1]);
     if (!brief) return Response.json({ error: "Not found" }, { status: 404 });
     const conversations = await sb(env).query("conversations", `brief_id=eq.${brief.id}&order=created_at.desc`);
-    return Response.json({ ...brief, conversations });
+    const enrichedConvs = await Promise.all(conversations.map(async (c) => {
+      const ops = await sb(env).query("operators", `id=eq.${c.operator_id}`);
+      const answers = await sb(env).query("answers", `conversation_id=eq.${c.id}`);
+      return { ...c, operator: ops[0] || null, answer_count: answers.length };
+    }));
+    return Response.json({ ...brief, conversations: enrichedConvs });
   }
 
   // PUT /api/briefs/:slug — update brief
