@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Salidas de Golf — Club Tres Marías</title>
+<style>
+:root{--g9:#064e3b;--g8:#065f46;--g7:#047857;--g6:#059669;--g5:#10b981;--g1:#d1fae5;--g0:#ecfdf5;--x0:#f9fafb;--x1:#f3f4f6;--x2:#e5e7eb;--x3:#d1d5db;--x4:#9ca3af;--x5:#6b7280;--x6:#4b5563;--x7:#374151;--x8:#1f2937;--r0:#fef2f2;--r1:#fee2e2;--r5:#ef4444;--r6:#dc2626;--r7:#b91c1c;--a0:#fffbeb;--a1:#fef3c7;--a5:#f59e0b;--a6:#d97706;--b0:#eff6ff;--b1:#dbeafe;--b5:#3b82f6;--b6:#2563eb;--sh:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);--shm:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);--shl:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.05);--r:10px;--rs:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--x1);color:var(--x8);min-height:100vh}
+.demo-banner{background:var(--a0);border-bottom:2px solid var(--a5);padding:10px 20px;text-align:center;font-size:13px;color:var(--a6);font-weight:600}
+.header{background:var(--g9);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shm);position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:12px}
+.header h1{font-size:18px;font-weight:700;letter-spacing:-.3px}
+.header-sub{font-size:12px;opacity:.7}
+.header-right{display:flex;align-items:center;gap:12px}
+.hstat{background:rgba(255,255,255,.12);border-radius:var(--rs);padding:6px 12px;font-size:12px;display:flex;align-items:center;gap:6px}
+.hstat strong{font-size:18px}
+.hstat .lbl{opacity:.8}
+.logo{width:36px;height:36px;background:var(--g6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+.ubadge{background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px 4px 8px;font-size:12px;display:flex;align-items:center;gap:6px}
+.udot{width:8px;height:8px;border-radius:50%;background:var(--g5)}
+.main{max-width:960px;margin:0 auto;padding:24px 20px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+.btn-p{background:var(--g7);color:#fff}.btn-p:hover{background:var(--g8)}
+.btn-s{background:#fff;color:var(--x7);border:1px solid var(--x3)}.btn-s:hover{background:var(--x0)}
+.btn-sm{padding:6px 12px;font-size:13px}
+.btn-lg{padding:14px 28px;font-size:16px;width:100%;justify-content:center}
+.card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:16px}
+.card-body{padding:20px}
+.grow{padding:14px 20px;border-bottom:1px solid var(--x1);display:flex;align-items:center;gap:16px;cursor:pointer;transition:background .1s}
+.grow:hover{background:var(--g0)}.grow:last-child{border-bottom:none}
+.gt{font-size:14px;font-weight:700;color:var(--g8);min-width:56px}
+.gp{flex:1}.gpn{font-size:14px;font-weight:500}.gm{font-size:12px;color:var(--x5);margin-top:2px}
+.gb{font-size:11px;font-weight:600;padding:3px 8px;border-radius:12px;white-space:nowrap}
+.gb-c{background:var(--g1);color:var(--g8)}.gb-p{background:var(--b1);color:var(--b6)}.gb-k{background:var(--x1);color:var(--x6)}
+.fi,.fs{width:100%;padding:10px 14px;border:1.5px solid var(--x3);border-radius:var(--rs);font-size:15px;transition:border-color .15s;background:#fff;font-family:inherit}
+.fi:focus,.fs:focus{outline:none;border-color:var(--g5);box-shadow:0 0 0 3px rgba(16,185,129,.15)}
+.fi::placeholder{color:var(--x4)}
+.sc{position:relative}.si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--x4);font-size:16px;pointer-events:none}
+.sinp{padding-left:38px!important}
+.sr{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--x2);border-radius:var(--rs);box-shadow:var(--shl);z-index:50;max-height:280px;overflow-y:auto;display:none}
+.sr.show{display:block}
+.sri{padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--x1);transition:background .1s}
+.sri:hover{background:var(--g0)}.sri:last-child{border-bottom:none}
+.srn{font-weight:600;font-size:14px}.srd{font-size:12px;color:var(--x5);margin-top:2px}
+.sri-s{background:var(--r0);border-left:3px solid var(--r5)}.sri-s:hover{background:var(--r1)}
+.stag{display:inline-block;background:var(--r5);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:8px;text-transform:uppercase}
+.freq{padding:10px 16px;background:var(--a0);border-bottom:1px solid var(--a1);font-size:12px;color:var(--a6);font-weight:600}
+.pc{border:1.5px solid var(--x2);border-radius:var(--r);padding:16px;margin-bottom:12px;background:#fff;transition:border-color .15s}
+.pc:hover{border-color:var(--g5)}
+.pch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.pn{font-size:16px;font-weight:700}.pa{font-size:13px;color:var(--x5)}
+.pbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.pb{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500}
+.prm{background:none;border:none;color:var(--x4);cursor:pointer;font-size:18px;padding:4px;line-height:1;border-radius:4px}
+.prm:hover{color:var(--r5);background:var(--r0)}
+.pf{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pf label{font-size:11px;color:var(--x5);text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:3px}
+.pf .v{font-size:14px;font-weight:500;color:var(--x8)}.pf .at{font-size:10px;color:var(--g6);font-weight:500}
+.sa{background:var(--r0);border:2px solid var(--r5);border-radius:var(--r);padding:20px;margin-bottom:12px;text-align:center}
+.sa .ic{font-size:32px;margin-bottom:8px}.sa h3{color:var(--r7);font-size:16px;margin-bottom:4px}.sa p{color:var(--r6);font-size:13px}
+.vf{background:var(--a0);border:1.5px solid var(--a5);border-radius:var(--rs);padding:12px;margin-top:10px}
+.vf h4{font-size:13px;color:var(--a6);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.vfl{display:grid;grid-template-columns:1fr 1fr;gap:8px}.vfl .fw{grid-column:1/-1}
+.vfl label{font-size:11px;color:var(--x5);text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:3px}
+.vfl input,.vfl select{width:100%;padding:6px 10px;border:1px solid var(--x3);border-radius:4px;font-size:13px;font-family:inherit}
+.dp{display:flex;gap:10px;flex-wrap:wrap}
+.dpill{padding:14px 32px;border:2px solid var(--x2);border-radius:var(--r);background:#fff;cursor:pointer;font-size:15px;font-weight:600;transition:all .15s;text-align:center}
+.dpill:hover{border-color:var(--g5)}.dpill.act{border-color:var(--g7);background:var(--g0);color:var(--g8)}
+.fbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--x2);padding:12px 20px;box-shadow:0 -4px 12px rgba(0,0,0,.08);z-index:100;display:flex;justify-content:center;gap:12px}
+.fbar .btn{min-width:200px;justify-content:center}
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--g8);color:#fff;padding:14px 24px;border-radius:var(--r);box-shadow:var(--shl);font-size:14px;font-weight:600;z-index:200;opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.sl{font-size:13px;font-weight:700;color:var(--x5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.sl .cnt{background:var(--x2);padding:1px 7px;border-radius:10px;font-size:12px;color:var(--x6)}
+.cr{display:flex;gap:8px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--x1)}
+.cr label{font-size:12px;color:var(--x5);white-space:nowrap;min-width:50px}
+.csug{font-size:11px;color:var(--g6);background:var(--g0);padding:2px 8px;border-radius:10px;cursor:pointer}
+.csug:hover{background:var(--g1)}
+.es{text-align:center;padding:32px 24px;color:var(--x4)}.es .ic{font-size:48px;margin-bottom:12px}.es h3{color:var(--x5);font-size:16px;margin-bottom:4px}.es p{font-size:13px}
+.hidden{display:none!important}
+@keyframes si{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.ai{animation:si .25s ease-out}
+.add-vis-btn{font-size:12px;color:var(--a6);background:var(--a0);border:1px dashed var(--a5);border-radius:var(--rs);padding:6px 10px;cursor:pointer;margin-top:8px;display:inline-block;transition:all .15s}
+.add-vis-btn:hover{background:var(--a1)}
+.detail-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.detail-time{font-size:32px;font-weight:800;color:var(--g8)}
+.detail-badges{display:flex;gap:8px;margin-top:4px}
+.detail-player{padding:16px;border-bottom:1px solid var(--x1)}
+.detail-player:last-child{border-bottom:none}
+.dp-top{display:flex;justify-content:space-between;align-items:flex-start}
+.dp-name{font-size:15px;font-weight:600}.dp-sub{font-size:12px;color:var(--x5);margin-top:2px}
+.dp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+.dp-cell label{font-size:10px;color:var(--x4);text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:2px}
+.dp-cell .val{font-size:13px;font-weight:500}
+.detail-meta{padding:16px 20px;background:var(--x0);border-top:1px solid var(--x2);font-size:12px;color:var(--x5);display:flex;justify-content:space-between}
+@media(max-width:640px){.header{padding:12px 16px}.header h1{font-size:15px}.hstat .lbl{display:none}.main{padding:16px 12px}.pf,.vfl{grid-template-columns:1fr}.dp-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<!-- ===== PIN GATE ===== -->
+<style>
+  #pinGate{position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#1b2a4a 0%,#0f1a2e 100%);display:flex;align-items:center;justify-content:center;padding:20px;}
+  #pinGate .pin-box{background:#fff;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.3);padding:32px 28px;max-width:340px;width:100%;text-align:center;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;}
+  #pinGate h2{font-size:19px;color:#1b2a4a;margin-bottom:6px;font-weight:700;}
+  #pinGate p.sub{font-size:13px;color:#666;margin-bottom:18px;}
+  #pinGate input{width:100%;font-size:26px;letter-spacing:10px;text-align:center;padding:12px;border:2px solid #e0e0e0;border-radius:10px;outline:none;font-variant-numeric:tabular-nums;}
+  #pinGate input:focus{border-color:#2e7d6b;}
+  #pinGate button{margin-top:14px;width:100%;background:#1b2a4a;color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s;}
+  #pinGate button:hover{background:#2e7d6b;}
+  #pinGate .err{color:#c62828;font-size:13px;height:18px;margin-top:10px;}
+  body.locked{overflow:hidden;}
+</style>
+<div id="pinGate">
+  <div class="pin-box">
+    <h2>Club de Golf Tres Marías</h2>
+    <p class="sub">Ingresa el PIN para ver el dashboard</p>
+    <input id="pinInput" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
+    <div class="err" id="pinErr"></div>
+    <button type="button" id="pinBtn">Entrar</button>
+  </div>
+</div>
+<script>
+(function(){
+  var PIN="0717", KEY="3m_pin_ok";
+  function unlock(){
+    var g=document.getElementById('pinGate');
+    if(g) g.style.display='none';
+    document.body.classList.remove('locked');
+    window.dispatchEvent(new Event('resize'));
+  }
+  if(sessionStorage.getItem(KEY)==="1"){ unlock(); return; }
+  document.body.classList.add('locked');
+  function tryPin(){
+    var inp=document.getElementById('pinInput');
+    if(inp.value.trim()===PIN){ sessionStorage.setItem(KEY,"1"); unlock(); }
+    else { document.getElementById('pinErr').textContent='PIN incorrecto'; inp.value=''; inp.focus(); }
+  }
+  document.getElementById('pinBtn').addEventListener('click',tryPin);
+  document.getElementById('pinInput').addEventListener('keydown',function(e){ if(e.key==='Enter') tryPin(); });
+})();
+</script>
+
+<div class="demo-banner">⚠️ DEMO INTERACTIVO — Prototipo de interfaz para validación con equipo de Golf. Los datos son ficticios.</div>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">⛳</div>
+    <div><h1>Registro de Salidas</h1><div class="header-sub">Club de Golf Tres Marías</div></div>
+  </div>
+  <div class="header-right">
+    <div class="hstat">🏌️ <span class="lbl">En campo:</span> <strong id="hPlayers">14</strong> <span class="lbl">jugadores</span></div>
+    <div class="hstat">🚗 <span class="lbl">Carritos:</span> <strong id="hCarts">4</strong> <span class="lbl">en uso</span></div>
+    <div class="hstat">📋 <strong id="hGroups">4</strong> <span class="lbl">grupos hoy</span></div>
+    <div class="ubadge"><div class="udot"></div>Luis (Starter)</div>
+  </div>
+</div>
+
+<div class="main" id="mainContent">
+
+  <div id="viewGroups">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div><h2 style="font-size:20px;font-weight:700">Salidas de hoy</h2><p style="font-size:13px;color:var(--x5)" id="todayDate"></p></div>
+      <button class="btn btn-p" onclick="showNewGroup()">＋ Nuevo Grupo</button>
+    </div>
+    <div class="card" id="groupsCard"><div id="groupsList"></div></div>
+  </div>
+
+  <div id="viewDetail" class="hidden"></div>
+
+  <div id="viewNewGroup" class="hidden">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <button class="btn btn-s btn-sm" onclick="backToGroups()">← Atrás</button>
+      <div><h2 style="font-size:20px;font-weight:700">Nuevo Grupo</h2><p style="font-size:13px;color:var(--x5)">El horario se registra automáticamente al guardar</p></div>
+    </div>
+
+    <div class="card ai"><div class="card-body">
+      <div class="sl">Destino</div>
+      <div class="dp">
+        <div class="dpill act" onclick="selDest(this,'campo')">🏌️ Campo</div>
+        <div class="dpill" onclick="selDest(this,'practica')">🎯 Práctica</div>
+      </div>
+    </div></div>
+
+    <div class="card ai" id="cartSec"><div class="card-body">
+      <div style="display:flex;gap:16px;align-items:flex-end">
+        <div style="flex:1"><div class="sl">Número de carrito</div>
+          <input type="number" class="fi" placeholder="Ej: 15" id="cartNum" min="1" max="99" style="max-width:140px;font-size:20px;font-weight:700;text-align:center">
+        </div>
+        <p style="font-size:12px;color:var(--x4);margin-bottom:12px">Confirmar con Caddie House por radio</p>
+      </div>
+    </div></div>
+
+    <div class="card ai"><div class="card-body">
+      <div class="sl">Jugadores <span class="cnt" id="pCnt">0 / 6</span></div>
+      <div id="playerCards"></div>
+      <div id="addPS">
+        <div class="sc" style="margin-bottom:8px">
+          <span class="si">🔍</span>
+          <input type="text" class="fi sinp" id="pSearch" placeholder="Buscar socio por nombre o # de acción..." oninput="onSearch(this.value)" onfocus="onSF()" autocomplete="off">
+          <div class="sr" id="sResults"></div>
+        </div>
+      </div>
+    </div></div>
+
+    <div style="height:80px"></div>
+    <div class="fbar">
+      <button class="btn btn-s" onclick="backToGroups()">Cancelar</button>
+      <button class="btn btn-p btn-lg" style="max-width:360px" onclick="saveGroup()">Guardar Grupo</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== DATA =====
+const socios=[
+  {id:1,nombre:"Roberto Álvarez",accion:1245,genero:"M",edad:"45-54",carrito:"Campo Anual",suspendido:false,federado:true,handicap:12.4,numFed:"MX-4521",frecuentes:[2,5],ultimoCaddie:"Martín Reyes"},
+  {id:2,nombre:"Carlos Mendoza",accion:892,genero:"M",edad:"55-64",carrito:"Anual",suspendido:false,federado:true,handicap:18.2,numFed:"MX-3390",frecuentes:[1,5],ultimoCaddie:"Jorge Huerta"},
+  {id:3,nombre:"Patricia Vega",accion:1567,genero:"F",edad:"35-44",carrito:"Semestral",suspendido:false,federado:false,handicap:null,numFed:null,frecuentes:[4],ultimoCaddie:null},
+  {id:4,nombre:"Enrique Sánchez",accion:334,genero:"M",edad:"65+",carrito:"Campo Semestral",suspendido:false,federado:true,handicap:8.1,numFed:"MX-1102",frecuentes:[3,6],ultimoCaddie:"Raúl Moreno"},
+  {id:5,nombre:"Francisco Ortiz",accion:2010,genero:"M",edad:"45-54",carrito:"Campo Anual",suspendido:false,federado:true,handicap:15.7,numFed:"MX-5544",frecuentes:[1,2],ultimoCaddie:null},
+  {id:6,nombre:"Miguel Torres",accion:1890,genero:"M",edad:"35-44",carrito:"No pagado",suspendido:false,federado:false,handicap:null,numFed:null,frecuentes:[],ultimoCaddie:"Pedro López"},
+  {id:7,nombre:"Ana Lucía Garza",accion:445,genero:"F",edad:"25-34",carrito:"Anual",suspendido:false,federado:true,handicap:22.0,numFed:"MX-8891",frecuentes:[8],ultimoCaddie:null},
+  {id:8,nombre:"David Peña",accion:1102,genero:"M",edad:"45-54",carrito:"Campo Anual",suspendido:false,federado:true,handicap:10.3,numFed:"MX-2267",frecuentes:[7],ultimoCaddie:"Martín Reyes"},
+  {id:9,nombre:"Alejandro Ruiz",accion:678,genero:"M",edad:"55-64",carrito:"Semestral",suspendido:false,federado:true,handicap:14.5,numFed:"MX-6678",frecuentes:[10],ultimoCaddie:"Jorge Huerta"},
+  {id:10,nombre:"Luis Herrera",accion:2200,genero:"M",edad:"35-44",carrito:"Campo Anual",suspendido:false,federado:false,handicap:null,numFed:null,frecuentes:[9],ultimoCaddie:null},
+  {id:11,nombre:"Gustavo Ramírez Solís",accion:1455,genero:"M",edad:"55-64",carrito:"Anual",suspendido:true,motivoSuspension:"Adeudo de cuota trimestral — $45,200 MXN vencido desde 15 mayo 2026",federado:true,handicap:9.8,numFed:"MX-1100",frecuentes:[],ultimoCaddie:"Raúl Moreno"},
+  {id:12,nombre:"Fernando García López",accion:390,genero:"M",edad:"45-54",carrito:"Campo Anual",suspendido:false,federado:true,handicap:11.2,numFed:"MX-4490",frecuentes:[1,5],ultimoCaddie:"Martín Reyes"},
+];
+const caddiesList=[
+  {nombre:"Martín Reyes",cat:"A"},{nombre:"Raúl Moreno",cat:"A"},
+  {nombre:"Jorge Huerta",cat:"B"},{nombre:"Pedro López",cat:"B"},
+  {nombre:"Raúl Jr. Moreno",cat:"C"},{nombre:"Tomás Aguilar",cat:"C"},
+  {nombre:"Iván Castillo",cat:"D"},{nombre:"Óscar Núñez",cat:"D"},
+];
+const tarifas={es:1800,fs:2500};
+const groupSizes=['','Individual','Twosome','Threesome','Foursome','Fivesome','Sixsome'];
+
+const demoGroups=[
+  {time:"7:12",dest:"Campo",cart:"12",players:[
+    {nombre:"Roberto Álvarez",accion:1245,tipo:"socio",carrito:"Campo Anual",genero:"M",edad:"45-54",federado:true,handicap:12.4,numFed:"MX-4521",caddie:"Martín Reyes (A)"},
+    {nombre:"Carlos Mendoza",accion:892,tipo:"socio",carrito:"Anual",genero:"M",edad:"55-64",federado:true,handicap:18.2,numFed:"MX-3390",caddie:"Jorge Huerta (B)"},
+    {nombre:"Francisco Ortiz",accion:2010,tipo:"socio",carrito:"Campo Anual",genero:"M",edad:"45-54",federado:true,handicap:15.7,numFed:"MX-5544",caddie:"Sin caddie"},
+    {nombre:"Luis Herrera",accion:2200,tipo:"socio",carrito:"Campo Anual",genero:"M",edad:"35-44",federado:false,handicap:null,numFed:null,caddie:"Sin caddie"}
+  ]},
+  {time:"7:24",dest:"Campo",cart:"07",players:[
+    {nombre:"Enrique Sánchez",accion:334,tipo:"socio",carrito:"Campo Semestral",genero:"M",edad:"65+",federado:true,handicap:8.1,numFed:"MX-1102",caddie:"Raúl Moreno (A)"},
+    {nombre:"Patricia Vega",accion:1567,tipo:"socio",carrito:"Semestral",genero:"F",edad:"35-44",federado:false,handicap:null,numFed:null,caddie:"Pedro López (B)"},
+    {nombre:"Miguel Torres",accion:1890,tipo:"socio",carrito:"No pagado",genero:"M",edad:"35-44",federado:false,handicap:null,numFed:null,caddie:"Raúl Jr. Moreno (C)"}
+  ]},
+  {time:"7:38",dest:"Campo",cart:"22",players:[
+    {nombre:"Alejandro Ruiz",accion:678,tipo:"socio",carrito:"Semestral",genero:"M",edad:"55-64",federado:true,handicap:14.5,numFed:"MX-6678",caddie:"Sin caddie"},
+    {nombre:"David Peña",accion:1102,tipo:"socio",carrito:"Campo Anual",genero:"M",edad:"45-54",federado:true,handicap:10.3,numFed:"MX-2267",caddie:"Sin caddie"},
+    {nombre:"Marcos Jiménez",tipo:"visitante",genero:"M",edad:"35-44",caddie:"Sin caddie",anfitrion:"Alejandro Ruiz",pago:"Green Fee ($1,800)"}
+  ]},
+  {time:"7:55",dest:"Práctica",cart:null,players:[
+    {nombre:"Ana Lucía Garza",accion:445,tipo:"socio",carrito:"Anual",genero:"F",edad:"25-34",federado:true,handicap:22.0,numFed:"MX-8891",caddie:"Sin caddie"}
+  ]}
+];
+
+let added=[];
+let dest='campo';
+let sto=null;
+
+function init(){
+  const d=new Date();
+  const dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('todayDate').textContent=`${dias[d.getDay()]} ${d.getDate()} de ${meses[d.getMonth()]} ${d.getFullYear()}`;
+  renderGroupsList();
+}
+init();
+
+function renderGroupsList(){
+  const el=document.getElementById('groupsList');
+  el.innerHTML=demoGroups.map((g,i)=>{
+    const names=g.players.map(p=>p.tipo==='visitante'?p.nombre+' (vis.)':p.nombre).join(', ');
+    const cads=g.players.map(p=>p.caddie).join(', ');
+    const isP=g.dest==='Práctica';
+    return `<div class="grow" onclick="showDetail(${i})">
+      <div class="gt">${g.time}</div>
+      <div class="gp"><div class="gpn">${names}</div><div class="gm">${groupSizes[g.players.length]} · Caddie: ${cads}</div></div>
+      <span class="gb ${isP?'gb-p':'gb-c'}">${g.dest}</span>
+      ${g.cart?`<span class="gb gb-k">🚗 C-${g.cart}</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+function showDetail(idx){
+  const g=demoGroups[idx];
+  const el=document.getElementById('viewDetail');
+  const isP=g.dest==='Práctica';
+  const visCount=g.players.filter(p=>p.tipo==='visitante').length;
+  const socCount=g.players.length-visCount;
+
+  let playersHtml=g.players.map(p=>{
+    if(p.tipo==='socio'){
+      const cTag=p.carrito.includes('Campo')?'✅ En campo':(p.carrito==='No pagado'?'❌ No pagado':'🔄 Solo traslado');
+      return `<div class="detail-player">
+        <div class="dp-top">
+          <div>
+            <div class="dp-name">${p.nombre}</div>
+            <div class="dp-sub">Acción #${p.accion} · <span class="pb" style="background:var(--g1);color:var(--g8)">Socio</span>
+              ${p.federado?`<span class="pb" style="background:var(--b1);color:var(--b6);margin-left:4px">Federado · HCP ${p.handicap}</span>`:''}</div>
+          </div>
+        </div>
+        <div class="dp-grid">
+          <div class="dp-cell"><label>Carrito</label><div class="val">${p.carrito}<br><span style="font-size:11px">${cTag}</span></div></div>
+          <div class="dp-cell"><label>Género / Edad</label><div class="val">${p.genero==='M'?'Masculino':'Femenino'} · ${p.edad}</div></div>
+          <div class="dp-cell"><label>Caddie</label><div class="val">${p.caddie}</div></div>
+        </div>
+      </div>`;
+    } else {
+      return `<div class="detail-player" style="background:var(--a0)">
+        <div class="dp-top">
+          <div>
+            <div class="dp-name">${p.nombre}</div>
+            <div class="dp-sub"><span class="pb" style="background:var(--a1);color:var(--a6)">Visitante</span>
+              <span class="pb" style="background:var(--x1);color:var(--x6);margin-left:4px">${p.pago}</span></div>
+          </div>
+        </div>
+        <div class="dp-grid">
+          <div class="dp-cell"><label>Invitado por</label><div class="val">${p.anfitrion}</div></div>
+          <div class="dp-cell"><label>Género / Edad</label><div class="val">${p.genero==='M'?'Masculino':'Femenino'} · ${p.edad}</div></div>
+          <div class="dp-cell"><label>Caddie</label><div class="val">${p.caddie}</div></div>
+        </div>
+      </div>`;
+    }
+  }).join('');
+
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <button class="btn btn-s btn-sm" onclick="backToGroups()">← Atrás</button>
+      <div class="detail-header" style="margin-bottom:0">
+        <div class="detail-time">${g.time}</div>
+        <div>
+          <div style="font-size:16px;font-weight:700">${groupSizes[g.players.length]}</div>
+          <div class="detail-badges">
+            <span class="gb ${isP?'gb-p':'gb-c'}">${g.dest}</span>
+            ${g.cart?`<span class="gb gb-k">🚗 Carrito C-${g.cart}</span>`:''}
+            <span class="gb" style="background:var(--g1);color:var(--g8)">${socCount} socio${socCount!==1?'s':''}</span>
+            ${visCount?`<span class="gb" style="background:var(--a1);color:var(--a6)">${visCount} visitante${visCount!==1?'s':''}</span>`:''}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      ${playersHtml}
+      <div class="detail-meta">
+        <span>Registrado por: Luis (Starter)</span>
+        <span>Editable hasta ${addMinutes(g.time,30)}</span>
+      </div>
+    </div>`;
+
+  document.getElementById('viewGroups').classList.add('hidden');
+  document.getElementById('viewNewGroup').classList.add('hidden');
+  el.classList.remove('hidden');
+}
+
+function addMinutes(timeStr,min){
+  const[h,m]=timeStr.split(':').map(Number);
+  const d=new Date(2026,0,1,h,m+min);
+  return `${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+
+function showNewGroup(){
+  document.getElementById('viewGroups').classList.add('hidden');
+  document.getElementById('viewDetail').classList.add('hidden');
+  document.getElementById('viewNewGroup').classList.remove('hidden');
+  added=[];dest='campo';renderPlayers();
+  document.getElementById('cartNum').value='';
+  document.getElementById('pSearch').value='';
+  document.getElementById('sResults').classList.remove('show');
+  document.querySelectorAll('.dpill').forEach((p,i)=>{p.classList.toggle('act',i===0)});
+  document.getElementById('cartSec').style.opacity='1';
+}
+function backToGroups(){
+  document.getElementById('viewNewGroup').classList.add('hidden');
+  document.getElementById('viewDetail').classList.add('hidden');
+  document.getElementById('viewGroups').classList.remove('hidden');
+}
+
+function selDest(el,d){
+  document.querySelectorAll('.dpill').forEach(p=>p.classList.remove('act'));el.classList.add('act');dest=d;
+  const cs=document.getElementById('cartSec');
+  if(d==='practica'){cs.style.opacity='.5';document.getElementById('cartNum').placeholder='Opcional'}
+  else{cs.style.opacity='1';document.getElementById('cartNum').placeholder='Ej: 15'}
+}
+
+function onSF(){const v=document.getElementById('pSearch').value;if(v.length>=2)onSearch(v)}
+function onSearch(val){
+  clearTimeout(sto);const res=document.getElementById('sResults');
+  if(val.length<2){res.classList.remove('show');return}
+  sto=setTimeout(()=>{
+    const q=val.toLowerCase();
+    const m=socios.filter(s=>!added.find(p=>p.id===s.id)&&(s.nombre.toLowerCase().includes(q)||s.accion.toString().startsWith(q)));
+    if(!m.length){res.innerHTML='<div style="padding:16px;text-align:center;color:var(--x4);font-size:13px">Sin resultados</div>';res.classList.add('show');return}
+    let h='';
+    if(added.length>0){
+      const la=added.filter(p=>p.tipo==='socio').pop();
+      if(la&&la.frecuentes&&la.frecuentes.length){
+        const fn=la.frecuentes.map(fid=>socios.find(s=>s.id===fid)).filter(s=>s&&!added.find(p=>p.id===s.id)&&m.find(x=>x.id===s.id));
+        if(fn.length)h+=`<div class="freq">💡 Compañeros frecuentes de ${la.nombre.split(' ')[0]}: ${fn.map(s=>s.nombre.split(' ')[0]).join(', ')}</div>`;
+      }
+    }
+    h+=m.slice(0,6).map(s=>{
+      if(s.suspendido)return`<div class="sri sri-s" onclick="trySusp('${s.nombre.replace(/'/g,"\\'")}','${s.motivoSuspension.replace(/'/g,"\\'")}')"><div class="srn">${s.nombre} <span class="stag">Suspendido</span></div><div class="srd">Acción #${s.accion} · ${s.motivoSuspension}</div></div>`;
+      const cs=s.ultimoCaddie?`· Último caddie: ${s.ultimoCaddie}`:'';
+      return`<div class="sri" onclick="addSocio(${s.id})"><div class="srn">${s.nombre}</div><div class="srd">Acción #${s.accion} · ${s.carrito} ${cs}</div></div>`;
+    }).join('');
+    res.innerHTML=h;res.classList.add('show');
+  },150);
+}
+function trySusp(n,m){
+  document.getElementById('sResults').classList.remove('show');document.getElementById('pSearch').value='';
+  const c=document.getElementById('playerCards');
+  const d=document.createElement('div');d.className='sa ai';
+  d.innerHTML=`<div class="ic">🚫</div><h3>Socio suspendido — No puede salir al campo</h3><p><strong>${n}</strong></p><p style="margin-top:6px">${m}</p><button class="btn btn-s btn-sm" style="margin-top:12px" onclick="this.parentElement.remove()">Entendido</button>`;
+  c.appendChild(d);
+}
+function addSocio(id){
+  const s=socios.find(x=>x.id===id);if(!s||added.find(p=>p.id===s.id))return;
+  const total=added.length+added.reduce((n,p)=>n+(p.visitors?p.visitors.length:0),0);
+  if(total>=6){showToast('⚠️ Máximo 6 jugadores por grupo');return}
+  added.push({...s,tipo:'socio',caddieSelection:'',visitors:[]});
+  renderPlayers();document.getElementById('pSearch').value='';document.getElementById('sResults').classList.remove('show');
+}
+
+function showVisForm(socIdx){
+  const total=added.length+added.reduce((n,p)=>n+(p.visitors?p.visitors.length:0),0);
+  if(total>=6){showToast('⚠️ Máximo 6 jugadores por grupo');return}
+  const d=new Date();const fs=(d.getDay()===0||d.getDay()===6);
+  const tar=fs?tarifas.fs:tarifas.es;const td=fs?'fin de semana':'entre semana';
+  const host=added[socIdx];
+  const el=document.getElementById(`vf-${socIdx}`);
+  el.classList.remove('hidden');
+  el.innerHTML=`<div class="vf ai">
+    <h4>👤 Agregar visitante invitado por ${host.nombre.split(' ')[0]}</h4>
+    <div class="vfl">
+      <div><label>Nombre completo</label><input type="text" id="vn-${socIdx}" placeholder="Nombre del visitante"></div>
+      <div><label>Género</label><select id="vg-${socIdx}"><option value="M">Masculino</option><option value="F">Femenino</option></select></div>
+      <div><label>Rango de edad</label><select id="va-${socIdx}"><option value="<18">Menor de 18</option><option value="18-24">18–24</option><option value="25-34">25–34</option><option value="35-44" selected>35–44</option><option value="45-54">45–54</option><option value="55-64">55–64</option><option value="65+">65+</option></select></div>
+      <div><label>Forma de pago</label><select id="vp-${socIdx}" onchange="onPayChg(${socIdx})"><option value="gf">Green Fee</option><option value="cu">Cupón del socio</option><option value="co">Cortesía autorizada (solo Lulú)</option></select></div>
+      <div id="vgf-${socIdx}"><label>Tarifa</label><div style="font-size:18px;font-weight:700;color:var(--g8)">$${tar.toLocaleString()} MXN</div><div style="font-size:11px;color:var(--x5)">Tarifa ${td} vigente</div></div>
+      <div id="vco-${socIdx}" class="hidden"><label>Autorizado por</label><select id="vca-${socIdx}"><option value="Enrique Ramírez">Enrique Ramírez</option><option value="Daniel Gutiérrez">Daniel Gutiérrez</option></select></div>
+      <div class="fw" style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
+        <button class="btn btn-s btn-sm" onclick="cancelVis(${socIdx})">Cancelar</button>
+        <button class="btn btn-p btn-sm" onclick="addVis(${socIdx})">Agregar</button>
+      </div>
+    </div>
+  </div>`;
+}
+function onPayChg(i){
+  const v=document.getElementById(`vp-${i}`).value;
+  document.getElementById(`vgf-${i}`).classList.toggle('hidden',v!=='gf');
+  document.getElementById(`vco-${i}`).classList.toggle('hidden',v!=='co');
+}
+function cancelVis(i){const el=document.getElementById(`vf-${i}`);el.classList.add('hidden');el.innerHTML=''}
+function addVis(socIdx){
+  const nm=document.getElementById(`vn-${socIdx}`).value.trim();
+  if(!nm){showToast('⚠️ Escribe el nombre del visitante');return}
+  const pay=document.getElementById(`vp-${socIdx}`).value;
+  let payLabel='Green Fee';
+  if(pay==='cu')payLabel='Cupón';
+  if(pay==='co')payLabel='Cortesía ('+document.getElementById(`vca-${socIdx}`).value+')';
+  added[socIdx].visitors.push({
+    id:'v'+Date.now(),nombre:nm,tipo:'visitante',
+    genero:document.getElementById(`vg-${socIdx}`).value,
+    edad:document.getElementById(`va-${socIdx}`).value,
+    formaPago:payLabel,caddieSelection:'',
+    anfitrion:added[socIdx].nombre
+  });
+  cancelVis(socIdx);renderPlayers();
+}
+function removeVis(socIdx,visIdx){added[socIdx].visitors.splice(visIdx,1);renderPlayers()}
+
+function caddieOpts(){return`<option value="">— Seleccionar —</option><option value="sin">Sin caddie</option><optgroup label="Por categoría"><option value="cat-A">Categoría A</option><option value="cat-B">Categoría B</option><option value="cat-C">Categoría C</option><option value="cat-D">Categoría D</option></optgroup><optgroup label="Caddie específico">${caddiesList.map(c=>`<option value="caddie-${c.nombre}">${c.nombre} (${c.cat})</option>`).join('')}</optgroup>`}
+
+function renderPlayers(){
+  const c=document.getElementById('playerCards');
+  const total=added.length+added.reduce((n,p)=>n+(p.visitors?p.visitors.length:0),0);
+  document.getElementById('pCnt').textContent=`${total} / 6`;
+  if(!added.length){c.innerHTML=`<div class="es"><div class="ic">🏌️</div><h3>Sin jugadores</h3><p>Busca un socio por nombre o número de acción para agregarlo al grupo</p></div>`;return}
+
+  c.innerHTML=added.map((p,idx)=>{
+    const cTag=p.carrito.includes('Campo')?'✅ En campo':(p.carrito==='No pagado'?'❌ No pagado':'🔄 Solo traslado');
+    const csug=p.ultimoCaddie?`<span class="csug" onclick="selSugCad(${idx},'${p.ultimoCaddie}')">💡 ${p.ultimoCaddie} (últ. 3 rondas)</span>`:'';
+    const canAddVis=total<6;
+
+    let visHtml='';
+    if(p.visitors&&p.visitors.length){
+      visHtml=p.visitors.map((v,vi)=>`
+        <div class="pc ai" style="border-color:var(--a5);margin-left:24px;margin-top:8px">
+          <div class="pch">
+            <div>
+              <div class="pn">${v.nombre}</div>
+              <div class="pbs">
+                <span class="pb" style="background:var(--a1);color:var(--a6)">Visitante de ${p.nombre.split(' ')[0]}</span>
+                <span class="pb" style="background:var(--x1);color:var(--x6)">${v.formaPago}</span>
+              </div>
+            </div>
+            <button class="prm" onclick="removeVis(${idx},${vi})" title="Quitar">✕</button>
+          </div>
+          <div class="cr">
+            <label>Caddie:</label>
+            <select style="flex:1" onchange="setVisCad(${idx},${vi},this.value)" id="vcad-${idx}-${vi}">${caddieOpts()}</select>
+          </div>
+        </div>`).join('');
+    }
+
+    return`<div class="pc ai">
+      <div class="pch">
+        <div>
+          <div class="pn">${p.nombre}</div>
+          <div class="pa">Acción #${p.accion}</div>
+          <div class="pbs">
+            <span class="pb" style="background:var(--g1);color:var(--g8)">Socio</span>
+            ${p.federado?`<span class="pb" style="background:var(--b1);color:var(--b6)">Federado · HCP ${p.handicap}</span>`:''}
+          </div>
+        </div>
+        <button class="prm" onclick="removeSocio(${idx})" title="Quitar">✕</button>
+      </div>
+      <div class="pf">
+        <div class="player-field"><label>Carrito</label><div class="v">${p.carrito} <span class="at">(auto)</span></div><div style="font-size:11px;margin-top:2px">${cTag}</div></div>
+        <div class="player-field"><label>Género / Edad</label><div class="v">${p.genero==='M'?'Masculino':'Femenino'} · ${p.edad} <span class="at">(auto)</span></div></div>
+      </div>
+      <div class="cr">
+        <label>Caddie:</label>
+        <select style="flex:1" onchange="setCad(${idx},this.value)" id="cad-${idx}">${caddieOpts()}</select>
+        ${csug}
+      </div>
+      ${canAddVis?`<div class="add-vis-btn" onclick="showVisForm(${idx})">＋ Agregar visitante invitado por ${p.nombre.split(' ')[0]}</div>`:''}
+      <div id="vf-${idx}" class="hidden"></div>
+      ${visHtml}
+    </div>`;
+  }).join('');
+}
+
+function removeSocio(i){added.splice(i,1);renderPlayers()}
+function setCad(i,v){added[i].caddieSelection=v}
+function setVisCad(si,vi,v){added[si].visitors[vi].caddieSelection=v}
+function selSugCad(i,cn){const s=document.getElementById(`cad-${i}`);if(s){s.value=`caddie-${cn}`;added[i].caddieSelection=`caddie-${cn}`}}
+
+function saveGroup(){
+  if(!added.length){showToast('⚠️ Agrega al menos un jugador');return}
+  const allPlayers=[...added];
+  added.forEach(p=>{if(p.visitors)allPlayers.push(...p.visitors)});
+  const missing=allPlayers.some(p=>!p.caddieSelection);
+  if(missing){showToast('⚠️ Selecciona caddie para todos los jugadores (o marca "Sin caddie")');return}
+
+  const now=new Date();const time=`${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
+  const cart=document.getElementById('cartNum').value;
+
+  const gPlayers=[];
+  added.forEach(p=>{
+    const cadLabel=caddieLbl(p.caddieSelection);
+    gPlayers.push({nombre:p.nombre,accion:p.accion,tipo:'socio',carrito:p.carrito,genero:p.genero,edad:p.edad,federado:p.federado,handicap:p.handicap,numFed:p.numFed,caddie:cadLabel});
+    if(p.visitors)p.visitors.forEach(v=>{
+      gPlayers.push({nombre:v.nombre,tipo:'visitante',genero:v.genero,edad:v.edad,caddie:caddieLbl(v.caddieSelection),anfitrion:p.nombre,pago:v.formaPago});
+    });
+  });
+
+  const newG={time,dest:dest==='campo'?'Campo':'Práctica',cart:cart||null,players:gPlayers};
+  demoGroups.unshift(newG);
+
+  document.getElementById('hGroups').textContent=demoGroups.length;
+  document.getElementById('hPlayers').textContent=parseInt(document.getElementById('hPlayers').textContent)+gPlayers.length;
+  if(cart)document.getElementById('hCarts').textContent=parseInt(document.getElementById('hCarts').textContent)+1;
+
+  renderGroupsList();
+  showToast(`✅ Grupo registrado — ${time} — ${gPlayers.length} jugadores`);
+  setTimeout(()=>backToGroups(),800);
+}
+
+function caddieLbl(v){
+  if(v==='sin')return'Sin caddie';
+  if(v.startsWith('cat-'))return'Categoría '+v.split('-')[1];
+  if(v.startsWith('caddie-')){const n=v.replace('caddie-','');const c=caddiesList.find(x=>x.nombre===n);return c?`${n} (${c.cat})`:n}
+  return'?';
+}
+
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+document.addEventListener('click',e=>{if(!e.target.closest('.sc'))document.getElementById('sResults').classList.remove('show')});
+</script>
+</body>
+</html>
