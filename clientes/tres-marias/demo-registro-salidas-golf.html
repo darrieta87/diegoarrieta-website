@@ -3,98 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registro de Salidas de Golf — Club Tres Marías</title>
+<title>Sistema de Operaciones de Golf — Club Tres Marías</title>
 <style>
-:root{--g9:#064e3b;--g8:#065f46;--g7:#047857;--g6:#059669;--g5:#10b981;--g1:#d1fae5;--g0:#ecfdf5;--x0:#f9fafb;--x1:#f3f4f6;--x2:#e5e7eb;--x3:#d1d5db;--x4:#9ca3af;--x5:#6b7280;--x6:#4b5563;--x7:#374151;--x8:#1f2937;--r0:#fef2f2;--r1:#fee2e2;--r5:#ef4444;--r6:#dc2626;--r7:#b91c1c;--a0:#fffbeb;--a1:#fef3c7;--a5:#f59e0b;--a6:#d97706;--b0:#eff6ff;--b1:#dbeafe;--b5:#3b82f6;--b6:#2563eb;--sh:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);--shm:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);--shl:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.05);--r:10px;--rs:6px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--x1);color:var(--x8);min-height:100vh}
-.demo-banner{background:var(--a0);border-bottom:2px solid var(--a5);padding:10px 20px;text-align:center;font-size:13px;color:var(--a6);font-weight:600}
-.header{background:var(--g9);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shm);position:sticky;top:0;z-index:100}
-.header-left{display:flex;align-items:center;gap:12px}
-.header h1{font-size:18px;font-weight:700;letter-spacing:-.3px}
-.header-sub{font-size:12px;opacity:.7}
-.header-right{display:flex;align-items:center;gap:12px}
-.hstat{background:rgba(255,255,255,.12);border-radius:var(--rs);padding:6px 12px;font-size:12px;display:flex;align-items:center;gap:6px}
-.hstat strong{font-size:18px}
-.hstat .lbl{opacity:.8}
-.logo{width:36px;height:36px;background:var(--g6);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
-.ubadge{background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px 4px 8px;font-size:12px;display:flex;align-items:center;gap:6px}
-.udot{width:8px;height:8px;border-radius:50%;background:var(--g5)}
-.main{max-width:960px;margin:0 auto;padding:24px 20px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+:root{--g9:#064e3b;--g8:#065f46;--g7:#047857;--g6:#059669;--g5:#10b981;--g1:#d1fae5;--g0:#ecfdf5;--x0:#f9fafb;--x1:#f3f4f6;--x2:#e5e7eb;--x3:#d1d5db;--x4:#9ca3af;--x5:#6b7280;--x6:#4b5563;--x7:#374151;--x8:#1f2937;--r0:#fef2f2;--r1:#fee2e2;--r5:#ef4444;--r6:#dc2626;--r7:#b91c1c;--a0:#fffbeb;--a1:#fef3c7;--a5:#f59e0b;--a6:#d97706;--b0:#eff6ff;--b1:#dbeafe;--b5:#3b82f6;--b6:#2563eb;--p0:#faf5ff;--p1:#f3e8ff;--p5:#a855f7;--p6:#9333ea;--sh:0 1px 3px rgba(0,0,0,.1);--shm:0 4px 6px rgba(0,0,0,.07);--shl:0 10px 15px rgba(0,0,0,.1);--r:10px;--rs:6px}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--x1);color:var(--x8);min-height:100vh}
+.demo-banner{background:var(--a0);border-bottom:2px solid var(--a5);padding:8px 20px;text-align:center;font-size:12px;color:var(--a6);font-weight:600}
+.header{background:var(--g9);color:#fff;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shm);position:sticky;top:0;z-index:100}
+.header h1{font-size:17px;font-weight:700}.header-sub{font-size:11px;opacity:.7}
+.hstats{display:flex;gap:10px}.hstat{background:rgba(255,255,255,.12);border-radius:var(--rs);padding:5px 10px;font-size:11px;display:flex;align-items:center;gap:5px}.hstat strong{font-size:16px}
+.ubadge{background:rgba(255,255,255,.15);border-radius:20px;padding:3px 10px 3px 7px;font-size:11px;display:flex;align-items:center;gap:5px;cursor:pointer}.udot{width:7px;height:7px;border-radius:50%;background:var(--g5)}
+.main{max-width:1000px;margin:0 auto;padding:20px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:inherit}
 .btn-p{background:var(--g7);color:#fff}.btn-p:hover{background:var(--g8)}
 .btn-s{background:#fff;color:var(--x7);border:1px solid var(--x3)}.btn-s:hover{background:var(--x0)}
-.btn-sm{padding:6px 12px;font-size:13px}
-.btn-lg{padding:14px 28px;font-size:16px;width:100%;justify-content:center}
-.card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);overflow:visible;margin-bottom:16px}
-.card-body{padding:20px}
-.grow{padding:14px 20px;border-bottom:1px solid var(--x1);display:flex;align-items:center;gap:16px;cursor:pointer;transition:background .1s}
+.btn-d{background:var(--r5);color:#fff}.btn-d:hover{background:var(--r7)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-lg{padding:12px 24px;font-size:15px;width:100%;justify-content:center}
+.card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);margin-bottom:14px}
+.card-body{padding:16px}
+.tabs{display:flex;border-bottom:2px solid var(--x2);margin-bottom:16px;gap:0;overflow-x:auto}
+.tab{padding:10px 18px;font-size:13px;font-weight:600;color:var(--x5);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s}
+.tab:hover{color:var(--x8)}.tab.act{color:var(--g7);border-bottom-color:var(--g7)}
+.grow{padding:12px 16px;border-bottom:1px solid var(--x1);display:flex;align-items:center;gap:14px;cursor:pointer;transition:background .1s}
 .grow:hover{background:var(--g0)}.grow:last-child{border-bottom:none}
-.gt{font-size:14px;font-weight:700;color:var(--g8);min-width:56px}
-.gp{flex:1}.gpn{font-size:14px;font-weight:500}.gm{font-size:12px;color:var(--x5);margin-top:2px}
-.gb{font-size:11px;font-weight:600;padding:3px 8px;border-radius:12px;white-space:nowrap}
-.gb-c{background:var(--g1);color:var(--g8)}.gb-p{background:var(--b1);color:var(--b6)}.gb-k{background:var(--x1);color:var(--x6)}
-.fi,.fs{width:100%;padding:10px 14px;border:1.5px solid var(--x3);border-radius:var(--rs);font-size:15px;transition:border-color .15s;background:#fff;font-family:inherit}
-.fi:focus,.fs:focus{outline:none;border-color:var(--g5);box-shadow:0 0 0 3px rgba(16,185,129,.15)}
+.gt{font-size:13px;font-weight:700;color:var(--g8);min-width:48px}
+.gpn{font-size:13px;font-weight:500}.gm{font-size:11px;color:var(--x5);margin-top:1px}
+.gb{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;white-space:nowrap}
+.gb-c{background:var(--g1);color:var(--g8)}.gb-p{background:var(--b1);color:var(--b6)}.gb-t{background:var(--p1);color:var(--p6)}.gb-k{background:var(--x1);color:var(--x6)}.gb-cl{background:var(--a1);color:var(--a6)}
+.fi{width:100%;padding:8px 12px;border:1.5px solid var(--x3);border-radius:var(--rs);font-size:14px;transition:border .15s;background:#fff;font-family:inherit}
+.fi:focus{outline:none;border-color:var(--g5);box-shadow:0 0 0 3px rgba(16,185,129,.12)}
 .fi::placeholder{color:var(--x4)}
-.sc{position:relative}.si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--x4);font-size:16px;pointer-events:none}
-.sinp{padding-left:38px!important}
-.sr{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--x2);border-radius:var(--rs);box-shadow:var(--shl);z-index:50;max-height:280px;overflow-y:auto;display:none}
-.sr.show{display:block}
-.sri{padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--x1);transition:background .1s}
-.sri:hover{background:var(--g0)}.sri:last-child{border-bottom:none}
-.srn{font-weight:600;font-size:14px}.srd{font-size:12px;color:var(--x5);margin-top:2px}
+.sc{position:relative;z-index:60}.si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--x4);font-size:14px;pointer-events:none}.sinp{padding-left:32px!important}
+.sr{position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:1px solid var(--x2);border-radius:var(--rs);box-shadow:var(--shl);z-index:70;max-height:260px;overflow-y:auto;display:none}.sr.show{display:block}
+.sri{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--x1);font-size:13px;transition:background .1s}.sri:hover{background:var(--g0)}.sri:last-child{border-bottom:none}
 .sri-s{background:var(--r0);border-left:3px solid var(--r5)}.sri-s:hover{background:var(--r1)}
-.stag{display:inline-block;background:var(--r5);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:8px;text-transform:uppercase}
-.freq{padding:10px 16px;background:var(--a0);border-bottom:1px solid var(--a1);font-size:12px;color:var(--a6);font-weight:600}
-.pc{border:1.5px solid var(--x2);border-radius:var(--r);padding:16px;margin-bottom:12px;background:#fff;transition:border-color .15s}
-.pc:hover{border-color:var(--g5)}
-.pch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-.pn{font-size:16px;font-weight:700}.pa{font-size:13px;color:var(--x5)}
-.pbs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.pb{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500}
-.prm{background:none;border:none;color:var(--x4);cursor:pointer;font-size:18px;padding:4px;line-height:1;border-radius:4px}
-.prm:hover{color:var(--r5);background:var(--r0)}
-.pf{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.pf label{font-size:11px;color:var(--x5);text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:3px}
-.pf .v{font-size:14px;font-weight:500;color:var(--x8)}.pf .at{font-size:10px;color:var(--g6);font-weight:500}
-.sa{background:var(--r0);border:2px solid var(--r5);border-radius:var(--r);padding:20px;margin-bottom:12px;text-align:center}
-.sa .ic{font-size:32px;margin-bottom:8px}.sa h3{color:var(--r7);font-size:16px;margin-bottom:4px}.sa p{color:var(--r6);font-size:13px}
-.vf{background:var(--a0);border:1.5px solid var(--a5);border-radius:var(--rs);padding:12px;margin-top:10px}
-.vf h4{font-size:13px;color:var(--a6);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.vfl{display:grid;grid-template-columns:1fr 1fr;gap:8px}.vfl .fw{grid-column:1/-1}
-.vfl label{font-size:11px;color:var(--x5);text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:3px}
-.vfl input,.vfl select{width:100%;padding:6px 10px;border:1px solid var(--x3);border-radius:4px;font-size:13px;font-family:inherit}
-.dp{display:flex;gap:10px;flex-wrap:wrap}
-.dpill{padding:14px 32px;border:2px solid var(--x2);border-radius:var(--r);background:#fff;cursor:pointer;font-size:15px;font-weight:600;transition:all .15s;text-align:center}
+.stag{display:inline-block;background:var(--r5);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:6px;text-transform:uppercase}
+.sl{font-size:12px;font-weight:700;color:var(--x5);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+.sl .cnt{background:var(--x2);padding:0 6px;border-radius:8px;font-size:11px;color:var(--x6)}
+.pc{border:1.5px solid var(--x2);border-radius:var(--r);padding:14px;margin-bottom:10px;background:#fff}.pc:hover{border-color:var(--g5)}
+.pn{font-size:14px;font-weight:700}.pa{font-size:12px;color:var(--x5)}
+.pb{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:500}
+.prm{background:none;border:none;color:var(--x4);cursor:pointer;font-size:16px;padding:3px;border-radius:4px}.prm:hover{color:var(--r5);background:var(--r0)}
+.dp{display:flex;gap:8px;flex-wrap:wrap}
+.dpill{padding:10px 24px;border:2px solid var(--x2);border-radius:var(--r);background:#fff;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s}
 .dpill:hover{border-color:var(--g5)}.dpill.act{border-color:var(--g7);background:var(--g0);color:var(--g8)}
-.fbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--x2);padding:12px 20px;box-shadow:0 -4px 12px rgba(0,0,0,.08);z-index:100;display:flex;justify-content:center;gap:12px}
-.fbar .btn{min-width:200px;justify-content:center}
-.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--g8);color:#fff;padding:14px 24px;border-radius:var(--r);box-shadow:var(--shl);font-size:14px;font-weight:600;z-index:200;opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.sl{font-size:13px;font-weight:700;color:var(--x5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.sl .cnt{background:var(--x2);padding:1px 7px;border-radius:10px;font-size:12px;color:var(--x6)}
-.cr{display:flex;gap:8px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--x1)}
-.cr label{font-size:12px;color:var(--x5);white-space:nowrap;min-width:50px}
-.csug{font-size:11px;color:var(--g6);background:var(--g0);padding:2px 8px;border-radius:10px;cursor:pointer}
-.csug:hover{background:var(--g1)}
-.es{text-align:center;padding:32px 24px;color:var(--x4)}.es .ic{font-size:48px;margin-bottom:12px}.es h3{color:var(--x5);font-size:16px;margin-bottom:4px}.es p{font-size:13px}
+.fbar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--x2);padding:10px 20px;box-shadow:0 -4px 12px rgba(0,0,0,.06);z-index:100;display:flex;justify-content:center;gap:10px}
+.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--g8);color:#fff;padding:12px 20px;border-radius:var(--r);box-shadow:var(--shl);font-size:13px;font-weight:600;z-index:200;opacity:0;transition:all .3s;display:flex;align-items:center;gap:6px}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .hidden{display:none!important}
-@keyframes si{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.ai{animation:si .25s ease-out}
-.add-vis-btn{font-size:12px;color:var(--a6);background:var(--a0);border:1px dashed var(--a5);border-radius:var(--rs);padding:6px 10px;cursor:pointer;margin-top:8px;display:inline-block;transition:all .15s}
-.add-vis-btn:hover{background:var(--a1)}
-.detail-header{display:flex;align-items:center;gap:16px;margin-bottom:24px}
-.detail-time{font-size:32px;font-weight:800;color:var(--g8)}
-.detail-badges{display:flex;gap:8px;margin-top:4px}
-.detail-player{padding:16px;border-bottom:1px solid var(--x1)}
-.detail-player:last-child{border-bottom:none}
+@keyframes si{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}.ai{animation:si .2s ease-out}
+.add-vis{font-size:11px;color:var(--a6);background:var(--a0);border:1px dashed var(--a5);border-radius:var(--rs);padding:5px 8px;cursor:pointer;margin-top:6px;display:inline-block}.add-vis:hover{background:var(--a1)}
+.vf{background:var(--a0);border:1.5px solid var(--a5);border-radius:var(--rs);padding:10px;margin-top:8px}
+.vf h4{font-size:12px;color:var(--a6);margin-bottom:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fw{grid-column:1/-1}
+.grid2 label,.flbl{font-size:10px;color:var(--x5);text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:2px}
+.grid2 input,.grid2 select{width:100%;padding:5px 8px;border:1px solid var(--x3);border-radius:4px;font-size:12px;font-family:inherit}
+.sa{background:var(--r0);border:2px solid var(--r5);border-radius:var(--r);padding:16px;margin-bottom:10px;text-align:center}
+.sa h3{color:var(--r7);font-size:14px;margin:6px 0 2px}.sa p{color:var(--r6);font-size:12px}
+.es{text-align:center;padding:28px 20px;color:var(--x4)}.es .ic{font-size:40px;margin-bottom:8px}.es h3{color:var(--x5);font-size:15px;margin-bottom:3px}.es p{font-size:12px}
 .dp-top{display:flex;justify-content:space-between;align-items:flex-start}
-.dp-name{font-size:15px;font-weight:600}.dp-sub{font-size:12px;color:var(--x5);margin-top:2px}
-.dp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
-.dp-cell label{font-size:10px;color:var(--x4);text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:2px}
-.dp-cell .val{font-size:13px;font-weight:500}
-.detail-meta{padding:16px 20px;background:var(--x0);border-top:1px solid var(--x2);font-size:12px;color:var(--x5);display:flex;justify-content:space-between}
-@media(max-width:640px){.header{padding:12px 16px}.header h1{font-size:15px}.hstat .lbl{display:none}.main{padding:16px 12px}.pf,.vfl{grid-template-columns:1fr}.dp-grid{grid-template-columns:1fr 1fr}}
+.dp-name{font-size:14px;font-weight:600}.dp-sub{font-size:11px;color:var(--x5);margin-top:1px}
+.dp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.dp-cell label{font-size:9px;color:var(--x4);text-transform:uppercase;letter-spacing:.3px;display:block;margin-bottom:1px}.dp-cell .val{font-size:12px;font-weight:500}
+.detail-player{padding:14px;border-bottom:1px solid var(--x1)}.detail-player:last-child{border-bottom:none}
+.detail-meta{padding:12px 16px;background:var(--x0);border-top:1px solid var(--x2);font-size:11px;color:var(--x5);display:flex;justify-content:space-between}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-size:11px;color:var(--x5);text-transform:uppercase;letter-spacing:.3px;padding:8px 12px;border-bottom:2px solid var(--x2)}
+.tbl td{padding:8px 12px;border-bottom:1px solid var(--x1)}.tbl tr:hover{background:var(--x0)}
+.st-ok{color:var(--g6);font-weight:600}.st-off{color:var(--r5);font-weight:600}.st-inact{color:var(--x4);font-weight:600}
+.chart-bar{display:flex;align-items:flex-end;gap:6px;height:160px;padding-top:10px}
+.chart-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.chart-fill{width:100%;border-radius:4px 4px 0 0;transition:height .3s}
+.chart-lbl{font-size:9px;color:var(--x5);white-space:nowrap}
+.chart-val{font-size:10px;font-weight:700;color:var(--x7)}
+.stat-row{display:flex;gap:12px;margin-bottom:16px}.stat-card{flex:1;background:#fff;border-radius:var(--r);padding:14px;box-shadow:var(--sh);text-align:center}
+.stat-card .num{font-size:28px;font-weight:800;color:var(--g8)}.stat-card .lbl{font-size:11px;color:var(--x5);margin-top:2px}
+.role-sel{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;gap:24px;padding:40px 20px}
+.role-sel h2{font-size:22px;font-weight:700;color:var(--x8)}.role-sel p{color:var(--x5);font-size:14px;margin-top:-16px}
+.role-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.role-card{background:#fff;border:2px solid var(--x2);border-radius:12px;padding:28px 24px;width:220px;text-align:center;cursor:pointer;transition:all .2s;box-shadow:var(--sh)}
+.role-card:hover{border-color:var(--g5);box-shadow:var(--shm);transform:translateY(-2px)}
+.role-card .ri{font-size:40px;margin-bottom:10px}.role-card h3{font-size:16px;margin-bottom:8px;line-height:1.3}.role-card p{font-size:12px;color:var(--x5);line-height:1.4}
+.inc-card{border-left:3px solid var(--r5);padding:12px 14px;margin-bottom:10px;background:#fff;border-radius:0 var(--rs) var(--rs) 0;box-shadow:var(--sh)}
+.inc-card .ic-date{font-size:11px;color:var(--x5)}.inc-card .ic-who{font-size:13px;font-weight:600;margin:3px 0}.inc-card .ic-desc{font-size:12px;color:var(--x6)}
+.forecast-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--x1);font-size:13px}
+.forecast-row:last-child{border-bottom:none}
+.forecast-day{min-width:80px;font-weight:600}.forecast-bar{flex:1;height:20px;background:var(--x1);border-radius:4px;overflow:hidden}
+.forecast-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--g5),var(--g7))}
+.forecast-num{min-width:60px;text-align:right;font-weight:700;color:var(--g8)}
+.toggle{position:relative;width:44px;height:24px;cursor:pointer;display:inline-block}
+.toggle input{opacity:0;width:0;height:0}
+.toggle .slider{position:absolute;inset:0;background:var(--r5);border-radius:24px;transition:.2s}
+.toggle input:checked+.slider{background:var(--g6)}
+.toggle .slider::before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+.slider::before{transform:translateX(20px)}
+@media(max-width:640px){.hstats{display:none}.main{padding:12px}.role-cards{flex-direction:column;align-items:center}.dp-grid{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -142,76 +144,110 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 })();
 </script>
 
-<div class="demo-banner">⚠️ DEMO INTERACTIVO — Prototipo de interfaz para validación con equipo de Golf. Los datos son ficticios.</div>
-
+<div class="demo-banner">⚠️ DEMO INTERACTIVO v3 — Prototipo para validación con equipo de Golf. Datos ficticios.</div>
 <div class="header">
-  <div class="header-left">
-    <div class="logo">⛳</div>
-    <div><h1>Registro de Salidas</h1><div class="header-sub">Club de Golf Tres Marías</div></div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:20px">⛳</span>
+    <div><h1>Operaciones de Golf</h1><div class="header-sub">Club de Golf Tres Marías</div></div>
   </div>
-  <div class="header-right">
-    <div class="hstat">🏌️ <span class="lbl">En campo:</span> <strong id="hPlayers">14</strong> <span class="lbl">jugadores</span></div>
-    <div class="hstat">🚗 <span class="lbl">Carritos:</span> <strong id="hCarts">4</strong> <span class="lbl">en uso</span></div>
-    <div class="hstat">📋 <strong id="hGroups">4</strong> <span class="lbl">grupos hoy</span></div>
-    <div class="ubadge"><div class="udot"></div>Luis (Starter)</div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="hstats">
+      <div class="hstat">🏌️ <strong id="hP">14</strong> jugadores</div>
+      <div class="hstat">🚗 <strong id="hC">8</strong> carritos</div>
+      <div class="hstat">📋 <strong id="hG">4</strong> grupos</div>
+    </div>
+    <div class="ubadge" onclick="showRoles()" id="roleBadge"><div class="udot"></div><span id="roleLabel">Seleccionar rol</span></div>
+  </div>
+</div>
+<div class="main" id="mainContent">
+<!-- ROLE SELECTOR -->
+<div id="viewRoles" class="role-sel">
+  <h2>Selecciona tu perfil</h2>
+  <p>Cada perfil tiene acceso a diferentes funciones</p>
+  <div class="role-cards">
+    <div class="role-card" onclick="selectRole('starter')">
+      <div class="ri">🏌</div><h3>Starter</h3><p>Registrar salidas de socios y visitantes al campo</p>
+    </div>
+    <div class="role-card" onclick="selectRole('admin')">
+      <div class="ri">⚙️</div><h3>Administrador</h3><p>Gestión completa: caddies, carritos, torneos, incidentes y reportes</p>
+    </div>
+    <div class="role-card" onclick="selectRole('marshall')">
+      <div class="ri">🏌️</div><h3>Marshall</h3><p>Ver salidas en campo, editar grupos y registrar incidentes</p>
+    </div>
   </div>
 </div>
 
-<div class="main" id="mainContent">
-
-  <div id="viewGroups">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <div><h2 style="font-size:20px;font-weight:700">Salidas de hoy</h2><p style="font-size:13px;color:var(--x5)" id="todayDate"></p></div>
-      <button class="btn btn-p" onclick="showNewGroup()">＋ Nuevo Grupo</button>
+<!-- ===== STARTER / ADMIN: GROUPS LIST ===== -->
+<div id="viewGroups" class="hidden">
+  <div style="margin-bottom:16px"><button class="btn btn-s btn-sm" onclick="showRoles()">← Cambiar perfil</button></div>
+  <div id="adminTabs"></div>
+  <div id="tabSalidas">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div><h2 style="font-size:18px;font-weight:700">Salidas de hoy</h2><p style="font-size:12px;color:var(--x5)" id="todayDate"></p></div>
+      <button class="btn btn-p" onclick="showNewGroup()" id="btnNewGroup">＋ Nuevo Grupo</button>
     </div>
     <div class="card" id="groupsCard"><div id="groupsList"></div></div>
   </div>
-
-  <div id="viewDetail" class="hidden"></div>
-
-  <div id="viewNewGroup" class="hidden">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
-      <button class="btn btn-s btn-sm" onclick="backToGroups()">← Atrás</button>
-      <div><h2 style="font-size:20px;font-weight:700">Nuevo Grupo</h2><p style="font-size:13px;color:var(--x5)">El horario se registra automáticamente al guardar</p></div>
-    </div>
-
-    <div class="card ai"><div class="card-body">
-      <div class="sl">Destino</div>
-      <div class="dp">
-        <div class="dpill act" onclick="selDest(this,'campo')">🏌️ Campo</div>
-        <div class="dpill" onclick="selDest(this,'practica')">🎯 Práctica</div>
-      </div>
-    </div></div>
-
-    <div class="card ai" id="cartSec"><div class="card-body">
-      <div style="display:flex;gap:16px;align-items:flex-end">
-        <div style="flex:1"><div class="sl">Número de carrito</div>
-          <input type="number" class="fi" placeholder="Ej: 15" id="cartNum" min="1" max="99" style="max-width:140px;font-size:20px;font-weight:700;text-align:center">
-        </div>
-        <p style="font-size:12px;color:var(--x4);margin-bottom:12px">Confirmar con Caddie House por radio</p>
-      </div>
-    </div></div>
-
-    <div class="card ai"><div class="card-body">
-      <div class="sl">Jugadores <span class="cnt" id="pCnt">0 / 6</span></div>
-      <div id="playerCards"></div>
-      <div id="addPS">
-        <div class="sc" style="margin-bottom:8px">
-          <span class="si">🔍</span>
-          <input type="text" class="fi sinp" id="pSearch" placeholder="Buscar socio por nombre o # de acción..." oninput="onSearch(this.value)" onfocus="onSF()" autocomplete="off">
-          <div class="sr" id="sResults"></div>
-        </div>
-      </div>
-    </div></div>
-
-    <div style="height:80px"></div>
-    <div class="fbar">
-      <button class="btn btn-s" onclick="backToGroups()">Cancelar</button>
-      <button class="btn btn-p btn-lg" style="max-width:360px" onclick="saveGroup()">Guardar Grupo</button>
-    </div>
-  </div>
+  <div id="tabCaddies" class="hidden"></div>
+  <div id="tabCarritos" class="hidden"></div>
+  <div id="tabTorneos" class="hidden"></div>
+  <div id="tabIncidentes" class="hidden"></div>
+  <div id="tabReportes" class="hidden"></div>
 </div>
 
+<!-- ===== GROUP DETAIL ===== -->
+<div id="viewDetail" class="hidden"></div>
+
+<!-- ===== NEW CADDIE FORM ===== -->
+<div id="viewNewCaddie" class="hidden"></div>
+
+<!-- ===== EDIT CADDIE FORM ===== -->
+<div id="viewEditCaddie" class="hidden"></div>
+
+<!-- ===== NEW GROUP FORM ===== -->
+<div id="viewNewGroup" class="hidden">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+    <button class="btn btn-s btn-sm" onclick="backToGroups()">← Atrás</button>
+    <div><h2 style="font-size:18px;font-weight:700">Nuevo Grupo</h2><p style="font-size:12px;color:var(--x5)">Horario automático al guardar</p></div>
+  </div>
+  <div class="card ai"><div class="card-body">
+    <div class="sl">Destino</div>
+    <div class="dp" id="destPills"></div>
+    <div id="torneoSel" class="hidden" style="margin-top:10px">
+      <div class="flbl">Torneo activo</div>
+      <select class="fi" id="torneoList" style="max-width:300px"></select>
+    </div>
+    <div id="clinicaSel" class="hidden" style="margin-top:10px">
+      <div class="grid2" style="max-width:400px">
+        <div><label>Tipo</label><select class="fi" id="clinicaTipo"><option>Privada</option><option>Mensual</option></select></div>
+        <div><label>Profesor (opcional)</label><input class="fi" id="clinicaProf" placeholder="Nombre"></div>
+      </div>
+    </div>
+  </div></div>
+  <div class="card ai" id="hoyosSec"><div class="card-body">
+    <div class="sl">Hoyos <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;color:var(--x4)">(opcional)</span></div>
+    <div class="dp">
+      <div class="dpill" onclick="selHoyos(this,9)">9</div>
+      <div class="dpill" onclick="selHoyos(this,18)">18</div>
+      <div class="dpill" onclick="selHoyos(this,27)">27</div>
+    </div>
+  </div></div>
+  <div class="card ai"><div class="card-body">
+    <div class="sl">Jugadores <span class="cnt" id="pCnt">0 / 6</span></div>
+    <div id="playerCards"></div>
+    <div class="sc" style="margin-top:8px">
+      <span class="si">🔍</span>
+      <input type="text" class="fi sinp" id="pSearch" placeholder="Buscar socio por nombre o # de acción..." oninput="onSearch(this.value)" autocomplete="off">
+      <div class="sr" id="sResults"></div>
+    </div>
+  </div></div>
+  <div style="height:70px"></div>
+  <div class="fbar">
+    <button class="btn btn-s" onclick="backToGroups()">Cancelar</button>
+    <button class="btn btn-p btn-lg" style="max-width:320px" onclick="saveGroup()">Guardar Grupo</button>
+  </div>
+</div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -222,368 +258,542 @@ const socios=[
   {id:3,nombre:"Patricia Vega",accion:1567,genero:"F",edad:"35-44",carrito:"Semestral",suspendido:false,federado:false,handicap:null,numFed:null,frecuentes:[4],ultimoCaddie:null},
   {id:4,nombre:"Enrique Sánchez",accion:334,genero:"M",edad:"65+",carrito:"Campo Semestral",suspendido:false,federado:true,handicap:8.1,numFed:"MX-1102",frecuentes:[3,6],ultimoCaddie:"Raúl Moreno"},
   {id:5,nombre:"Francisco Ortiz",accion:2010,genero:"M",edad:"45-54",carrito:"Campo Anual",suspendido:false,federado:true,handicap:15.7,numFed:"MX-5544",frecuentes:[1,2],ultimoCaddie:null},
-  {id:6,nombre:"Miguel Torres",accion:1890,genero:"M",edad:"35-44",carrito:"No pagado",suspendido:false,federado:false,handicap:null,numFed:null,frecuentes:[],ultimoCaddie:"Pedro López"},
+  {id:6,nombre:"Miguel Torres",accion:1890,genero:"M",edad:"35-44",carrito:"No pagado",suspendido:false,federado:false,frecuentes:[],ultimoCaddie:"Pedro López"},
   {id:7,nombre:"Ana Lucía Garza",accion:445,genero:"F",edad:"25-34",carrito:"Anual",suspendido:false,federado:true,handicap:22.0,numFed:"MX-8891",frecuentes:[8],ultimoCaddie:null},
   {id:8,nombre:"David Peña",accion:1102,genero:"M",edad:"45-54",carrito:"Campo Anual",suspendido:false,federado:true,handicap:10.3,numFed:"MX-2267",frecuentes:[7],ultimoCaddie:"Martín Reyes"},
   {id:9,nombre:"Alejandro Ruiz",accion:678,genero:"M",edad:"55-64",carrito:"Semestral",suspendido:false,federado:true,handicap:14.5,numFed:"MX-6678",frecuentes:[10],ultimoCaddie:"Jorge Huerta"},
-  {id:10,nombre:"Luis Herrera",accion:2200,genero:"M",edad:"35-44",carrito:"Campo Anual",suspendido:false,federado:false,handicap:null,numFed:null,frecuentes:[9],ultimoCaddie:null},
-  {id:11,nombre:"Gustavo Ramírez Solís",accion:1455,genero:"M",edad:"55-64",carrito:"Anual",suspendido:true,motivoSuspension:"Adeudo de cuota trimestral — $45,200 MXN vencido desde 15 mayo 2026",federado:true,handicap:9.8,numFed:"MX-1100",frecuentes:[],ultimoCaddie:"Raúl Moreno"},
+  {id:10,nombre:"Luis Herrera",accion:2200,genero:"M",edad:"35-44",carrito:"Campo Anual",suspendido:false,federado:false,frecuentes:[9],ultimoCaddie:null},
+  {id:11,nombre:"Gustavo Ramírez Solís",accion:1455,genero:"M",edad:"55-64",carrito:"Anual",suspendido:true,motivoSuspension:"Adeudo cuota trimestral — $45,200 MXN vencido 15 mayo 2026",federado:true,handicap:9.8,numFed:"MX-1100",frecuentes:[],ultimoCaddie:"Raúl Moreno"},
   {id:12,nombre:"Fernando García López",accion:390,genero:"M",edad:"45-54",carrito:"Campo Anual",suspendido:false,federado:true,handicap:11.2,numFed:"MX-4490",frecuentes:[1,5],ultimoCaddie:"Martín Reyes"},
 ];
 const caddiesList=[
-  {nombre:"Martín Reyes",cat:"A"},{nombre:"Raúl Moreno",cat:"A"},
-  {nombre:"Jorge Huerta",cat:"B"},{nombre:"Pedro López",cat:"B"},
-  {nombre:"Raúl Jr. Moreno",cat:"C"},{nombre:"Tomás Aguilar",cat:"C"},
-  {nombre:"Iván Castillo",cat:"D"},{nombre:"Óscar Núñez",cat:"D"},
+  {nombre:"Martín Reyes",cat:"A",status:"Disponible"},{nombre:"Raúl Moreno",cat:"A",status:"Disponible"},
+  {nombre:"Jorge Huerta",cat:"B",status:"Disponible"},{nombre:"Pedro López",cat:"B",status:"Disponible"},
+  {nombre:"Raúl Jr. Moreno",cat:"C",status:"Disponible"},{nombre:"Tomás Aguilar",cat:"C",status:"Inactivo"},
+  {nombre:"Iván Castillo",cat:"D",status:"Disponible"},{nombre:"Óscar Núñez",cat:"D",status:"Disponible"},
+];
+const carritosList=[];
+for(let i=1;i<=110;i++){
+  const oos=i===14||i===27||i===53||i===88||i===101;
+  carritosList.push({num:i,status:oos?'Fuera de servicio':'Habilitado'});
+}
+const torneos=[
+  {nombre:"Torneo Aniversario 3M",inicio:"2026-07-16",fin:"2026-07-17",org:"Club de Golf",jugadores:120,hombres:85,mujeres:35,socios:90,visitantes:30,pagos:"120 green fees pagados, 10 cortesías",notas:"Incluye comida y premiación."}
+];
+const incidentes=[
+  {fecha:"12 jul 2026, 9:45",quien:"Miguel Torres (#1890)",desc:"Carrito #22 dañó cerca del hoyo 7. Evidencia fotográfica entregada.",por:"Marshall Eduardo"},
+  {fecha:"8 jul 2026, 11:20",quien:"Invitado de Roberto Álvarez",desc:"Conducción imprudente en área de práctica. Advertencia verbal.",por:"Marshall Eduardo"}
 ];
 const tarifas={es:1800,fs:2500};
-const groupSizes=['','Individual','Twosome','Threesome','Foursome','Fivesome','Sixsome'];
-
 const demoGroups=[
-  {time:"7:12",dest:"Campo",cart:"12",players:[
-    {nombre:"Roberto Álvarez",accion:1245,tipo:"socio",carrito:"Campo Anual",genero:"M",edad:"45-54",federado:true,handicap:12.4,numFed:"MX-4521",caddie:"Martín Reyes (A)"},
-    {nombre:"Carlos Mendoza",accion:892,tipo:"socio",carrito:"Anual",genero:"M",edad:"55-64",federado:true,handicap:18.2,numFed:"MX-3390",caddie:"Jorge Huerta (B)"},
-    {nombre:"Francisco Ortiz",accion:2010,tipo:"socio",carrito:"Campo Anual",genero:"M",edad:"45-54",federado:true,handicap:15.7,numFed:"MX-5544",caddie:"Sin caddie"},
-    {nombre:"Luis Herrera",accion:2200,tipo:"socio",carrito:"Campo Anual",genero:"M",edad:"35-44",federado:false,handicap:null,numFed:null,caddie:"Sin caddie"}
+  {time:"7:12",dest:"Campo",hoyos:18,players:[
+    {nombre:"Roberto Álvarez",accion:1245,tipo:"socio",carrito:"Campo Anual",cartNum:12,genero:"M",edad:"45-54",federado:true,handicap:12.4,caddie:"Martín Reyes (A)"},
+    {nombre:"Carlos Mendoza",accion:892,tipo:"socio",carrito:"Anual",cartNum:12,genero:"M",edad:"55-64",federado:true,handicap:18.2,caddie:"Jorge Huerta (B)"},
+    {nombre:"Francisco Ortiz",accion:2010,tipo:"socio",carrito:"Campo Anual",cartNum:15,genero:"M",edad:"45-54",federado:true,handicap:15.7,caddie:"Sin caddie"},
+    {nombre:"Luis Herrera",accion:2200,tipo:"socio",carrito:"Campo Anual",cartNum:15,genero:"M",edad:"35-44",federado:false,caddie:"Sin caddie"}
   ]},
-  {time:"7:24",dest:"Campo",cart:"07",players:[
-    {nombre:"Enrique Sánchez",accion:334,tipo:"socio",carrito:"Campo Semestral",genero:"M",edad:"65+",federado:true,handicap:8.1,numFed:"MX-1102",caddie:"Raúl Moreno (A)"},
-    {nombre:"Patricia Vega",accion:1567,tipo:"socio",carrito:"Semestral",genero:"F",edad:"35-44",federado:false,handicap:null,numFed:null,caddie:"Pedro López (B)"},
-    {nombre:"Miguel Torres",accion:1890,tipo:"socio",carrito:"No pagado",genero:"M",edad:"35-44",federado:false,handicap:null,numFed:null,caddie:"Raúl Jr. Moreno (C)"}
+  {time:"7:24",dest:"Campo",hoyos:18,players:[
+    {nombre:"Enrique Sánchez",accion:334,tipo:"socio",carrito:"Campo Semestral",cartNum:7,genero:"M",edad:"65+",federado:true,handicap:8.1,caddie:"Raúl Moreno (A)"},
+    {nombre:"Patricia Vega",accion:1567,tipo:"socio",carrito:"Semestral",cartNum:7,genero:"F",edad:"35-44",federado:false,caddie:"Pedro López (B)"},
+    {nombre:"Miguel Torres",accion:1890,tipo:"socio",carrito:"No pagado",cartNum:null,genero:"M",edad:"35-44",federado:false,caddie:"Raúl Jr. Moreno (C)"}
   ]},
-  {time:"7:38",dest:"Campo",cart:"22",players:[
-    {nombre:"Alejandro Ruiz",accion:678,tipo:"socio",carrito:"Semestral",genero:"M",edad:"55-64",federado:true,handicap:14.5,numFed:"MX-6678",caddie:"Sin caddie"},
-    {nombre:"David Peña",accion:1102,tipo:"socio",carrito:"Campo Anual",genero:"M",edad:"45-54",federado:true,handicap:10.3,numFed:"MX-2267",caddie:"Sin caddie"},
-    {nombre:"Marcos Jiménez",tipo:"visitante",genero:"M",edad:"35-44",caddie:"Sin caddie",anfitrion:"Alejandro Ruiz",pago:"Green Fee ($1,800)"}
+  {time:"7:38",dest:"Campo",hoyos:27,players:[
+    {nombre:"Alejandro Ruiz",accion:678,tipo:"socio",carrito:"Semestral",cartNum:22,genero:"M",edad:"55-64",federado:true,handicap:14.5,caddie:"Sin caddie"},
+    {nombre:"David Peña",accion:1102,tipo:"socio",carrito:"Campo Anual",cartNum:22,genero:"M",edad:"45-54",federado:true,handicap:10.3,caddie:"Sin caddie"},
+    {nombre:"Marcos Jiménez",tipo:"visitante",genero:"M",edad:"35-44",caddie:"Sin caddie",anfitrion:"Alejandro Ruiz",pago:"Green Fee (Ticket #6842)",cartNum:22}
   ]},
-  {time:"7:55",dest:"Práctica",cart:null,players:[
-    {nombre:"Ana Lucía Garza",accion:445,tipo:"socio",carrito:"Anual",genero:"F",edad:"25-34",federado:true,handicap:22.0,numFed:"MX-8891",caddie:"Sin caddie"}
+  {time:"7:55",dest:"Práctica",hoyos:null,players:[
+    {nombre:"Ana Lucía Garza",accion:445,tipo:"socio",carrito:"Anual",cartNum:null,genero:"F",edad:"25-34",federado:true,handicap:22.0,caddie:"Sin caddie"}
   ]}
 ];
 
-let added=[];
-let dest='campo';
-let sto=null;
+// ===== STATE =====
+let role=null,added=[],dest='campo',hoyos=null,sto=null,activeTab='salidas';
+function pad2(n){return n.toString().padStart(2,'0')}
 
+// ===== INIT =====
 function init(){
-  const d=new Date();
-  const dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const d=new Date(),dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+    meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   document.getElementById('todayDate').textContent=`${dias[d.getDay()]} ${d.getDate()} de ${meses[d.getMonth()]} ${d.getFullYear()}`;
-  renderGroupsList();
 }
 init();
 
+// ===== VIEWS HELPER =====
+function hideAll(){['viewRoles','viewGroups','viewNewGroup','viewDetail','viewNewCaddie','viewEditCaddie'].forEach(id=>document.getElementById(id).classList.add('hidden'))}
+
+// ===== ROLE SELECTION =====
+function selectRole(r){
+  role=r;activeTab='salidas';
+  const labels={starter:'Rodo (Starter)',admin:'Lulú (Admin)',marshall:'Eduardo (Marshall)'};
+  document.getElementById('roleLabel').textContent=labels[r];
+  hideAll();document.getElementById('viewGroups').classList.remove('hidden');
+  renderAdminTabs();renderGroupsList();
+  if(r==='marshall')document.getElementById('btnNewGroup').classList.add('hidden');
+  else document.getElementById('btnNewGroup').classList.remove('hidden');
+  switchTab('salidas');
+}
+function showRoles(){hideAll();document.getElementById('viewRoles').classList.remove('hidden')}
+
+// ===== ADMIN TABS =====
+function renderAdminTabs(){
+  const el=document.getElementById('adminTabs');
+  if(role==='starter'){el.innerHTML='';return}
+  const tabs=role==='admin'
+    ?[['salidas','Salidas'],['caddies','Caddies'],['carritos','Carritos'],['torneos','Torneos'],['incidentes','Incidentes'],['reportes','Reportes']]
+    :[['salidas','Salidas'],['incidentes','Incidentes']];
+  el.innerHTML=`<div class="tabs">${tabs.map(([k,l])=>`<div class="tab ${activeTab===k?'act':''}" onclick="switchTab('${k}')">${l}</div>`).join('')}</div>`;
+}
+function switchTab(t){
+  activeTab=t;renderAdminTabs();
+  ['salidas','caddies','carritos','torneos','incidentes','reportes'].forEach(k=>{
+    const el=document.getElementById('tab'+k.charAt(0).toUpperCase()+k.slice(1));
+    if(el)el.classList.toggle('hidden',k!==t);
+  });
+  document.getElementById('tabSalidas').classList.toggle('hidden',t!=='salidas');
+  if(t==='caddies')renderCaddies();
+  if(t==='carritos')renderCarritos();
+  if(t==='torneos')renderTorneos();
+  if(t==='incidentes')renderIncidentes();
+  if(t==='reportes')renderReportes();
+}
+
+// ===== GROUPS LIST =====
 function renderGroupsList(){
   const el=document.getElementById('groupsList');
+  const gn=['','Individual','Twosome','Threesome','Foursome','Fivesome','Sixsome'];
   el.innerHTML=demoGroups.map((g,i)=>{
     const names=g.players.map(p=>p.tipo==='visitante'?p.nombre+' (vis.)':p.nombre).join(', ');
-    const cads=g.players.map(p=>p.caddie).join(', ');
-    const isP=g.dest==='Práctica';
+    const carts=[...new Set(g.players.map(p=>p.cartNum).filter(Boolean))].map(n=>'C-'+pad2(n)).join(', ');
+    const cls=g.dest==='Práctica'?'gb-p':g.dest==='Torneo'?'gb-t':g.dest==='Clínica'?'gb-cl':'gb-c';
     return `<div class="grow" onclick="showDetail(${i})">
       <div class="gt">${g.time}</div>
-      <div class="gp"><div class="gpn">${names}</div><div class="gm">${groupSizes[g.players.length]} · Caddie: ${cads}</div></div>
-      <span class="gb ${isP?'gb-p':'gb-c'}">${g.dest}</span>
-      ${g.cart?`<span class="gb gb-k">🚗 C-${g.cart}</span>`:''}
+      <div style="flex:1"><div class="gpn">${names}</div><div class="gm">${gn[g.players.length]} ${g.hoyos?'· '+g.hoyos+' hoyos':''} ${carts?'· '+carts:''}</div></div>
+      <span class="gb ${cls}">${g.dest}</span>
     </div>`;
   }).join('');
 }
 
+// ===== GROUP DETAIL =====
 function showDetail(idx){
-  const g=demoGroups[idx];
-  const el=document.getElementById('viewDetail');
-  const isP=g.dest==='Práctica';
-  const visCount=g.players.filter(p=>p.tipo==='visitante').length;
-  const socCount=g.players.length-visCount;
-
-  let playersHtml=g.players.map(p=>{
+  const g=demoGroups[idx],el=document.getElementById('viewDetail');
+  const gn=['','Individual','Twosome','Threesome','Foursome','Fivesome','Sixsome'];
+  const vis=g.players.filter(p=>p.tipo==='visitante').length,soc=g.players.length-vis;
+  const cls=g.dest==='Práctica'?'gb-p':g.dest==='Torneo'?'gb-t':g.dest==='Clínica'?'gb-cl':'gb-c';
+  let ph=g.players.map(p=>{
     if(p.tipo==='socio'){
-      const cTag=p.carrito.includes('Campo')?'✅ En campo':(p.carrito==='No pagado'?'❌ No pagado':'🔄 Solo traslado');
-      return `<div class="detail-player">
-        <div class="dp-top">
-          <div>
-            <div class="dp-name">${p.nombre}</div>
-            <div class="dp-sub">Acción #${p.accion} · <span class="pb" style="background:var(--g1);color:var(--g8)">Socio</span>
-              ${p.federado?`<span class="pb" style="background:var(--b1);color:var(--b6);margin-left:4px">Federado · HCP ${p.handicap}</span>`:''}</div>
-          </div>
-        </div>
-        <div class="dp-grid">
-          <div class="dp-cell"><label>Carrito</label><div class="val">${p.carrito}<br><span style="font-size:11px">${cTag}</span></div></div>
-          <div class="dp-cell"><label>Género / Edad</label><div class="val">${p.genero==='M'?'Masculino':'Femenino'} · ${p.edad}</div></div>
-          <div class="dp-cell"><label>Caddie</label><div class="val">${p.caddie}</div></div>
-        </div>
-      </div>`;
+      const ct=p.carrito.includes('Campo')?'✅ Campo':(p.carrito==='No pagado'?'❌ No pagado':'🔄 Traslado');
+      return `<div class="detail-player"><div class="dp-top"><div><div class="dp-name">${p.nombre}</div><div class="dp-sub">Acción #${p.accion} · <span class="pb" style="background:var(--g1);color:var(--g8)">Socio</span>${p.federado?` <span class="pb" style="background:var(--b1);color:var(--b6)">HCP ${p.handicap}</span>`:''}</div></div></div>
+      <div class="dp-grid"><div class="dp-cell"><label>Carrito</label><div class="val">${p.cartNum?'C-'+pad2(p.cartNum):'—'} · ${p.carrito}<br><span style="font-size:10px">${ct}</span></div></div><div class="dp-cell"><label>Género / Edad</label><div class="val">${p.genero==='M'?'Masc.':'Fem.'} · ${p.edad}</div></div><div class="dp-cell"><label>Caddie</label><div class="val">${p.caddie}</div></div></div></div>`;
     } else {
-      return `<div class="detail-player" style="background:var(--a0)">
-        <div class="dp-top">
-          <div>
-            <div class="dp-name">${p.nombre}</div>
-            <div class="dp-sub"><span class="pb" style="background:var(--a1);color:var(--a6)">Visitante</span>
-              <span class="pb" style="background:var(--x1);color:var(--x6);margin-left:4px">${p.pago}</span></div>
-          </div>
-        </div>
-        <div class="dp-grid">
-          <div class="dp-cell"><label>Invitado por</label><div class="val">${p.anfitrion}</div></div>
-          <div class="dp-cell"><label>Género / Edad</label><div class="val">${p.genero==='M'?'Masculino':'Femenino'} · ${p.edad}</div></div>
-          <div class="dp-cell"><label>Caddie</label><div class="val">${p.caddie}</div></div>
-        </div>
-      </div>`;
+      return `<div class="detail-player" style="background:var(--a0)"><div class="dp-top"><div><div class="dp-name">${p.nombre}</div><div class="dp-sub"><span class="pb" style="background:var(--a1);color:var(--a6)">Visitante de ${p.anfitrion}</span> <span class="pb" style="background:var(--x1);color:var(--x6)">${p.pago}</span></div></div></div>
+      <div class="dp-grid"><div class="dp-cell"><label>Carrito</label><div class="val">${p.cartNum?'C-'+pad2(p.cartNum):'—'}</div></div><div class="dp-cell"><label>Género / Edad</label><div class="val">${p.genero==='M'?'Masc.':'Fem.'} · ${p.edad}</div></div><div class="dp-cell"><label>Caddie</label><div class="val">${p.caddie}</div></div></div></div>`;
     }
   }).join('');
-
-  el.innerHTML=`
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
-      <button class="btn btn-s btn-sm" onclick="backToGroups()">← Atrás</button>
-      <div class="detail-header" style="margin-bottom:0">
-        <div class="detail-time">${g.time}</div>
-        <div>
-          <div style="font-size:16px;font-weight:700">${groupSizes[g.players.length]}</div>
-          <div class="detail-badges">
-            <span class="gb ${isP?'gb-p':'gb-c'}">${g.dest}</span>
-            ${g.cart?`<span class="gb gb-k">🚗 Carrito C-${g.cart}</span>`:''}
-            <span class="gb" style="background:var(--g1);color:var(--g8)">${socCount} socio${socCount!==1?'s':''}</span>
-            ${visCount?`<span class="gb" style="background:var(--a1);color:var(--a6)">${visCount} visitante${visCount!==1?'s':''}</span>`:''}
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      ${playersHtml}
-      <div class="detail-meta">
-        <span>Registrado por: Luis (Starter)</span>
-        <span>Editable hasta ${addMinutes(g.time,30)}</span>
-      </div>
-    </div>`;
-
-  document.getElementById('viewGroups').classList.add('hidden');
-  document.getElementById('viewNewGroup').classList.add('hidden');
-  el.classList.remove('hidden');
+  const canEdit=role==='marshall'||role==='admin'?'todo el día':`hasta ${addMin(g.time,30)}`;
+  el.innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px"><button class="btn btn-s btn-sm" onclick="backToGroups()">← Atrás</button>
+    <div style="display:flex;align-items:center;gap:14px"><div style="font-size:28px;font-weight:800;color:var(--g8)">${g.time}</div><div><div style="font-size:15px;font-weight:700">${gn[g.players.length]}${g.hoyos?' · '+g.hoyos+' hoyos':''}</div><div style="display:flex;gap:6px;margin-top:3px"><span class="gb ${cls}">${g.dest}</span><span class="gb gb-c">${soc} socio${soc!==1?'s':''}</span>${vis?`<span class="gb gb-cl">${vis} visitante${vis!==1?'s':''}</span>`:''}</div></div></div></div>
+    <div class="card">${ph}<div class="detail-meta"><span>Registrado por: Rodo (Starter)</span><span>Editable ${canEdit}</span></div></div>`;
+  hideAll();el.classList.remove('hidden');
 }
+function addMin(t,m){const[h,mi]=t.split(':').map(Number);const d=new Date(2026,0,1,h,mi+m);return d.getHours()+':'+d.getMinutes().toString().padStart(2,'0')}
 
-function addMinutes(timeStr,min){
-  const[h,m]=timeStr.split(':').map(Number);
-  const d=new Date(2026,0,1,h,m+min);
-  return `${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
-}
-
+// ===== NAV =====
 function showNewGroup(){
-  document.getElementById('viewGroups').classList.add('hidden');
-  document.getElementById('viewDetail').classList.add('hidden');
-  document.getElementById('viewNewGroup').classList.remove('hidden');
-  added=[];dest='campo';renderPlayers();
-  document.getElementById('cartNum').value='';
+  hideAll();document.getElementById('viewNewGroup').classList.remove('hidden');
+  added=[];dest='campo';hoyos=null;renderPlayers();renderDestPills();
   document.getElementById('pSearch').value='';
   document.getElementById('sResults').classList.remove('show');
-  document.querySelectorAll('.dpill').forEach((p,i)=>{p.classList.toggle('act',i===0)});
-  document.getElementById('cartSec').style.opacity='1';
+  document.getElementById('hoyosSec').classList.remove('hidden');
 }
 function backToGroups(){
-  document.getElementById('viewNewGroup').classList.add('hidden');
-  document.getElementById('viewDetail').classList.add('hidden');
-  document.getElementById('viewGroups').classList.remove('hidden');
+  hideAll();document.getElementById('viewGroups').classList.remove('hidden');
+  renderGroupsList();
 }
 
+// ===== DESTINATION =====
+function renderDestPills(){
+  const hasTorneo=torneos.some(t=>{const d=new Date().toISOString().slice(0,10);return t.inicio<=d&&t.fin>=d});
+  let pills=[{k:'campo',l:'🏌️ Campo'},{k:'practica',l:'🎯 Práctica'}];
+  if(hasTorneo||role==='admin')pills.push({k:'torneo',l:'🏆 Torneo'});
+  pills.push({k:'clinica',l:'📚 Clínica'});
+  document.getElementById('destPills').innerHTML=pills.map((p,i)=>`<div class="dpill ${i===0?'act':''}" onclick="selDest(this,'${p.k}')">${p.l}</div>`).join('');
+}
 function selDest(el,d){
-  document.querySelectorAll('.dpill').forEach(p=>p.classList.remove('act'));el.classList.add('act');dest=d;
-  const cs=document.getElementById('cartSec');
-  if(d==='practica'){cs.style.opacity='.5';document.getElementById('cartNum').placeholder='Opcional'}
-  else{cs.style.opacity='1';document.getElementById('cartNum').placeholder='Ej: 15'}
+  document.querySelectorAll('#destPills .dpill').forEach(p=>p.classList.remove('act'));el.classList.add('act');dest=d;
+  document.getElementById('hoyosSec').classList.toggle('hidden',d!=='campo');
+  document.getElementById('torneoSel').classList.toggle('hidden',d!=='torneo');
+  document.getElementById('clinicaSel').classList.toggle('hidden',d!=='clinica');
+  if(d==='torneo'){
+    const today=new Date().toISOString().slice(0,10);
+    const active=torneos.filter(t=>t.inicio<=today&&t.fin>=today);
+    document.getElementById('torneoList').innerHTML=active.map((t,i)=>`<option value="${i}">${t.nombre} (${t.inicio})</option>`).join('')||'<option>No hay torneos activos hoy</option>';
+  }
+}
+function selHoyos(el,h){
+  document.querySelectorAll('#hoyosSec .dpill').forEach(p=>p.classList.remove('act'));
+  if(hoyos===h){hoyos=null}else{el.classList.add('act');hoyos=h}
 }
 
-function onSF(){const v=document.getElementById('pSearch').value;if(v.length>=2)onSearch(v)}
+// ===== SEARCH =====
 function onSearch(val){
   clearTimeout(sto);const res=document.getElementById('sResults');
   if(val.length<2){res.classList.remove('show');return}
   sto=setTimeout(()=>{
     const q=val.toLowerCase();
     const m=socios.filter(s=>!added.find(p=>p.id===s.id)&&(s.nombre.toLowerCase().includes(q)||s.accion.toString().startsWith(q)));
-    if(!m.length){res.innerHTML='<div style="padding:16px;text-align:center;color:var(--x4);font-size:13px">Sin resultados</div>';res.classList.add('show');return}
+    if(!m.length){res.innerHTML='<div style="padding:12px;text-align:center;color:var(--x4);font-size:12px">Sin resultados</div>';res.classList.add('show');return}
     let h='';
-    if(added.length>0){
-      const la=added.filter(p=>p.tipo==='socio').pop();
-      if(la&&la.frecuentes&&la.frecuentes.length){
-        const fn=la.frecuentes.map(fid=>socios.find(s=>s.id===fid)).filter(s=>s&&!added.find(p=>p.id===s.id)&&m.find(x=>x.id===s.id));
-        if(fn.length)h+=`<div class="freq">💡 Compañeros frecuentes de ${la.nombre.split(' ')[0]}: ${fn.map(s=>s.nombre.split(' ')[0]).join(', ')}</div>`;
-      }
-    }
-    h+=m.slice(0,6).map(s=>{
-      if(s.suspendido)return`<div class="sri sri-s" onclick="trySusp('${s.nombre.replace(/'/g,"\\'")}','${s.motivoSuspension.replace(/'/g,"\\'")}')"><div class="srn">${s.nombre} <span class="stag">Suspendido</span></div><div class="srd">Acción #${s.accion} · ${s.motivoSuspension}</div></div>`;
-      const cs=s.ultimoCaddie?`· Último caddie: ${s.ultimoCaddie}`:'';
-      return`<div class="sri" onclick="addSocio(${s.id})"><div class="srn">${s.nombre}</div><div class="srd">Acción #${s.accion} · ${s.carrito} ${cs}</div></div>`;
+    if(added.length){const la=added.filter(p=>p.tipo==='socio').pop();if(la&&la.frecuentes){const fn=la.frecuentes.map(f=>socios.find(s=>s.id===f)).filter(s=>s&&!added.find(p=>p.id===s.id)&&m.find(x=>x.id===s.id));if(fn.length)h+=`<div style="padding:8px 12px;background:var(--a0);font-size:11px;color:var(--a6);font-weight:600">💡 Frecuentes de ${la.nombre.split(' ')[0]}: ${fn.map(s=>s.nombre.split(' ')[0]).join(', ')}</div>`}}
+    h+=m.slice(0,5).map(s=>{
+      if(s.suspendido)return`<div class="sri sri-s" onclick="trySusp('${esc(s.nombre)}','${esc(s.motivoSuspension)}')"><b>${s.nombre}</b> <span class="stag">Suspendido</span><div style="font-size:11px;color:var(--x5);margin-top:2px">#${s.accion} · ${s.motivoSuspension}</div></div>`;
+      return`<div class="sri" onclick="addSocio(${s.id})"><b>${s.nombre}</b><div style="font-size:11px;color:var(--x5);margin-top:2px">#${s.accion} · ${s.carrito}${s.ultimoCaddie?' · Últ. caddie: '+s.ultimoCaddie:''}</div></div>`;
     }).join('');
     res.innerHTML=h;res.classList.add('show');
-  },150);
+  },120);
 }
+function esc(s){return s.replace(/'/g,"\\'")}
 function trySusp(n,m){
   document.getElementById('sResults').classList.remove('show');document.getElementById('pSearch').value='';
   const c=document.getElementById('playerCards');
   const d=document.createElement('div');d.className='sa ai';
-  d.innerHTML=`<div class="ic">🚫</div><h3>Socio suspendido — No puede salir al campo</h3><p><strong>${n}</strong></p><p style="margin-top:6px">${m}</p><button class="btn btn-s btn-sm" style="margin-top:12px" onclick="this.parentElement.remove()">Entendido</button>`;
+  d.innerHTML=`<div style="font-size:28px">🚫</div><h3>Socio suspendido</h3><p><b>${n}</b></p><p style="margin-top:4px">${m}</p><button class="btn btn-s btn-sm" style="margin-top:8px" onclick="this.parentElement.remove()">Entendido</button>`;
   c.appendChild(d);
 }
 function addSocio(id){
-  const s=socios.find(x=>x.id===id);if(!s||added.find(p=>p.id===s.id))return;
-  const total=added.length+added.reduce((n,p)=>n+(p.visitors?p.visitors.length:0),0);
-  if(total>=6){showToast('⚠️ Máximo 6 jugadores por grupo');return}
-  added.push({...s,tipo:'socio',caddieSelection:'',visitors:[]});
+  const s=socios.find(x=>x.id===id);if(!s)return;
+  const tot=added.length+added.reduce((n,p)=>n+(p.visitors?p.visitors.length:0),0);
+  if(tot>=6){showToast('⚠️ Máximo 6 jugadores por grupo');return}
+  added.push({...s,tipo:'socio',caddieVal:'',cartNum:'',visitors:[]});
   renderPlayers();document.getElementById('pSearch').value='';document.getElementById('sResults').classList.remove('show');
 }
 
-function showVisForm(socIdx){
-  const total=added.length+added.reduce((n,p)=>n+(p.visitors?p.visitors.length:0),0);
-  if(total>=6){showToast('⚠️ Máximo 6 jugadores por grupo');return}
-  const d=new Date();const fs=(d.getDay()===0||d.getDay()===6);
-  const tar=fs?tarifas.fs:tarifas.es;const td=fs?'fin de semana':'entre semana';
-  const host=added[socIdx];
-  const el=document.getElementById(`vf-${socIdx}`);
+// ===== VISITORS =====
+function showVisForm(si){
+  const tot=added.length+added.reduce((n,p)=>n+(p.visitors?p.visitors.length:0),0);
+  if(tot>=6){showToast('⚠️ Máximo 6 jugadores');return}
+  const h=added[si],el=document.getElementById(`vf-${si}`);
+  const d=new Date(),fs=d.getDay()===0||d.getDay()===6,tar=fs?tarifas.fs:tarifas.es,td=fs?'fin de semana':'entre semana';
   el.classList.remove('hidden');
-  el.innerHTML=`<div class="vf ai">
-    <h4>👤 Agregar visitante invitado por ${host.nombre.split(' ')[0]}</h4>
-    <div class="vfl">
-      <div><label>Nombre completo</label><input type="text" id="vn-${socIdx}" placeholder="Nombre del visitante"></div>
-      <div><label>Género</label><select id="vg-${socIdx}"><option value="M">Masculino</option><option value="F">Femenino</option></select></div>
-      <div><label>Rango de edad</label><select id="va-${socIdx}"><option value="<18">Menor de 18</option><option value="18-24">18–24</option><option value="25-34">25–34</option><option value="35-44" selected>35–44</option><option value="45-54">45–54</option><option value="55-64">55–64</option><option value="65+">65+</option></select></div>
-      <div><label>Forma de pago</label><select id="vp-${socIdx}" onchange="onPayChg(${socIdx})"><option value="gf">Green Fee</option><option value="cu">Cupón del socio</option><option value="co">Cortesía autorizada (solo Lulú)</option></select></div>
-      <div id="vgf-${socIdx}"><label>Tarifa</label><div style="font-size:18px;font-weight:700;color:var(--g8)">$${tar.toLocaleString()} MXN</div><div style="font-size:11px;color:var(--x5)">Tarifa ${td} vigente</div></div>
-      <div id="vco-${socIdx}" class="hidden"><label>Autorizado por</label><select id="vca-${socIdx}"><option value="Enrique Ramírez">Enrique Ramírez</option><option value="Daniel Gutiérrez">Daniel Gutiérrez</option></select></div>
-      <div class="fw" style="display:flex;gap:8px;justify-content:flex-end;margin-top:4px">
-        <button class="btn btn-s btn-sm" onclick="cancelVis(${socIdx})">Cancelar</button>
-        <button class="btn btn-p btn-sm" onclick="addVis(${socIdx})">Agregar</button>
+  el.innerHTML=`<div class="vf ai"><h4>👤 Visitante de ${h.nombre.split(' ')[0]}</h4>
+    <div class="grid2">
+      <div><label>Nombre</label><input class="fi" id="vn-${si}" placeholder="Nombre completo"></div>
+      <div><label>Género</label><select class="fi" id="vg-${si}"><option value="M">Masculino</option><option value="F">Femenino</option></select></div>
+      <div><label>Edad</label><select class="fi" id="va-${si}"><option value="<18">&lt;18</option><option value="18-24">18–24</option><option value="25-34">25–34</option><option value="35-44" selected>35–44</option><option value="45-54">45–54</option><option value="55-64">55–64</option><option value="65+">65+</option></select></div>
+      <div><label>Forma de pago</label><select class="fi" id="vp-${si}" onchange="vpChg(${si})"><option value="gf">Green Fee</option><option value="cu">Cupón</option>${role==='admin'?'<option value="co">Cortesía autorizada</option>':''}</select></div>
+      <div id="vgf-${si}"><label>Ticket #</label><input class="fi" id="vtk-${si}" placeholder="Número de ticket"><div style="font-size:11px;color:var(--g6);margin-top:2px">Tarifa ${td}: $${tar.toLocaleString()} MXN</div></div>
+      <div id="vcu-${si}" class="hidden"><label>Cupón #</label><input class="fi" id="vcn-${si}" placeholder="Número de cupón"></div>
+      <div id="vco-${si}" class="hidden"><label>Autorizado por</label><select class="fi" id="vca-${si}"><option>Enrique Ramírez</option><option>Daniel Gutiérrez</option></select></div>
+      <div><label>Carrito # (si aplica)</label><input type="number" class="fi" id="vcart-${si}" placeholder="Número" min="1" max="110"></div>
+      <div class="fw" style="display:flex;gap:6px;justify-content:flex-end;margin-top:2px">
+        <button class="btn btn-s btn-sm" onclick="cancelVis(${si})">Cancelar</button>
+        <button class="btn btn-p btn-sm" onclick="addVis(${si})">Agregar</button>
       </div>
-    </div>
-  </div>`;
+    </div></div>`;
 }
-function onPayChg(i){
-  const v=document.getElementById(`vp-${i}`).value;
-  document.getElementById(`vgf-${i}`).classList.toggle('hidden',v!=='gf');
-  document.getElementById(`vco-${i}`).classList.toggle('hidden',v!=='co');
-}
+function vpChg(i){const v=document.getElementById(`vp-${i}`).value;['vgf','vcu','vco'].forEach(p=>document.getElementById(`${p}-${i}`).classList.add('hidden'));document.getElementById(`${v==='gf'?'vgf':v==='cu'?'vcu':'vco'}-${i}`).classList.remove('hidden')}
 function cancelVis(i){const el=document.getElementById(`vf-${i}`);el.classList.add('hidden');el.innerHTML=''}
-function addVis(socIdx){
-  const nm=document.getElementById(`vn-${socIdx}`).value.trim();
-  if(!nm){showToast('⚠️ Escribe el nombre del visitante');return}
-  const pay=document.getElementById(`vp-${socIdx}`).value;
-  let payLabel='Green Fee';
-  if(pay==='cu')payLabel='Cupón';
-  if(pay==='co')payLabel='Cortesía ('+document.getElementById(`vca-${socIdx}`).value+')';
-  added[socIdx].visitors.push({
-    id:'v'+Date.now(),nombre:nm,tipo:'visitante',
-    genero:document.getElementById(`vg-${socIdx}`).value,
-    edad:document.getElementById(`va-${socIdx}`).value,
-    formaPago:payLabel,caddieSelection:'',
-    anfitrion:added[socIdx].nombre
-  });
-  cancelVis(socIdx);renderPlayers();
+function addVis(si){
+  const nm=document.getElementById(`vn-${si}`).value.trim();if(!nm){showToast('⚠️ Nombre del visitante');return}
+  const pay=document.getElementById(`vp-${si}`).value;
+  let pl='Green Fee';if(pay==='cu')pl='Cupón (#'+((document.getElementById(`vcn-${si}`)||{}).value||'?')+')';if(pay==='co')pl='Cortesía ('+document.getElementById(`vca-${si}`).value+')';
+  if(pay==='gf'){const tk=(document.getElementById(`vtk-${si}`)||{}).value;if(tk)pl+=` (Ticket #${tk})`}
+  const cn=document.getElementById(`vcart-${si}`).value;
+  added[si].visitors.push({id:'v'+Date.now(),nombre:nm,tipo:'visitante',genero:document.getElementById(`vg-${si}`).value,edad:document.getElementById(`va-${si}`).value,formaPago:pl,caddieVal:'',cartNum:cn||'',anfitrion:added[si].nombre});
+  cancelVis(si);renderPlayers();
 }
-function removeVis(socIdx,visIdx){added[socIdx].visitors.splice(visIdx,1);renderPlayers()}
+function removeVis(si,vi){added[si].visitors.splice(vi,1);renderPlayers()}
 
-function caddieOpts(){return`<option value="">— Seleccionar —</option><option value="sin">Sin caddie</option><optgroup label="Por categoría"><option value="cat-A">Categoría A</option><option value="cat-B">Categoría B</option><option value="cat-C">Categoría C</option><option value="cat-D">Categoría D</option></optgroup><optgroup label="Caddie específico">${caddiesList.map(c=>`<option value="caddie-${c.nombre}">${c.nombre} (${c.cat})</option>`).join('')}</optgroup>`}
-
+// ===== RENDER PLAYERS =====
+function caddieOpts(){
+  const avail=caddiesList.filter(c=>c.status==='Disponible');
+  return`<option value="">— Seleccionar —</option><option value="sin">Sin caddie</option><optgroup label="Caddie específico">${avail.map(c=>`<option value="c-${c.nombre}">${c.nombre} (${c.cat})</option>`).join('')}</optgroup>`;
+}
+function cartOpts(){
+  const avail=carritosList.filter(c=>c.status==='Habilitado');
+  return`<option value="">—</option>${avail.map(c=>`<option value="${c.num}">C-${pad2(c.num)}</option>`).join('')}`;
+}
 function renderPlayers(){
   const c=document.getElementById('playerCards');
-  const total=added.length+added.reduce((n,p)=>n+(p.visitors?p.visitors.length:0),0);
-  document.getElementById('pCnt').textContent=`${total} / 6`;
-  if(!added.length){c.innerHTML=`<div class="es"><div class="ic">🏌️</div><h3>Sin jugadores</h3><p>Busca un socio por nombre o número de acción para agregarlo al grupo</p></div>`;return}
-
-  c.innerHTML=added.map((p,idx)=>{
-    const cTag=p.carrito.includes('Campo')?'✅ En campo':(p.carrito==='No pagado'?'❌ No pagado':'🔄 Solo traslado');
-    const csug=p.ultimoCaddie?`<span class="csug" onclick="selSugCad(${idx},'${p.ultimoCaddie}')">💡 ${p.ultimoCaddie} (últ. 3 rondas)</span>`:'';
-    const canAddVis=total<6;
-
-    let visHtml='';
-    if(p.visitors&&p.visitors.length){
-      visHtml=p.visitors.map((v,vi)=>`
-        <div class="pc ai" style="border-color:var(--a5);margin-left:24px;margin-top:8px">
-          <div class="pch">
-            <div>
-              <div class="pn">${v.nombre}</div>
-              <div class="pbs">
-                <span class="pb" style="background:var(--a1);color:var(--a6)">Visitante de ${p.nombre.split(' ')[0]}</span>
-                <span class="pb" style="background:var(--x1);color:var(--x6)">${v.formaPago}</span>
-              </div>
-            </div>
-            <button class="prm" onclick="removeVis(${idx},${vi})" title="Quitar">✕</button>
-          </div>
-          <div class="cr">
-            <label>Caddie:</label>
-            <select style="flex:1" onchange="setVisCad(${idx},${vi},this.value)" id="vcad-${idx}-${vi}">${caddieOpts()}</select>
-          </div>
-        </div>`).join('');
-    }
-
-    return`<div class="pc ai">
-      <div class="pch">
-        <div>
-          <div class="pn">${p.nombre}</div>
-          <div class="pa">Acción #${p.accion}</div>
-          <div class="pbs">
-            <span class="pb" style="background:var(--g1);color:var(--g8)">Socio</span>
-            ${p.federado?`<span class="pb" style="background:var(--b1);color:var(--b6)">Federado · HCP ${p.handicap}</span>`:''}
-          </div>
+  const tot=added.length+added.reduce((n,p)=>n+(p.visitors?p.visitors.length:0),0);
+  document.getElementById('pCnt').textContent=`${tot} / 6`;
+  if(!added.length){c.innerHTML=`<div class="es"><div class="ic">🏌️</div><h3>Sin jugadores</h3><p>Busca un socio para agregarlo al grupo</p></div>`;return}
+  c.innerHTML=added.map((p,i)=>{
+    const ct=p.carrito.includes('Campo')?'✅ Campo':(p.carrito==='No pagado'?'❌ No pagado':'🔄 Traslado');
+    const csug=p.ultimoCaddie?`<span style="font-size:10px;color:var(--g6);background:var(--g0);padding:1px 6px;border-radius:8px;cursor:pointer" onclick="sugCad(${i},'${p.ultimoCaddie}')">💡 ${p.ultimoCaddie}</span>`:'';
+    const canVis=tot<6;
+    let vh='';if(p.visitors&&p.visitors.length)vh=p.visitors.map((v,vi)=>`
+      <div class="pc ai" style="border-color:var(--a5);margin-left:20px;margin-top:6px">
+        <div style="display:flex;justify-content:space-between"><div><div class="pn">${v.nombre}</div><div style="margin-top:2px"><span class="pb" style="background:var(--a1);color:var(--a6)">Visitante de ${p.nombre.split(' ')[0]}</span> <span class="pb" style="background:var(--x1);color:var(--x6)">${v.formaPago}</span></div></div><button class="prm" onclick="removeVis(${i},${vi})">✕</button></div>
+        <div style="display:flex;gap:6px;align-items:center;margin-top:6px;padding-top:6px;border-top:1px solid var(--x1)">
+          <div style="flex:1"><div class="flbl">Caddie</div><select class="fi" style="font-size:12px;padding:4px 6px" onchange="setVisCad(${i},${vi},this.value)">${caddieOpts()}</select></div>
+          <div style="width:80px"><div class="flbl">Carrito</div><select class="fi" style="font-size:12px;padding:4px 6px" onchange="setVisCart(${i},${vi},this.value)">${cartOpts()}</select></div>
         </div>
-        <button class="prm" onclick="removeSocio(${idx})" title="Quitar">✕</button>
+      </div>`).join('');
+    return`<div class="pc ai">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="pn">${p.nombre}</div><div class="pa">#${p.accion}</div><div style="margin-top:3px"><span class="pb" style="background:var(--g1);color:var(--g8)">Socio</span>${p.federado?` <span class="pb" style="background:var(--b1);color:var(--b6)">HCP ${p.handicap}</span>`:''}</div></div><button class="prm" onclick="removeSocio(${i})">✕</button></div>
+      <div class="grid2" style="margin-top:8px">
+        <div><div class="flbl">Carrito plan</div><div style="font-size:13px;font-weight:500">${p.carrito} <span style="font-size:10px;color:var(--g6)">(auto)</span><br><span style="font-size:10px">${ct}</span></div></div>
+        <div><div class="flbl">Género / Edad</div><div style="font-size:13px;font-weight:500">${p.genero==='M'?'Masc.':'Fem.'} · ${p.edad} <span style="font-size:10px;color:var(--g6)">(auto)</span></div></div>
       </div>
-      <div class="pf">
-        <div class="player-field"><label>Carrito</label><div class="v">${p.carrito} <span class="at">(auto)</span></div><div style="font-size:11px;margin-top:2px">${cTag}</div></div>
-        <div class="player-field"><label>Género / Edad</label><div class="v">${p.genero==='M'?'Masculino':'Femenino'} · ${p.edad} <span class="at">(auto)</span></div></div>
-      </div>
-      <div class="cr">
-        <label>Caddie:</label>
-        <select style="flex:1" onchange="setCad(${idx},this.value)" id="cad-${idx}">${caddieOpts()}</select>
+      <div style="display:flex;gap:6px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--x1)">
+        <div style="flex:1"><div class="flbl">Caddie</div><select class="fi" style="font-size:12px;padding:4px 6px" onchange="setCad(${i},this.value)" id="cad-${i}">${caddieOpts()}</select></div>
+        <div style="width:80px"><div class="flbl">Carrito #</div><select class="fi" style="font-size:12px;padding:4px 6px" onchange="setCart(${i},this.value)" id="cart-${i}">${cartOpts()}</select></div>
         ${csug}
       </div>
-      ${canAddVis?`<div class="add-vis-btn" onclick="showVisForm(${idx})">＋ Agregar visitante invitado por ${p.nombre.split(' ')[0]}</div>`:''}
-      <div id="vf-${idx}" class="hidden"></div>
-      ${visHtml}
+      ${canVis?`<div class="add-vis" onclick="showVisForm(${i})">＋ Visitante de ${p.nombre.split(' ')[0]}</div>`:''}
+      <div id="vf-${i}" class="hidden"></div>
+      ${vh}
     </div>`;
   }).join('');
 }
-
 function removeSocio(i){added.splice(i,1);renderPlayers()}
-function setCad(i,v){added[i].caddieSelection=v}
-function setVisCad(si,vi,v){added[si].visitors[vi].caddieSelection=v}
-function selSugCad(i,cn){const s=document.getElementById(`cad-${i}`);if(s){s.value=`caddie-${cn}`;added[i].caddieSelection=`caddie-${cn}`}}
+function setCad(i,v){added[i].caddieVal=v}
+function setCart(i,v){added[i].cartNum=v}
+function setVisCad(si,vi,v){added[si].visitors[vi].caddieVal=v}
+function setVisCart(si,vi,v){added[si].visitors[vi].cartNum=v}
+function sugCad(i,cn){const s=document.getElementById(`cad-${i}`);if(s){s.value=`c-${cn}`;added[i].caddieVal=`c-${cn}`}}
 
+// ===== SAVE GROUP =====
 function saveGroup(){
   if(!added.length){showToast('⚠️ Agrega al menos un jugador');return}
-  const allPlayers=[...added];
-  added.forEach(p=>{if(p.visitors)allPlayers.push(...p.visitors)});
-  const missing=allPlayers.some(p=>!p.caddieSelection);
-  if(missing){showToast('⚠️ Selecciona caddie para todos los jugadores (o marca "Sin caddie")');return}
-
-  const now=new Date();const time=`${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
-  const cart=document.getElementById('cartNum').value;
-
+  const all=[...added];added.forEach(p=>{if(p.visitors)all.push(...p.visitors)});
+  if(all.some(p=>!p.caddieVal)){showToast('⚠️ Selecciona caddie para todos');return}
+  const now=new Date(),time=now.getHours()+':'+now.getMinutes().toString().padStart(2,'0');
   const gPlayers=[];
   added.forEach(p=>{
-    const cadLabel=caddieLbl(p.caddieSelection);
-    gPlayers.push({nombre:p.nombre,accion:p.accion,tipo:'socio',carrito:p.carrito,genero:p.genero,edad:p.edad,federado:p.federado,handicap:p.handicap,numFed:p.numFed,caddie:cadLabel});
-    if(p.visitors)p.visitors.forEach(v=>{
-      gPlayers.push({nombre:v.nombre,tipo:'visitante',genero:v.genero,edad:v.edad,caddie:caddieLbl(v.caddieSelection),anfitrion:p.nombre,pago:v.formaPago});
-    });
+    gPlayers.push({nombre:p.nombre,accion:p.accion,tipo:'socio',carrito:p.carrito,cartNum:p.cartNum?parseInt(p.cartNum):null,genero:p.genero,edad:p.edad,federado:p.federado,handicap:p.handicap,caddie:cadLbl(p.caddieVal)});
+    if(p.visitors)p.visitors.forEach(v=>gPlayers.push({nombre:v.nombre,tipo:'visitante',genero:v.genero,edad:v.edad,caddie:cadLbl(v.caddieVal),anfitrion:p.nombre,pago:v.formaPago,cartNum:v.cartNum?parseInt(v.cartNum):null}));
   });
+  const destLabel=dest==='campo'?'Campo':dest==='practica'?'Práctica':dest==='torneo'?'Torneo':'Clínica';
+  demoGroups.unshift({time,dest:destLabel,hoyos:dest==='campo'?hoyos:null,players:gPlayers});
+  document.getElementById('hG').textContent=demoGroups.length;
+  document.getElementById('hP').textContent=parseInt(document.getElementById('hP').textContent)+gPlayers.length;
+  const newCarts=[...new Set(gPlayers.map(p=>p.cartNum).filter(Boolean))].length;
+  document.getElementById('hC').textContent=parseInt(document.getElementById('hC').textContent)+newCarts;
+  renderGroupsList();showToast(`✅ Grupo registrado — ${time} — ${gPlayers.length} jugadores`);
+  setTimeout(()=>backToGroups(),700);
+}
+function cadLbl(v){if(v==='sin')return'Sin caddie';if(v.startsWith('c-'))return v.replace('c-','')+' ('+((caddiesList.find(x=>x.nombre===v.replace('c-',''))||{}).cat||'?')+')';return'?'}
 
-  const newG={time,dest:dest==='campo'?'Campo':'Práctica',cart:cart||null,players:gPlayers};
-  demoGroups.unshift(newG);
-
-  document.getElementById('hGroups').textContent=demoGroups.length;
-  document.getElementById('hPlayers').textContent=parseInt(document.getElementById('hPlayers').textContent)+gPlayers.length;
-  if(cart)document.getElementById('hCarts').textContent=parseInt(document.getElementById('hCarts').textContent)+1;
-
-  renderGroupsList();
-  showToast(`✅ Grupo registrado — ${time} — ${gPlayers.length} jugadores`);
-  setTimeout(()=>backToGroups(),800);
+// ===== ADMIN: CADDIES =====
+function renderCaddies(){
+  document.getElementById('tabCaddies').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h2 style="font-size:18px;font-weight:700">Catálogo de Caddies</h2>
+      <button class="btn btn-p btn-sm" onclick="showNewCaddie()">＋ Nuevo Caddie</button>
+    </div>
+    <div class="card"><table class="tbl"><thead><tr><th>Nombre</th><th>Categoría</th><th>Estatus</th><th></th></tr></thead><tbody>
+    ${caddiesList.map((c,i)=>`<tr><td><b>${c.nombre}</b></td><td><span class="gb gb-c">${c.cat}</span></td><td><span class="${c.status==='Disponible'?'st-ok':'st-inact'}">${c.status}</span></td><td><button class="btn btn-s btn-sm" onclick="showEditCaddie(${i})">Editar</button></td></tr>`).join('')}
+    </tbody></table></div>`;
 }
 
-function caddieLbl(v){
-  if(v==='sin')return'Sin caddie';
-  if(v.startsWith('cat-'))return'Categoría '+v.split('-')[1];
-  if(v.startsWith('caddie-')){const n=v.replace('caddie-','');const c=caddiesList.find(x=>x.nombre===n);return c?`${n} (${c.cat})`:n}
-  return'?';
+// ===== NEW CADDIE FORM =====
+function showNewCaddie(){
+  const el=document.getElementById('viewNewCaddie');
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+      <button class="btn btn-s btn-sm" onclick="backFromCaddieForm()">← Atrás</button>
+      <h2 style="font-size:18px;font-weight:700">Nuevo Caddie</h2>
+    </div>
+    <div class="card"><div class="card-body">
+      <div class="grid2" style="max-width:500px">
+        <div class="fw"><label>Nombre completo *</label><input class="fi" id="ncName" placeholder="Nombre del caddie"></div>
+        <div><label>Categoría *</label><select class="fi" id="ncCat"><option value="A">A</option><option value="B">B</option><option value="C" selected>C</option><option value="D">D</option></select></div>
+        <div><label>Estatus</label><select class="fi" id="ncSt"><option value="Disponible">Disponible</option><option value="Inactivo">Inactivo</option></select></div>
+        <div class="fw" style="display:flex;gap:6px;justify-content:flex-end;margin-top:8px">
+          <button class="btn btn-s" onclick="backFromCaddieForm()">Cancelar</button>
+          <button class="btn btn-p" onclick="saveNewCaddie()">Guardar Caddie</button>
+        </div>
+      </div>
+    </div></div>`;
+  hideAll();el.classList.remove('hidden');
+}
+function saveNewCaddie(){
+  const nm=document.getElementById('ncName').value.trim();
+  if(!nm){showToast('⚠️ Nombre obligatorio');return}
+  caddiesList.push({nombre:nm,cat:document.getElementById('ncCat').value,status:document.getElementById('ncSt').value});
+  showToast(`✅ ${nm} agregado como caddie`);
+  backFromCaddieForm();
 }
 
-function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+// ===== EDIT CADDIE =====
+function showEditCaddie(idx){
+  const c=caddiesList[idx];
+  const el=document.getElementById('viewEditCaddie');
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+      <button class="btn btn-s btn-sm" onclick="backFromCaddieForm()">← Atrás</button>
+      <h2 style="font-size:18px;font-weight:700">Editar Caddie</h2>
+    </div>
+    <div class="card"><div class="card-body">
+      <div class="grid2" style="max-width:500px">
+        <div class="fw"><label>Nombre</label><input class="fi" id="ecName" value="${c.nombre}"></div>
+        <div><label>Categoría</label><select class="fi" id="ecCat">${['A','B','C','D'].map(x=>`<option value="${x}"${c.cat===x?' selected':''}>${x}</option>`).join('')}</select></div>
+        <div><label>Estatus</label><select class="fi" id="ecSt"><option value="Disponible"${c.status==='Disponible'?' selected':''}>Disponible</option><option value="Inactivo"${c.status==='Inactivo'?' selected':''}>Inactivo</option></select></div>
+        <div class="fw" style="display:flex;gap:6px;justify-content:flex-end;margin-top:8px">
+          <button class="btn btn-s" onclick="backFromCaddieForm()">Cancelar</button>
+          <button class="btn btn-p" onclick="saveEditCaddie(${idx})">Guardar Cambios</button>
+        </div>
+      </div>
+    </div></div>`;
+  hideAll();el.classList.remove('hidden');
+}
+function saveEditCaddie(idx){
+  const c=caddiesList[idx];
+  c.nombre=document.getElementById('ecName').value.trim()||c.nombre;
+  c.cat=document.getElementById('ecCat').value;
+  c.status=document.getElementById('ecSt').value;
+  showToast(`✅ ${c.nombre} actualizado — Cat. ${c.cat}, ${c.status}`);
+  backFromCaddieForm();
+}
+function backFromCaddieForm(){
+  hideAll();document.getElementById('viewGroups').classList.remove('hidden');
+  activeTab='caddies';renderAdminTabs();switchTab('caddies');
+}
 
+// ===== ADMIN: CARRITOS =====
+function renderCarritos(){
+  const hab=carritosList.filter(c=>c.status==='Habilitado').length;
+  const oos=carritosList.length-hab;
+  document.getElementById('tabCarritos').innerHTML=`
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:14px">Inventario de Carritos</h2>
+    <div class="stat-row" style="margin-bottom:14px">
+      <div class="stat-card"><div class="num">${carritosList.length}</div><div class="lbl">Total</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--g6)">${hab}</div><div class="lbl">Habilitados</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--r5)">${oos}</div><div class="lbl">Fuera de servicio</div></div>
+    </div>
+    <div class="card"><table class="tbl"><thead><tr><th style="width:80px">#</th><th>Estatus</th><th style="width:80px;text-align:center">Habilitado</th></tr></thead><tbody>
+    ${carritosList.map(c=>`<tr><td><b>C-${pad2(c.num)}</b></td><td><span class="${c.status==='Habilitado'?'st-ok':'st-off'}">${c.status}</span></td><td style="text-align:center"><label class="toggle"><input type="checkbox" ${c.status==='Habilitado'?'checked':''} onchange="toggleCart(${c.num},this.checked)"><span class="slider"></span></label></td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+function toggleCart(n,on){
+  const c=carritosList.find(x=>x.num===n);
+  if(c){c.status=on?'Habilitado':'Fuera de servicio';renderCarritos();showToast(`C-${pad2(n)} — ${c.status}`)}
+}
+
+// ===== ADMIN: TORNEOS =====
+function renderTorneos(){
+  document.getElementById('tabTorneos').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h2 style="font-size:18px;font-weight:700">Torneos</h2>
+      <button class="btn btn-p btn-sm" onclick="showTorneoForm()">＋ Nuevo Torneo</button>
+    </div>
+    <div id="torneoFormArea"></div>
+    ${torneos.map(t=>`<div class="card"><div class="card-body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start"><div><h3 style="font-size:16px">${t.nombre}</h3><p style="font-size:12px;color:var(--x5);margin-top:2px">${t.inicio} — ${t.fin} · Organizador: ${t.org}</p></div><span class="gb gb-t">Activo</span></div>
+      <div class="grid2" style="margin-top:12px">
+        <div><div class="flbl">Jugadores estimados</div><div style="font-size:20px;font-weight:800;color:var(--g8)">${t.jugadores}</div></div>
+        <div><div class="flbl">Desglose</div><div style="font-size:13px">${t.hombres} hombres · ${t.mujeres} mujeres<br>${t.socios} socios · ${t.visitantes} visitantes</div></div>
+        <div><div class="flbl">Pagos</div><div style="font-size:12px;color:var(--x6)">${t.pagos}</div></div>
+        <div><div class="flbl">Notas</div><div style="font-size:12px;color:var(--x6)">${t.notas}</div></div>
+      </div>
+    </div></div>`).join('')}`;
+}
+function showTorneoForm(){
+  document.getElementById('torneoFormArea').innerHTML=`<div class="card ai"><div class="card-body"><h3 style="font-size:15px;margin-bottom:12px">Crear torneo</h3>
+    <div class="grid2">
+      <div class="fw"><label>Nombre del torneo *</label><input class="fi" id="tn" placeholder="Ej: Torneo Copa Julio 2026"></div>
+      <div><label>Fecha inicio *</label><input type="date" class="fi" id="tfi"></div>
+      <div><label>Fecha fin *</label><input type="date" class="fi" id="tff"></div>
+      <div><label>Organizador</label><input class="fi" id="torg" placeholder="Socio o Club de Golf"></div>
+      <div><label>Jugadores estimados</label><input type="number" class="fi" id="tj" placeholder="Cantidad"></div>
+      <div><label>Hombres / Mujeres</label><div style="display:flex;gap:4px"><input type="number" class="fi" id="th" placeholder="H" style="width:50%"><input type="number" class="fi" id="tm" placeholder="M" style="width:50%"></div></div>
+      <div class="fw"><label>Notas de pago</label><input class="fi" id="tpay" placeholder="Ej: 50 green fees, 5 cortesías"></div>
+      <div class="fw"><label>Notas generales</label><input class="fi" id="tnotes" placeholder="Observaciones"></div>
+      <div class="fw" style="display:flex;gap:6px;justify-content:flex-end;margin-top:4px">
+        <button class="btn btn-s btn-sm" onclick="document.getElementById('torneoFormArea').innerHTML=''">Cancelar</button>
+        <button class="btn btn-p btn-sm" onclick="saveTorneo()">Crear Torneo</button>
+      </div>
+    </div></div></div>`;
+}
+function saveTorneo(){
+  const n=document.getElementById('tn').value.trim();if(!n){showToast('⚠️ Nombre obligatorio');return}
+  torneos.push({nombre:n,inicio:document.getElementById('tfi').value||new Date().toISOString().slice(0,10),fin:document.getElementById('tff').value||new Date().toISOString().slice(0,10),org:document.getElementById('torg').value||'Club de Golf',jugadores:parseInt(document.getElementById('tj').value)||0,hombres:parseInt(document.getElementById('th').value)||0,mujeres:parseInt(document.getElementById('tm').value)||0,socios:0,visitantes:0,pagos:document.getElementById('tpay').value,notas:document.getElementById('tnotes').value});
+  renderTorneos();showToast('✅ Torneo creado');
+}
+
+// ===== INCIDENTES =====
+function renderIncidentes(){
+  document.getElementById('tabIncidentes').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <h2 style="font-size:18px;font-weight:700">Incidentes</h2>
+      <button class="btn btn-d btn-sm" onclick="showIncForm()">＋ Registrar Incidente</button>
+    </div>
+    <div id="incFormArea"></div>
+    ${incidentes.map(ic=>`<div class="inc-card"><div class="ic-date">${ic.fecha} · Registrado por: ${ic.por}</div><div class="ic-who">${ic.quien}</div><div class="ic-desc">${ic.desc}</div></div>`).join('')}
+    ${!incidentes.length?'<div class="es"><div class="ic">✓</div><h3>Sin incidentes registrados</h3></div>':''}`;
+}
+function showIncForm(){
+  document.getElementById('incFormArea').innerHTML=`<div class="card ai"><div class="card-body"><h3 style="font-size:15px;margin-bottom:12px">Nuevo Incidente</h3>
+    <div class="grid2">
+      <div class="fw"><label>Socio(s) / visitante(s) involucrado(s) *</label><input class="fi" id="incWho" placeholder="Buscar por nombre o # de acción"></div>
+      <div class="fw"><label>Descripción *</label><textarea class="fi" id="incDesc" rows="3" placeholder="Describir el incidente..."></textarea></div>
+      <div class="fw"><label>Fotografía (opcional)</label><div style="border:2px dashed var(--x3);border-radius:var(--rs);padding:20px;text-align:center;color:var(--x4);font-size:12px;cursor:pointer">📷 Toca para agregar foto</div></div>
+      <div class="fw" style="display:flex;gap:6px;justify-content:flex-end">
+        <button class="btn btn-s btn-sm" onclick="document.getElementById('incFormArea').innerHTML=''">Cancelar</button>
+        <button class="btn btn-d btn-sm" onclick="saveInc()">Registrar</button>
+      </div>
+    </div></div></div>`;
+}
+function saveInc(){
+  const w=document.getElementById('incWho').value.trim(),d=document.getElementById('incDesc').value.trim();
+  if(!w||!d){showToast('⚠️ Completa los campos obligatorios');return}
+  const now=new Date(),fecha=`${now.getDate()} jul 2026, ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
+  incidentes.unshift({fecha,quien:w,desc:d,por:role==='marshall'?'Marshall Eduardo':'Lulú (Admin)'});
+  renderIncidentes();showToast('✅ Incidente registrado');
+}
+
+// ===== REPORTES =====
+function renderReportes(){
+  const days14=['2','3','4','5','6','7','8','9','10','11','12','13','14','15'];
+  const vals14=[145,162,155,178,204,210,120,148,170,160,182,195,205,172];
+  const maxV=Math.max(...vals14);
+  const barH=vals14.map((v,idx)=>`<div class="chart-col"><div class="chart-val">${v}</div><div class="chart-fill" style="height:${(v/maxV)*130}px;background:${v>190?'var(--g7)':'var(--g5)'}"></div><div class="chart-lbl">${days14[idx]}</div></div>`).join('');
+  const diasSem=['Jue','Vie','Sáb','Dom','Lun','Mar','Mié','Jue'];
+  const foreVals=[172,185,210,215,95,160,170,175];
+  const maxF=Math.max(...foreVals);
+  document.getElementById('tabReportes').innerHTML=`
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:14px">Reportes</h2>
+    <div class="stat-row">
+      <div class="stat-card"><div class="num">172</div><div class="lbl">Promedio diario (14 días)</div></div>
+      <div class="stat-card"><div class="num">2,408</div><div class="lbl">Total últimos 14 días</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--g6)">+12%</div><div class="lbl">vs. período anterior</div></div>
+    </div>
+    <div class="card"><div class="card-body">
+      <div class="sl">Jugadores por día — últimos 14 días</div>
+      <div class="chart-bar">${barH}</div>
+      <div style="text-align:center;margin-top:6px;font-size:10px;color:var(--x4)">Julio 2–15, 2026</div>
+    </div></div>
+    <div class="card"><div class="card-body">
+      <div class="sl">Género — últimos 30 días</div>
+      <div style="display:flex;gap:16px;align-items:center;margin-top:8px">
+        <div style="flex:1;height:24px;background:var(--x1);border-radius:12px;overflow:hidden;display:flex">
+          <div style="width:72%;background:var(--b5);border-radius:12px"></div>
+          <div style="width:28%;background:var(--p5)"></div>
+        </div>
+        <div style="font-size:13px;min-width:140px"><span style="color:var(--b5);font-weight:700">72%</span> Hombres · <span style="color:var(--p5);font-weight:700">28%</span> Mujeres</div>
+      </div>
+    </div></div>
+    <div class="card"><div class="card-body">
+      <div class="sl">Rangos de edad — últimos 30 días</div>
+      <div style="margin-top:8px">
+        ${[['< 18','3%',3],['18–24','5%',5],['25–34','12%',12],['35–44','22%',22],['45–54','28%',28],['55–64','20%',20],['65+','10%',10]].map(([r,p,w])=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="min-width:50px;font-size:12px;text-align:right;color:var(--x5)">${r}</div><div style="flex:1;height:18px;background:var(--x1);border-radius:4px;overflow:hidden"><div style="width:${w*3}%;height:100%;background:var(--g5);border-radius:4px"></div></div><div style="min-width:32px;font-size:12px;font-weight:600">${p}</div></div>`).join('')}
+      </div>
+    </div></div>
+    <div class="card"><div class="card-body">
+      <div class="sl">Pronóstico — próximos 7 días</div>
+      <div style="margin-top:8px">
+        ${diasSem.map((d,i)=>`<div class="forecast-row"><div class="forecast-day">${d} ${16+i}</div><div class="forecast-bar"><div class="forecast-fill" style="width:${(foreVals[i]/maxF)*100}%"></div></div><div class="forecast-num">${foreVals[i]}</div></div>`).join('')}
+      </div>
+      <div style="font-size:11px;color:var(--x4);margin-top:8px">Estimación basada en tendencias de las últimas 8 semanas. Lunes 21 jul aún sin apertura formal.</div>
+    </div></div>`;
+}
+
+// ===== TOAST =====
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+// Close search on outside click
 document.addEventListener('click',e=>{if(!e.target.closest('.sc'))document.getElementById('sResults').classList.remove('show')});
 </script>
 </body>
