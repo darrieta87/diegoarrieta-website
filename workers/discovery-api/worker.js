@@ -176,7 +176,7 @@ async function sendEmail(env, brief, operator, summary, transcript) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "Discovery Bot <onboarding@resend.dev>",
+      from: "Discovery Bot <discovery@diegoarrieta.com>",
       to: [to],
       subject: `[Discovery] ${brief.title} — ${operator.name} — ${now}`,
       html,
@@ -377,7 +377,7 @@ async function handleSendOtp(request, env) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "Discovery Bot <onboarding@resend.dev>",
+      from: "Discovery Bot <discovery@diegoarrieta.com>",
       to: [email],
       subject: `Tu código de acceso: ${code}`,
       html: `<div style="font-family:sans-serif;max-width:400px;margin:0 auto;padding:20px">
