@@ -99,7 +99,7 @@ async function getOrCreateConversation(env, briefId, operatorId, sessionKey) {
 
 async function getConfig(env) {
   const rows = await sb(env).query("config", "id=eq.1");
-  return rows[0] || { master_prompt: "", model: "claude-sonnet-4-6", voice_enabled: true };
+  return rows[0] || { master_prompt: "", model: "claude-sonnet-5", voice_enabled: true };
 }
 
 // ===== SYSTEM PROMPT =====
@@ -251,7 +251,7 @@ async function handleChat(request, env) {
       ? [{ role: "user", content: "Hola, estoy listo para la entrevista." }]
       : messages;
 
-  const model = config.model || "claude-sonnet-4-6";
+  const model = config.model || "claude-sonnet-5";
 
   const claudeResponse = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
